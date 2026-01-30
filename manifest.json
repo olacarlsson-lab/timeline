@@ -1,6 +1,6 @@
 {
-  "name": "KPL-projekt",
-  "short_name": "KPL",
+  "name": "Tidslinje",
+  "short_name": "Tidslinje",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",

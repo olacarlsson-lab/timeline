@@ -1,12 +1,14 @@
-const CACHE_NAME = 'kpl-projekt-v1';
+const CACHE_NAME = 'tidslinje-v2';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './styles.css',
     './app.js',
     './manifest.json',
+    './icon.svg',
     './icon-192.png',
-    './icon-512.png'
+    './icon-512.png',
+    './sample-data.json'
 ];
 
 // Install event: Cache assets

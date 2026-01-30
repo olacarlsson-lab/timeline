@@ -1,4 +1,12 @@
 // Timeline Application
+const DEFAULT_AREAS = [
+    { name: 'Område A', color: '#BA4A71' },
+    { name: 'Område B', color: '#31567D' },
+    { name: 'Område C', color: '#E8BC1C' },
+    { name: 'Område D', color: '#37B94B' },
+    { name: 'Övrigt', color: '#FA4D2D' }
+];
+
 class TimelineApp {
     constructor() {
         // Configuration
@@ -13,8 +21,10 @@ class TimelineApp {
         this.dayWidth = 4; // Base width per day in pixels
 
         // Data
+        this.areas = this.loadData('timeline_areas') || JSON.parse(JSON.stringify(DEFAULT_AREAS));
         this.projects = this.loadData('timeline_projects') || [];
         this.events = this.loadData('timeline_events') || [];
+        this._firstVisit = !this.loadData('timeline_projects') && !this.loadData('timeline_events');
         this.autoSaveTimer = null;
         this.undoStack = [];
         this.maxUndoSteps = 30;
@@ -77,8 +87,78 @@ class TimelineApp {
         this.timelineContainer.classList.add('compact-mode');
         this.initTimelineRange();
         this.populateDateSelectors();
+        this.populateAreaSelects();
         this.bindEvents();
-        this.setView('3months');
+
+        if (this._firstVisit) {
+            this.loadSampleData();
+        } else {
+            this.setView('3months');
+        }
+    }
+
+    loadSampleData() {
+        fetch('./sample-data.json')
+            .then(res => res.json())
+            .then(data => {
+                this.projects = data.projects || [];
+                this.events = data.events || [];
+                if (data.areas) {
+                    this.areas = data.areas;
+                    this.saveData('timeline_areas', this.areas);
+                    this.populateAreaSelects();
+                }
+                if (data.timelineRange) {
+                    this.timelineStartYear = data.timelineRange.startYear;
+                    this.timelineEndYear = data.timelineRange.endYear;
+                    this.startDate = this.getStartDate();
+                    this.endDate = this.getEndDate();
+                    this.saveData('timeline_range', data.timelineRange);
+                    this.initTimelineRange();
+                }
+                this.saveData('timeline_projects', this.projects);
+                this.saveData('timeline_events', this.events);
+                this.populateDateSelectors();
+                this.setView('3months');
+            })
+            .catch(() => {
+                this.setView('3months');
+            });
+    }
+
+    resetToSampleData() {
+        if (!confirm('Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.')) return;
+        this.pushUndoState();
+        localStorage.removeItem('timeline_projects');
+        localStorage.removeItem('timeline_events');
+        localStorage.removeItem('timeline_areas');
+        localStorage.removeItem('timeline_range');
+        this.projects = [];
+        this.events = [];
+        this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.loadSampleData();
+        this.showToast('Exempeldata inläst', 'success');
+    }
+
+    resetToEmpty() {
+        if (!confirm('Vill du ta bort all data? Tidslinjen töms helt.')) return;
+        this.pushUndoState();
+        this.projects = [];
+        this.events = [];
+        this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.timelineStartYear = null;
+        this.timelineEndYear = null;
+        this.startDate = this.getStartDate();
+        this.endDate = this.getEndDate();
+        this.saveData('timeline_projects', this.projects);
+        this.saveData('timeline_events', this.events);
+        this.saveData('timeline_areas', this.areas);
+        localStorage.removeItem('timeline_range');
+        this.initTimelineRange();
+        this.populateAreaSelects();
+        this.populateDateSelectors();
+        this.render();
+        this.showToast('All data rensad', 'info');
     }
 
     initTimelineRange() {
@@ -111,6 +191,73 @@ class TimelineApp {
 
 
     // Generate week and month options for selectors
+    getAreaMap() {
+        const map = {};
+        this.areas.forEach(a => { map[a.color] = a.name; });
+        return map;
+    }
+
+    getAreaName(color) {
+        const area = this.areas.find(a => a.color === color);
+        return area ? area.name : color;
+    }
+
+    populateAreaSelects() {
+        // Filter select
+        const filterArea = document.getElementById('filterArea');
+        if (filterArea) {
+            const currentVal = filterArea.value;
+            filterArea.innerHTML = '<option value="">Alla</option>';
+            this.areas.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.color;
+                opt.textContent = a.name;
+                filterArea.appendChild(opt);
+            });
+            filterArea.value = currentVal;
+        }
+
+        // Project color select + Edit color select
+        ['projectColor', 'editColor'].forEach(id => {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '';
+            this.areas.forEach(a => {
+                const opt = document.createElement('option');
+                opt.value = a.color;
+                opt.textContent = a.name;
+                select.appendChild(opt);
+            });
+            if (currentVal) select.value = currentVal;
+
+            // Rebuild custom color dropdown if it exists
+            const dropdown = document.querySelector(`.color-dropdown[data-select-id="${id}"]`);
+            if (dropdown) {
+                const menu = dropdown.querySelector('.color-dropdown-menu');
+                if (menu) {
+                    menu.innerHTML = '';
+                    this.areas.forEach(a => {
+                        const item = document.createElement('div');
+                        item.className = 'color-dropdown-item';
+                        item.dataset.value = a.color;
+                        item.innerHTML = `
+                            <span class="color-swatch" style="background-color: ${a.color}"></span>
+                            <span class="color-label">${a.name}</span>
+                        `;
+                        item.addEventListener('click', () => {
+                            select.value = a.color;
+                            this.updateColorDropdown(dropdown, select);
+                            dropdown.classList.remove('open');
+                        });
+                        menu.appendChild(item);
+                    });
+                }
+                this.updateColorDropdown(dropdown, select);
+            }
+        });
+    }
+
     populateDateSelectors() {
         const weekNumSelects = document.querySelectorAll('.week-num-input');
         const weekYearSelects = document.querySelectorAll('.week-year-input');
@@ -198,6 +345,7 @@ class TimelineApp {
         safeBind('searchInput', 'input', (e) => {
             this.searchQuery = e.target.value.toLowerCase();
             this.render();
+            this.updateFilterIndicator();
         });
 
         safeBind('filterLead', 'change', (e) => this.setFilterLead(e.target.value));
@@ -205,22 +353,56 @@ class TimelineApp {
         safeBind('filterStatus', 'change', (e) => {
             this.filterStatus = e.target.value;
             this.render();
+            this.updateFilterIndicator();
         });
 
         safeBind('filterArea', 'change', (e) => {
             this.filterAreaValue = e.target.value;
             this.render();
+            this.updateFilterIndicator();
         });
 
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importFile', 'change', (e) => this.importData(e));
+        safeBind('resetSampleBtn', 'click', () => this.resetToSampleData());
+        safeBind('resetEmptyBtn', 'click', () => this.resetToEmpty());
 
         // Timeline range controls
         safeBind('timelineStartYear', 'change', (e) => this.updateTimelineRange());
         safeBind('timelineEndYear', 'change', (e) => this.updateTimelineRange());
 
+        // Control panel toggle
+        safeBind('controlPanelToggle', 'click', () => this.toggleControlPanel());
+        safeBind('controlPanelClose', 'click', () => this.closeControlPanel());
+        const backdrop = document.getElementById('controlPanelBackdrop');
+        if (backdrop) backdrop.addEventListener('click', () => this.closeControlPanel());
+
+        // Area management
+        safeBind('areaAddBtn', 'click', () => this.addArea());
+        const areaNameInput = document.getElementById('areaNewName');
+        if (areaNameInput) {
+            areaNameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); this.addArea(); }
+            });
+        }
+        this.renderAreaList();
+
+        // "Hantera områden" links from modals
+        ['openAreasFromProject', 'openAreasFromEdit'].forEach(id => {
+            const link = document.getElementById(id);
+            if (link) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Close whichever modal is open
+                    const activeModal = document.querySelector('.modal.active');
+                    if (activeModal) this.closeModal(activeModal.id);
+                    // Open control panel
+                    this.toggleControlPanel();
+                });
+            }
+        });
 
         // Mouse wheel zoom
         this.timelineBody.addEventListener('wheel', (e) => {
@@ -246,11 +428,17 @@ class TimelineApp {
                 const activeModal = document.querySelector('.modal.active');
                 if (activeModal) {
                     this.closeModal(activeModal.id);
+                    return;
                 }
                 const activeSidebar = document.querySelector('.sidebar.active');
                 if (activeSidebar) {
                     if (activeSidebar.id === 'projectSidebar') this.closeProjectSidebar();
                     else if (activeSidebar.id === 'eventSidebar') this.closeEventSidebar();
+                    return;
+                }
+                const controlPanel = document.getElementById('controlPanel');
+                if (controlPanel && controlPanel.classList.contains('active')) {
+                    this.closeControlPanel();
                 }
             }
         });
@@ -425,9 +613,8 @@ class TimelineApp {
         this.bindDateTypeSelector('editEventStart');
         this.bindDateTypeSelector('editEventEnd');
 
-        // Symbol selectors with icon preview
-        this.bindSymbolSelector('eventSymbol');
-        this.bindSymbolSelector('editSymbol');
+        // Symbol and project dropdowns are rebuilt each time modals open
+        // (rebuildSymbolDropdown / rebuildProjectDropdown in openEventModal / openEditModal)
 
         // Color selectors with color preview
         this.bindColorSelector('projectColor');
@@ -532,6 +719,216 @@ class TimelineApp {
         `;
 
         // Update selected state in menu
+        dropdown.querySelectorAll('.color-dropdown-item').forEach(item => {
+            item.classList.toggle('selected', item.dataset.value === value);
+        });
+    }
+
+    // Build/rebuild a custom project dropdown with color swatches
+    rebuildProjectDropdown(id) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        // Remove existing custom dropdown if any
+        const existing = select.parentNode.querySelector(`.color-dropdown[data-select-id="${id}"]`);
+        if (existing) existing.remove();
+
+        const options = Array.from(select.options).map(opt => {
+            const project = this.projects.find(p => p.id === opt.value);
+            return {
+                value: opt.value,
+                label: opt.textContent,
+                color: project ? project.color : null
+            };
+        });
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'color-dropdown';
+        dropdown.dataset.selectId = id;
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'color-dropdown-trigger';
+
+        const menu = document.createElement('div');
+        menu.className = 'color-dropdown-menu';
+
+        options.forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'color-dropdown-item';
+            item.dataset.value = opt.value;
+            if (opt.color) {
+                item.innerHTML = `
+                    <span class="color-swatch" style="background-color: ${opt.color}"></span>
+                    <span class="color-label">${opt.label}</span>
+                `;
+            } else {
+                item.innerHTML = `<span class="color-label">${opt.label}</span>`;
+            }
+            item.addEventListener('click', () => {
+                select.value = opt.value;
+                this.updateProjectDropdown(dropdown, select);
+                dropdown.classList.remove('open');
+            });
+            menu.appendChild(item);
+        });
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.color-dropdown.open').forEach(d => {
+                if (d !== dropdown) d.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        dropdown.appendChild(trigger);
+        dropdown.appendChild(menu);
+
+        select.style.display = 'none';
+        select.parentNode.insertBefore(dropdown, select.nextSibling);
+
+        this.updateProjectDropdown(dropdown, select);
+    }
+
+    updateProjectDropdown(dropdown, select) {
+        const trigger = dropdown.querySelector('.color-dropdown-trigger');
+        const selectedOption = select.options[select.selectedIndex];
+        const value = select.value;
+        const label = selectedOption ? selectedOption.textContent : '';
+        const project = this.projects.find(p => p.id === value);
+
+        if (project) {
+            trigger.innerHTML = `
+                <span class="color-swatch" style="background-color: ${project.color}"></span>
+                <span class="color-label">${label}</span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            `;
+        } else {
+            trigger.innerHTML = `
+                <span class="color-label">${label}</span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            `;
+        }
+
+        dropdown.querySelectorAll('.color-dropdown-item').forEach(item => {
+            item.classList.toggle('selected', item.dataset.value === value);
+        });
+    }
+
+    // Build/rebuild a custom symbol dropdown with SVG icons
+    rebuildSymbolDropdown(id) {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        // Remove existing custom dropdown if any
+        const existing = select.parentNode.querySelector(`.color-dropdown[data-select-id="${id}"]`);
+        if (existing) existing.remove();
+
+        const symbolSVGs = {
+            star: `<svg class="symbol-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+            diamond: `<svg class="symbol-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2z"/></svg>`,
+            flag: `<svg class="symbol-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>`,
+            warning: `<svg class="symbol-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>`,
+            check: `<svg class="symbol-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`
+        };
+
+        const options = Array.from(select.options).map(opt => ({
+            value: opt.value,
+            label: opt.textContent,
+            svg: symbolSVGs[opt.value] || null
+        }));
+
+        const dropdown = document.createElement('div');
+        dropdown.className = 'color-dropdown';
+        dropdown.dataset.selectId = id;
+
+        const trigger = document.createElement('button');
+        trigger.type = 'button';
+        trigger.className = 'color-dropdown-trigger';
+
+        const menu = document.createElement('div');
+        menu.className = 'color-dropdown-menu';
+
+        options.forEach(opt => {
+            const item = document.createElement('div');
+            item.className = 'color-dropdown-item';
+            item.dataset.value = opt.value;
+            if (opt.svg) {
+                item.innerHTML = `
+                    ${opt.svg}
+                    <span class="color-label">${opt.label}</span>
+                `;
+            } else {
+                item.innerHTML = `<span class="color-label">${opt.label}</span>`;
+            }
+            item.addEventListener('click', () => {
+                select.value = opt.value;
+                this.updateSymbolDropdown(dropdown, select, symbolSVGs);
+                dropdown.classList.remove('open');
+            });
+            menu.appendChild(item);
+        });
+
+        trigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.color-dropdown.open').forEach(d => {
+                if (d !== dropdown) d.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        dropdown.appendChild(trigger);
+        dropdown.appendChild(menu);
+
+        select.style.display = 'none';
+        select.parentNode.insertBefore(dropdown, select.nextSibling);
+
+        // Store symbolSVGs on the dropdown for later updates
+        dropdown._symbolSVGs = symbolSVGs;
+
+        this.updateSymbolDropdown(dropdown, select, symbolSVGs);
+    }
+
+    updateSymbolDropdown(dropdown, select, symbolSVGs) {
+        const trigger = dropdown.querySelector('.color-dropdown-trigger');
+        const value = select.value;
+        const selectedOption = select.options[select.selectedIndex];
+        const label = selectedOption ? selectedOption.textContent : '';
+        const svg = symbolSVGs[value] || '';
+
+        if (svg) {
+            trigger.innerHTML = `
+                ${svg}
+                <span class="color-label">${label}</span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            `;
+        } else {
+            trigger.innerHTML = `
+                <span class="color-label">${label}</span>
+                <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            `;
+        }
+
         dropdown.querySelectorAll('.color-dropdown-item').forEach(item => {
             item.classList.toggle('selected', item.dataset.value === value);
         });
@@ -647,8 +1044,16 @@ class TimelineApp {
 
     renderContentGrouped() {
         this.timelineContent.innerHTML = '';
+        const totalWidth = this.getTotalWidth();
+        this.timelineContent.style.width = totalWidth + 'px';
+
         const projects = this.getSortedProjects();
-        if (projects.length === 0) return;
+
+        if (projects.length === 0) {
+            // Still render standalone events even without projects
+            this.renderStandaloneEvents(this.timelineContent);
+            return;
+        }
 
         // Grouping Logic
         const groups = {};
@@ -719,7 +1124,7 @@ class TimelineApp {
         bar.style.width = width + 'px';
 
         // Determine color
-        let color = '#31567D'; // Default blue
+        let color = (this.areas[0] && this.areas[0].color) || '#31567D';
         if (project.color) {
             color = project.color;
         } else {
@@ -1039,16 +1444,7 @@ class TimelineApp {
 
         title.textContent = project.name;
 
-        const areaMap = {
-            '#BA4A71': 'Östra sjukhuset',
-            '#31567D': 'Sahlgrenska',
-            '#E8BC1C': 'Mölndal',
-            '#FEC7BD': 'SÄS',
-            '#37B94B': 'NU',
-            '#33B4CC': 'SkaS',
-            '#0054A6': 'Västtrafik',
-            '#FA4D2D': 'Övrigt'
-        };
+        const areaMap = this.getAreaMap();
 
         const projectEvents = this.events.filter(e => e.projectId === project.id);
         projectEvents.sort((a, b) => this.parseDate(a.start || a.date) - this.parseDate(b.start || b.date));
@@ -1083,7 +1479,7 @@ class TimelineApp {
                 <span class="sidebar-label">Händelser (${projectEvents.length})</span>
                 <div class="sidebar-events">
                     ${projectEvents.map(e => `
-                        <div class="sidebar-event-item">
+                        <div class="sidebar-event-item sidebar-event-clickable" data-event-id="${e.id}">
                             <div class="sidebar-event-date">${this.formatEventDateRange(e)}</div>
                             <div class="sidebar-event-name">${e.name}</div>
                         </div>
@@ -1091,6 +1487,14 @@ class TimelineApp {
                 </div>
             </div>
         `;
+
+        // Attach click handlers to event items for timeline navigation
+        content.querySelectorAll('.sidebar-event-clickable').forEach(el => {
+            el.addEventListener('click', () => {
+                const event = this.events.find(ev => ev.id === el.dataset.eventId);
+                if (event) this.scrollToEvent(event);
+            });
+        });
 
         sidebar.classList.add('active');
     }
@@ -1154,6 +1558,140 @@ class TimelineApp {
     closeEventSidebar() {
         document.getElementById('eventSidebar').classList.remove('active');
         this.activeSidebarEvent = null;
+    }
+
+    toggleControlPanel() {
+        const panel = document.getElementById('controlPanel');
+        const backdrop = document.getElementById('controlPanelBackdrop');
+        if (panel.classList.contains('active')) {
+            this.closeControlPanel();
+        } else {
+            panel.classList.add('active');
+            backdrop.classList.add('active');
+        }
+    }
+
+    closeControlPanel() {
+        document.getElementById('controlPanel').classList.remove('active');
+        document.getElementById('controlPanelBackdrop').classList.remove('active');
+    }
+
+    updateFilterIndicator() {
+        const indicator = document.getElementById('filterIndicator');
+        if (!indicator) return;
+        const hasActiveFilter = (
+            this.filterLead !== '' ||
+            this.filterStatus !== '' ||
+            this.filterAreaValue !== '' ||
+            this.searchQuery !== ''
+        );
+        indicator.style.display = hasActiveFilter ? 'block' : 'none';
+    }
+
+    renderAreaList() {
+        const list = document.getElementById('areaList');
+        if (!list) return;
+        list.innerHTML = '';
+        this.areas.forEach((area, index) => {
+            const item = document.createElement('div');
+            item.className = 'area-item';
+            item.innerHTML = `
+                <span class="area-item-swatch" style="background-color: ${area.color}"></span>
+                <span class="area-item-name">${area.name}</span>
+                <button class="area-item-delete" title="Ta bort">&times;</button>
+            `;
+            item.querySelector('.area-item-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeArea(index);
+            });
+            item.querySelector('.area-item-swatch').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.editAreaColor(index);
+            });
+            item.querySelector('.area-item-name').addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.editAreaName(index);
+            });
+            list.appendChild(item);
+        });
+    }
+
+    addArea() {
+        const nameInput = document.getElementById('areaNewName');
+        const colorInput = document.getElementById('areaNewColor');
+        const name = nameInput.value.trim();
+        if (!name) return;
+
+        this.areas.push({ name, color: colorInput.value });
+        nameInput.value = '';
+        colorInput.value = '#6366f1';
+        this.saveData('timeline_areas', this.areas);
+        this.populateAreaSelects();
+        this.renderAreaList();
+        this.render();
+    }
+
+    removeArea(index) {
+        const area = this.areas[index];
+        const usedBy = this.projects.filter(p => p.color === area.color).length;
+        if (usedBy > 0) {
+            if (!confirm(`"${area.name}" används av ${usedBy} projekt. Ta bort ändå?`)) return;
+        }
+        this.areas.splice(index, 1);
+        this.saveData('timeline_areas', this.areas);
+        this.populateAreaSelects();
+        this.renderAreaList();
+        this.render();
+    }
+
+    editAreaColor(index) {
+        const picker = document.createElement('input');
+        picker.type = 'color';
+        picker.value = this.areas[index].color;
+        picker.style.position = 'absolute';
+        picker.style.opacity = '0';
+        document.body.appendChild(picker);
+        picker.addEventListener('input', () => {
+            this.areas[index].color = picker.value;
+            this.saveData('timeline_areas', this.areas);
+            this.populateAreaSelects();
+            this.renderAreaList();
+            this.render();
+        });
+        picker.addEventListener('change', () => {
+            picker.remove();
+        });
+        picker.click();
+    }
+
+    editAreaName(index) {
+        const list = document.getElementById('areaList');
+        const item = list.children[index];
+        const nameSpan = item.querySelector('.area-item-name');
+        const oldName = this.areas[index].name;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldName;
+        input.className = 'area-name-edit';
+        nameSpan.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const save = () => {
+            const newName = input.value.trim() || oldName;
+            this.areas[index].name = newName;
+            this.saveData('timeline_areas', this.areas);
+            this.populateAreaSelects();
+            this.renderAreaList();
+            this.render();
+        };
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); save(); }
+            if (e.key === 'Escape') { input.value = oldName; save(); }
+        });
     }
 
     getSymbolLabel(symbol) {
@@ -1234,6 +1772,7 @@ class TimelineApp {
     setFilterLead(lead) {
         this.filterLead = lead;
         this.render();
+        this.updateFilterIndicator();
     }
 
     updateLeadFilter() {
@@ -1293,16 +1832,7 @@ class TimelineApp {
 
     getSortedProjects() {
         // Mapping for Area names (associated with colors)
-        const colorToArea = {
-            '#BA4A71': 'Östra sjukhuset',
-            '#31567D': 'Sahlgrenska',
-            '#E8BC1C': 'Mölndal',
-            '#FEC7BD': 'SÄS',
-            '#37B94B': 'NU',
-            '#33B4CC': 'SkaS',
-            '#0054A6': 'Västtrafik',
-            '#FA4D2D': 'Övrigt'
-        };
+        const colorToArea = this.getAreaMap();
 
         return [...this.getFilteredProjects()].sort((a, b) => {
             switch (this.sortBy) {
@@ -1356,6 +1886,10 @@ class TimelineApp {
 
     // Rendering
     render() {
+        // Preserve scroll position across re-renders
+        const scrollLeft = this.timelineBody ? this.timelineBody.scrollLeft : 0;
+        const scrollTop = this.timelineBody ? this.timelineBody.scrollTop : 0;
+
         this.updateLeadFilter();
         this.renderHeader();
         this.renderGrid();
@@ -1371,6 +1905,13 @@ class TimelineApp {
         }
 
         this.renderTodayMarker();
+
+        // Restore scroll position
+        if (this.timelineBody) {
+            this.timelineBody.scrollLeft = scrollLeft;
+            this.timelineBody.scrollTop = scrollTop;
+        }
+
         // Update sticky labels and sync grid height after DOM is ready
         requestAnimationFrame(() => {
             this.updateStickyLabels();
@@ -1889,6 +2430,28 @@ class TimelineApp {
         this.timelineBody.scrollLeft = pos - containerWidth / 2;
     }
 
+    scrollToEvent(event) {
+        const eventDate = this.parseDate(event.start || event.date);
+        const pos = this.dateToPosition(eventDate);
+        const containerWidth = this.timelineBody.clientWidth;
+        this.timelineBody.scrollLeft = pos - containerWidth / 2;
+
+        // Flash highlight on the event element in the timeline
+        requestAnimationFrame(() => {
+            // Find event markers/symbols/bars that match this event position
+            const tolerance = 3;
+            const allMarkers = this.timelineContent.querySelectorAll(
+                '.project-event-marker, .event-symbol, .project-event-bar, .event-container-duration-symbol, .event-container'
+            );
+            allMarkers.forEach(el => {
+                const left = parseFloat(el.style.left);
+                if (Math.abs(left - pos) < tolerance) {
+                    el.classList.add('event-flash');
+                    setTimeout(() => el.classList.remove('event-flash'), 1500);
+                }
+            });
+        });
+    }
 
     // Modal handling
     openProjectModal() {
@@ -1929,6 +2492,11 @@ class TimelineApp {
             option.textContent = project.name;
             select.appendChild(option);
         });
+        this.rebuildProjectDropdown('eventProject');
+
+        // Reset symbol and rebuild dropdown
+        document.getElementById('eventSymbol').value = '';
+        this.rebuildSymbolDropdown('eventSymbol');
 
         document.getElementById('eventModal').classList.add('active');
     }
@@ -2005,10 +2573,12 @@ class TimelineApp {
                 select.appendChild(option);
             });
             select.value = item.projectId || '';
+            this.rebuildProjectDropdown('editProject');
+
             const editSymbol = document.getElementById('editSymbol');
             editSymbol.value = item.symbol || '';
-            // Update symbol icon
-            this.updateSymbolSelectIcon(editSymbol);
+            this.rebuildSymbolDropdown('editSymbol');
+
             document.getElementById('editComment').value = item.comment || '';
         }
 
@@ -2253,6 +2823,7 @@ class TimelineApp {
             clearTimeout(this.autoSaveTimer);
         }
         this.autoSaveTimer = setTimeout(() => {
+            this.saveData('timeline_areas', this.areas);
             this.saveData('timeline_projects', this.projects);
             this.saveData('timeline_events', this.events);
         }, 500);
@@ -2303,7 +2874,7 @@ class TimelineApp {
 
             // Title
             doc.setFontSize(20);
-            doc.text('KPL-projekt Timeline', 20, 20);
+            doc.text('Tidslinje Timeline', 20, 20);
 
             // Date
             doc.setFontSize(10);
@@ -2382,7 +2953,7 @@ class TimelineApp {
             }
 
             // Save PDF
-            const filename = `KPL-projekt-${new Date().toISOString().split('T')[0]}.pdf`;
+            const filename = `Tidslinje-${new Date().toISOString().split('T')[0]}.pdf`;
             doc.save(filename);
             this.showToast('PDF exporterad!', 'success');
         } catch (error) {
@@ -2393,7 +2964,7 @@ class TimelineApp {
 
 
     async exportData() {
-        const defaultFilename = `kpl-projekt-${new Date().toISOString().split('T')[0]}.json`;
+        const defaultFilename = `tidslinje-${new Date().toISOString().split('T')[0]}.json`;
         let handle = null;
 
         // 1. Try to get handle immediately to preserve user gesture
@@ -2440,6 +3011,7 @@ class TimelineApp {
                 startYear: this.startDate.getFullYear(),
                 endYear: this.endDate.getFullYear()
             },
+            areas: this.areas,
             projects: this.projects,
             events: this.events
         };
@@ -2500,6 +3072,13 @@ class TimelineApp {
                     this.projects = data.projects;
                     this.events = data.events;
 
+                    // Restore areas if present
+                    if (data.areas) {
+                        this.areas = data.areas;
+                        this.saveData('timeline_areas', this.areas);
+                        this.populateAreaSelects();
+                    }
+
                     // Restore timeline range if present
                     if (data.timelineRange) {
                         this.timelineStartYear = data.timelineRange.startYear;
@@ -2510,6 +3089,18 @@ class TimelineApp {
                         this.initTimelineRange();
                     }
                 } else {
+                    // Merge areas: add any that don't already exist
+                    if (data.areas) {
+                        const existingColors = new Set(this.areas.map(a => a.color));
+                        data.areas.forEach(a => {
+                            if (!existingColors.has(a.color)) {
+                                this.areas.push(a);
+                            }
+                        });
+                        this.saveData('timeline_areas', this.areas);
+                        this.populateAreaSelects();
+                    }
+
                     // Merge - add imported items with new IDs to avoid conflicts
                     const idMap = {};
 
@@ -2552,3 +3143,17 @@ class TimelineApp {
 document.addEventListener('DOMContentLoaded', () => {
     new TimelineApp();
 });
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
+}
+
