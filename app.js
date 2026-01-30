@@ -126,6 +126,41 @@ class TimelineApp {
             });
     }
 
+    resetToSampleData() {
+        if (!confirm('Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.')) return;
+        this.pushUndoState();
+        localStorage.removeItem('timeline_projects');
+        localStorage.removeItem('timeline_events');
+        localStorage.removeItem('timeline_areas');
+        localStorage.removeItem('timeline_range');
+        this.projects = [];
+        this.events = [];
+        this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.loadSampleData();
+        this.showToast('Exempeldata inläst', 'success');
+    }
+
+    resetToEmpty() {
+        if (!confirm('Vill du ta bort all data? Tidslinjen töms helt.')) return;
+        this.pushUndoState();
+        this.projects = [];
+        this.events = [];
+        this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.timelineStartYear = null;
+        this.timelineEndYear = null;
+        this.startDate = this.getStartDate();
+        this.endDate = this.getEndDate();
+        this.saveData('timeline_projects', this.projects);
+        this.saveData('timeline_events', this.events);
+        this.saveData('timeline_areas', this.areas);
+        localStorage.removeItem('timeline_range');
+        this.initTimelineRange();
+        this.populateAreaSelects();
+        this.populateDateSelectors();
+        this.render();
+        this.showToast('All data rensad', 'info');
+    }
+
     initTimelineRange() {
         const startInput = document.getElementById('timelineStartYear');
         const endInput = document.getElementById('timelineEndYear');
@@ -331,6 +366,8 @@ class TimelineApp {
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importFile', 'change', (e) => this.importData(e));
+        safeBind('resetSampleBtn', 'click', () => this.resetToSampleData());
+        safeBind('resetEmptyBtn', 'click', () => this.resetToEmpty());
 
         // Timeline range controls
         safeBind('timelineStartYear', 'change', (e) => this.updateTimelineRange());
