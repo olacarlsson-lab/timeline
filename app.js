@@ -1,12 +1,9 @@
 // Timeline Application
 const DEFAULT_AREAS = [
-    { name: 'Östra sjukhuset', color: '#BA4A71' },
-    { name: 'Sahlgrenska', color: '#31567D' },
-    { name: 'Mölndal', color: '#E8BC1C' },
-    { name: 'SÄS', color: '#FEC7BD' },
-    { name: 'NU', color: '#37B94B' },
-    { name: 'SkaS', color: '#33B4CC' },
-    { name: 'Västtrafik', color: '#0054A6' },
+    { name: 'Område A', color: '#BA4A71' },
+    { name: 'Område B', color: '#31567D' },
+    { name: 'Område C', color: '#E8BC1C' },
+    { name: 'Område D', color: '#37B94B' },
     { name: 'Övrigt', color: '#FA4D2D' }
 ];
 
@@ -2805,7 +2802,7 @@ class TimelineApp {
 
             // Title
             doc.setFontSize(20);
-            doc.text('KPL-projekt Timeline', 20, 20);
+            doc.text('Tidslinje Timeline', 20, 20);
 
             // Date
             doc.setFontSize(10);
@@ -2884,7 +2881,7 @@ class TimelineApp {
             }
 
             // Save PDF
-            const filename = `KPL-projekt-${new Date().toISOString().split('T')[0]}.pdf`;
+            const filename = `Tidslinje-${new Date().toISOString().split('T')[0]}.pdf`;
             doc.save(filename);
             this.showToast('PDF exporterad!', 'success');
         } catch (error) {
@@ -2895,7 +2892,7 @@ class TimelineApp {
 
 
     async exportData() {
-        const defaultFilename = `kpl-projekt-${new Date().toISOString().split('T')[0]}.json`;
+        const defaultFilename = `tidslinje-${new Date().toISOString().split('T')[0]}.json`;
         let handle = null;
 
         // 1. Try to get handle immediately to preserve user gesture

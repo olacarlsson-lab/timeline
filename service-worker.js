@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kpl-projekt-v1';
+const CACHE_NAME = 'tidslinje-v1';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
