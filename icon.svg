@@ -1,0 +1,47 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4A5F7F" />
+      <stop offset="100%" stop-color="#2C3E5A" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGradient)" />
+
+  <!-- Main timeline - horizontal line -->
+  <line x1="80" y1="256" x2="432" y2="256" stroke="#E8E8E8" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Timeline markers/milestones -->
+  <g filter="url(#shadow)">
+    <!-- First marker - orange -->
+    <circle cx="140" cy="256" r="24" fill="#E74C3C" />
+    <circle cx="140" cy="256" r="16" fill="#FF6B5A" />
+
+    <!-- Second marker - yellow -->
+    <circle cx="256" cy="256" r="28" fill="#F39C12" />
+    <circle cx="256" cy="256" r="18" fill="#FFB74D" />
+
+    <!-- Third marker - purple -->
+    <circle cx="372" cy="256" r="22" fill="#8B5FA8" />
+    <circle cx="372" cy="256" r="14" fill="#A77BC4" />
+  </g>
+
+  <!-- Connecting segments with colors from palette -->
+  <line x1="80" y1="256" x2="140" y2="256" stroke="#FF6B5A" stroke-width="8" stroke-linecap="round" />
+  <line x1="140" y1="256" x2="256" y2="256" stroke="#FFB74D" stroke-width="8" stroke-linecap="round" />
+  <line x1="256" y1="256" x2="372" y2="256" stroke="#A77BC4" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Small accent dots above timeline -->
+  <circle cx="140" cy="200" r="4" fill="#E8E8E8" opacity="0.6" />
+  <circle cx="256" cy="190" r="4" fill="#E8E8E8" opacity="0.6" />
+  <circle cx="372" cy="200" r="4" fill="#E8E8E8" opacity="0.6" />
+
+  <!-- Subtle grid lines in background -->
+  <line x1="140" y1="180" x2="140" y2="220" stroke="#E8E8E8" stroke-width="2" opacity="0.3" />
+  <line x1="256" y1="170" x2="256" y2="210" stroke="#E8E8E8" stroke-width="2" opacity="0.3" />
+  <line x1="372" y1="180" x2="372" y2="220" stroke="#E8E8E8" stroke-width="2" opacity="0.3" />
+</svg>
