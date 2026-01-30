@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "exportDate": "2026-01-01T00:00:00.000Z",
+  "timelineRange": {
+    "startYear": 2025,
+    "endYear": 2027
+  },
+  "areas": [
+    { "name": "Område A", "color": "#BA4A71" },
+    { "name": "Område B", "color": "#31567D" },
+    { "name": "Område C", "color": "#E8BC1C" },
+    { "name": "Område D", "color": "#37B94B" },
+    { "name": "Övrigt", "color": "#FA4D2D" }
+  ],
+  "projects": [
+    {
+      "id": "sample-1",
+      "name": "Webbplatsförnyelse",
+      "lead": "Anna Johansson",
+      "status": "implementation",
+      "start": "2025-09-01",
+      "startType": "date",
+      "end": "2026-06-30",
+      "endType": "date",
+      "color": "#BA4A71",
+      "comment": "Ny design och teknisk plattform för den publika webbplatsen."
+    },
+    {
+      "id": "sample-2",
+      "name": "Systemintegration CRM",
+      "lead": "Erik Lindgren",
+      "status": "early",
+      "start": "2026-01-15",
+      "startType": "date",
+      "end": "2026-09-30",
+      "endType": "date",
+      "color": "#31567D",
+      "comment": "Integration mellan CRM-system och ekonomiplattform."
+    },
+    {
+      "id": "sample-3",
+      "name": "Flytt av serverpark",
+      "lead": "Maria Svensson",
+      "status": "procurement",
+      "start": "2025-11-01",
+      "startType": "date",
+      "end": "2026-04-15",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "comment": "Migrering till molntjänst."
+    },
+    {
+      "id": "sample-4",
+      "name": "Utbildningsinsats",
+      "lead": "Anna Johansson",
+      "status": "completion",
+      "start": "2025-06-01",
+      "startType": "date",
+      "end": "2025-12-15",
+      "endType": "date",
+      "color": "#37B94B",
+      "comment": null
+    },
+    {
+      "id": "sample-5",
+      "name": "App-utveckling",
+      "lead": "Erik Lindgren",
+      "status": "implementation",
+      "start": "2026-03-01",
+      "startType": "date",
+      "end": "2026-12-31",
+      "endType": "date",
+      "color": "#BA4A71",
+      "comment": "Mobilapp för kunder, iOS och Android."
+    },
+    {
+      "id": "sample-6",
+      "name": "Säkerhetsrevision",
+      "lead": "Maria Svensson",
+      "status": "early",
+      "start": "2026-06-01",
+      "startType": "date",
+      "end": "2026-08-31",
+      "endType": "date",
+      "color": "#FA4D2D",
+      "comment": "Extern granskning av IT-säkerhet."
+    }
+  ],
+  "events": [
+    {
+      "id": "sample-ev-1",
+      "name": "Projektstart webbplats",
+      "start": "2025-09-01",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "sample-1",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "sample-ev-2",
+      "name": "Designgranskning",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "sample-1",
+      "symbol": "diamond",
+      "comment": "Presentation av designförslag för ledningsgruppen."
+    },
+    {
+      "id": "sample-ev-3",
+      "name": "Lansering v1",
+      "start": "2026-04-15",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "sample-1",
+      "symbol": "star",
+      "comment": "Första versionen live."
+    },
+    {
+      "id": "sample-ev-4",
+      "name": "Upphandling klar",
+      "start": "2026-02-28",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "sample-3",
+      "symbol": "check",
+      "comment": null
+    },
+    {
+      "id": "sample-ev-5",
+      "name": "Budgetbeslut",
+      "start": "2026-03-15",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": null,
+      "symbol": "warning",
+      "comment": "Beslut om budget för kommande verksamhetsår."
+    },
+    {
+      "id": "sample-ev-6",
+      "name": "Sommarstopp",
+      "start": "2026-06-22",
+      "startType": "date",
+      "end": "2026-08-09",
+      "endType": "date",
+      "projectId": null,
+      "symbol": null,
+      "comment": "Begränsad kapacitet under semesterperiod."
+    }
+  ]
+}

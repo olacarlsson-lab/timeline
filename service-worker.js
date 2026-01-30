@@ -7,7 +7,8 @@ const ASSETS_TO_CACHE = [
     './manifest.json',
     './icon.svg',
     './icon-192.png',
-    './icon-512.png'
+    './icon-512.png',
+    './sample-data.json'
 ];
 
 // Install event: Cache assets

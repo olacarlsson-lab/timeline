@@ -24,6 +24,7 @@ class TimelineApp {
         this.areas = this.loadData('timeline_areas') || JSON.parse(JSON.stringify(DEFAULT_AREAS));
         this.projects = this.loadData('timeline_projects') || [];
         this.events = this.loadData('timeline_events') || [];
+        this._firstVisit = !this.loadData('timeline_projects') && !this.loadData('timeline_events');
         this.autoSaveTimer = null;
         this.undoStack = [];
         this.maxUndoSteps = 30;
@@ -88,7 +89,41 @@ class TimelineApp {
         this.populateDateSelectors();
         this.populateAreaSelects();
         this.bindEvents();
-        this.setView('3months');
+
+        if (this._firstVisit) {
+            this.loadSampleData();
+        } else {
+            this.setView('3months');
+        }
+    }
+
+    loadSampleData() {
+        fetch('./sample-data.json')
+            .then(res => res.json())
+            .then(data => {
+                this.projects = data.projects || [];
+                this.events = data.events || [];
+                if (data.areas) {
+                    this.areas = data.areas;
+                    this.saveData('timeline_areas', this.areas);
+                    this.populateAreaSelects();
+                }
+                if (data.timelineRange) {
+                    this.timelineStartYear = data.timelineRange.startYear;
+                    this.timelineEndYear = data.timelineRange.endYear;
+                    this.startDate = this.getStartDate();
+                    this.endDate = this.getEndDate();
+                    this.saveData('timeline_range', data.timelineRange);
+                    this.initTimelineRange();
+                }
+                this.saveData('timeline_projects', this.projects);
+                this.saveData('timeline_events', this.events);
+                this.populateDateSelectors();
+                this.setView('3months');
+            })
+            .catch(() => {
+                this.setView('3months');
+            });
     }
 
     initTimelineRange() {
