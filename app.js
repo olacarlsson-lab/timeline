@@ -3,13 +3,217 @@ const DEFAULT_AREAS = [
     { name: 'Område A', color: '#BA4A71' },
     { name: 'Område B', color: '#31567D' },
     { name: 'Område C', color: '#E8BC1C' },
-    { name: 'Område D', color: '#37B94B' },
-    { name: 'Övrigt', color: '#FA4D2D' }
+    { name: 'Område D', color: '#37B94B' }
 ];
+
+const SAMPLE_DATA = {
+    "version": 1,
+    "exportDate": "2026-01-01T00:00:00.000Z",
+    "timelineRange": {
+        "startYear": 2025,
+        "endYear": 2027
+    },
+    "areas": [
+        { "name": "Område A", "color": "#BA4A71" },
+        { "name": "Område B", "color": "#31567D" },
+        { "name": "Område C", "color": "#E8BC1C" },
+        { "name": "Område D", "color": "#37B94B" }
+    ],
+    "projects": [
+        {
+            "id": "sample-1",
+            "name": "Webbplatsförnyelse",
+            "lead": "Anna Johansson",
+            "status": "implementation",
+            "start": "2025-09-01",
+            "startType": "date",
+            "end": "2026-06-30",
+            "endType": "date",
+            "color": "#BA4A71",
+            "comment": "Ny design och teknisk plattform för den publika webbplatsen."
+        },
+        {
+            "id": "sample-2",
+            "name": "Systemintegration CRM",
+            "lead": "Erik Lindgren",
+            "status": "early",
+            "start": "2026-01-15",
+            "startType": "date",
+            "end": "2026-09-30",
+            "endType": "date",
+            "color": "#31567D",
+            "comment": "Integration mellan CRM-system och ekonomiplattform."
+        },
+        {
+            "id": "sample-3",
+            "name": "Flytt av serverpark",
+            "lead": "Maria Svensson",
+            "status": "procurement",
+            "start": "2025-11-01",
+            "startType": "date",
+            "end": "2026-04-15",
+            "endType": "date",
+            "color": "#E8BC1C",
+            "comment": "Migrering till molntjänst."
+        },
+        {
+            "id": "sample-4",
+            "name": "Utbildningsinsats",
+            "lead": "Anna Johansson",
+            "status": "completion",
+            "start": "2025-06-01",
+            "startType": "date",
+            "end": "2025-12-15",
+            "endType": "date",
+            "color": "#37B94B",
+            "comment": null
+        },
+        {
+            "id": "sample-5",
+            "name": "App-utveckling",
+            "lead": "Erik Lindgren",
+            "status": "implementation",
+            "start": "2026-03-01",
+            "startType": "date",
+            "end": "2026-12-31",
+            "endType": "date",
+            "color": "#BA4A71",
+            "comment": "Mobilapp för kunder, iOS och Android."
+        },
+        {
+            "id": "sample-6",
+            "name": "Säkerhetsrevision",
+            "lead": "Maria Svensson",
+            "status": "early",
+            "start": "2026-06-01",
+            "startType": "date",
+            "end": "2026-08-31",
+            "endType": "date",
+            "color": "#FA4D2D",
+            "comment": "Extern granskning av IT-säkerhet."
+        }
+    ],
+    "events": [
+        {
+            "id": "sample-ev-1",
+            "name": "Projektstart webbplats",
+            "start": "2025-09-01",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-1",
+            "symbol": "flag",
+            "comment": null
+        },
+        {
+            "id": "sample-ev-2",
+            "name": "Designgranskning",
+            "start": "2025-12-01",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-1",
+            "symbol": "diamond",
+            "comment": "Presentation av designförslag för ledningsgruppen."
+        },
+        {
+            "id": "sample-ev-3",
+            "name": "Lansering v1",
+            "start": "2026-04-15",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-1",
+            "symbol": "star",
+            "comment": "Första versionen live."
+        },
+        {
+            "id": "sample-ev-4",
+            "name": "Upphandling klar",
+            "start": "2026-02-28",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-3",
+            "symbol": "check",
+            "comment": null
+        },
+        {
+            "id": "sample-ev-5",
+            "name": "Budgetbeslut",
+            "start": "2026-03-15",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": null,
+            "symbol": "warning",
+            "comment": "Beslut om budget för kommande verksamhetsår."
+        },
+        {
+            "id": "sample-ev-6",
+            "name": "Sommarstopp",
+            "start": "2026-06-22",
+            "startType": "date",
+            "end": "2026-08-09",
+            "endType": "date",
+            "projectId": null,
+            "symbol": null,
+            "comment": "Begränsad kapacitet under semesterperiod."
+        }
+    ]
+};
+
+const DEFAULT_LABELS = {
+    project: 'Projekt',
+    projectsPlural: 'Projekt',
+    event: 'Händelse',
+    eventsPlural: 'Händelser',
+    area: 'Område',
+    areasPlural: 'Områden',
+    projectLead: 'Projektledare',
+    status: 'Status',
+    addProject: 'Projekt',
+    addEvent: 'Händelse',
+    searchLabel: 'Sök',
+    searchPlaceholder: 'Sök projekt...',
+    areaPlaceholder: 'Nytt område...',
+    all: 'Alla',
+    statusEarly: 'Tidigt skede',
+    statusProcurement: 'Upphandling',
+    statusImplementation: 'Genomförande',
+    statusCompletion: 'Slutförande',
+    sort: 'Sortera',
+    name: 'Namn',
+    startDate: 'Startdatum',
+    endDate: 'Slutdatum',
+    newProject: 'Nytt projekt',
+    projectName: 'Projektnamn',
+    projectNamePlaceholder: 'Ange projektets namn...',
+    projectLeadPlaceholder: 'Namn på ansvarig...',
+    optional: 'Valfritt',
+    manageAreas: 'Hantera områden',
+    newEvent: 'Ny händelse',
+    eventName: 'Händelsenamn',
+    freeText: 'Fritext...',
+    projectDetails: 'Projektdetaljer',
+    eventDetails: 'Händelsedetaljer',
+    edit: 'Redigera',
+    // Zoom levels
+    zoom2YearsLabel: '2 år',
+    zoom2YearsTitle: 'Två år från idag',
+    zoom2YearsDays: '730',
+    zoom1YearLabel: '1 år',
+    zoom1YearTitle: 'Ett år framåt',
+    zoom1YearDays: '365',
+    zoom3MonthsLabel: '3 månader',
+    zoom3MonthsTitle: 'Kommande tre månader',
+    zoom3MonthsDays: '90'
+};
 
 class TimelineApp {
     constructor() {
         // Configuration
+        this.labels = this.loadData('timeline_labels') || { ...DEFAULT_LABELS };
         const savedRange = this.loadData('timeline_range');
         this.timelineStartYear = savedRange ? savedRange.startYear : null;
         this.timelineEndYear = savedRange ? savedRange.endYear : null;
@@ -58,6 +262,45 @@ class TimelineApp {
         this.init();
     }
 
+    applyLabels() {
+        // Apply text labels
+        document.querySelectorAll('[data-label]').forEach(el => {
+            const key = el.getAttribute('data-label');
+            if (this.labels[key]) {
+                el.textContent = this.labels[key];
+            }
+        });
+
+        // Apply title/tooltip attributes
+        document.querySelectorAll('[data-title]').forEach(el => {
+            const key = el.getAttribute('data-title');
+            if (this.labels[key]) {
+                el.title = this.labels[key];
+            }
+        });
+
+        // Apply placeholders
+        document.querySelectorAll('[data-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-placeholder');
+            if (this.labels[key]) {
+                el.placeholder = this.labels[key];
+            }
+        });
+
+        // Update settings inputs
+        Object.keys(this.labels).forEach(key => {
+            const input = document.getElementById(`label-${key}`);
+            if (input) {
+                input.value = this.labels[key];
+            }
+        });
+
+        // Some labels are used in tooltips/placeholders that need manual updates
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput && this.labels.searchPlaceholder) {
+            searchInput.placeholder = this.labels.searchPlaceholder;
+        }
+    }
 
     getStartDate() {
         const date = new Date();
@@ -83,82 +326,105 @@ class TimelineApp {
         return date;
     }
 
-    init() {
+    async init() {
         this.timelineContainer.classList.add('compact-mode');
         this.initTimelineRange();
         this.populateDateSelectors();
         this.populateAreaSelects();
         this.bindEvents();
+        this.applyLabels();
+        this.initTheme();
 
         if (this._firstVisit) {
-            this.loadSampleData();
+            await this.loadSampleData();
         } else {
             this.setView('3months');
         }
     }
 
-    loadSampleData() {
-        fetch('./sample-data.json')
-            .then(res => res.json())
-            .then(data => {
-                this.projects = data.projects || [];
-                this.events = data.events || [];
-                if (data.areas) {
-                    this.areas = data.areas;
-                    this.saveData('timeline_areas', this.areas);
-                    this.populateAreaSelects();
-                }
-                if (data.timelineRange) {
-                    this.timelineStartYear = data.timelineRange.startYear;
-                    this.timelineEndYear = data.timelineRange.endYear;
-                    this.startDate = this.getStartDate();
-                    this.endDate = this.getEndDate();
-                    this.saveData('timeline_range', data.timelineRange);
-                    this.initTimelineRange();
-                }
-                this.saveData('timeline_projects', this.projects);
-                this.saveData('timeline_events', this.events);
-                this.populateDateSelectors();
-                this.setView('3months');
-            })
-            .catch(() => {
-                this.setView('3months');
-            });
-    }
-
-    resetToSampleData() {
-        if (!confirm('Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.')) return;
+    async resetToDefaults(loadSample = false) {
         this.pushUndoState();
-        localStorage.removeItem('timeline_projects');
-        localStorage.removeItem('timeline_events');
-        localStorage.removeItem('timeline_areas');
-        localStorage.removeItem('timeline_range');
+
+        // Clear all state
         this.projects = [];
         this.events = [];
         this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
-        this.loadSampleData();
-        this.showToast('Exempeldata inläst', 'success');
-    }
-
-    resetToEmpty() {
-        if (!confirm('Vill du ta bort all data? Tidslinjen töms helt.')) return;
-        this.pushUndoState();
-        this.projects = [];
-        this.events = [];
-        this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.labels = JSON.parse(JSON.stringify(DEFAULT_LABELS));
         this.timelineStartYear = null;
         this.timelineEndYear = null;
+        this.searchQuery = '';
+        this.filterLead = '';
+        this.filterStatus = '';
+        this.filterAreaValue = '';
+
+        // Clear storage
+        this.saveData('timeline_projects', []);
+        this.saveData('timeline_events', []);
+        this.saveData('timeline_areas', this.areas);
+        this.saveData('timeline_labels', this.labels);
+        localStorage.removeItem('timeline_range');
+
+        // Clear filter UI
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) searchInput.value = '';
+        const filterLead = document.getElementById('filterLead');
+        if (filterLead) filterLead.value = '';
+        const filterStatus = document.getElementById('filterStatus');
+        if (filterStatus) filterStatus.value = '';
+        const filterArea = document.getElementById('filterArea');
+        if (filterArea) filterArea.value = '';
+
+        if (loadSample) {
+            const data = JSON.parse(JSON.stringify(SAMPLE_DATA));
+            this.projects = data.projects || [];
+            this.events = data.events || [];
+            if (data.areas) this.areas = data.areas;
+            if (data.timelineRange) {
+                this.timelineStartYear = data.timelineRange.startYear;
+                this.timelineEndYear = data.timelineRange.endYear;
+                this.saveData('timeline_range', data.timelineRange);
+            }
+            this.saveData('timeline_projects', this.projects);
+            this.saveData('timeline_events', this.events);
+            this.saveData('timeline_areas', this.areas);
+        }
+
+        // Update UI state
         this.startDate = this.getStartDate();
         this.endDate = this.getEndDate();
-        this.saveData('timeline_projects', this.projects);
-        this.saveData('timeline_events', this.events);
-        this.saveData('timeline_areas', this.areas);
-        localStorage.removeItem('timeline_range');
         this.initTimelineRange();
         this.populateAreaSelects();
         this.populateDateSelectors();
+        this.updateFilterIndicator();
+        this.applyLabels();
+
+        // Force view reset
+        this.setView('3months');
         this.render();
-        this.showToast('All data rensad', 'info');
+
+        return true;
+    }
+
+    loadSampleData() {
+        return this.resetToDefaults(true);
+    }
+
+    async resetToSampleData() {
+        if (!await this.showConfirm('Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.', { danger: true })) return;
+
+        await this.loadSampleData();
+        this.showToast('Exempeldata inläst', 'success');
+    }
+
+    async resetToEmpty() {
+        if (!await this.showConfirm('Är du säker på att du vill rensa allt och skapa en ny timeline?', {
+            danger: true,
+            confirmText: 'Rensa allt',
+            cancelText: 'Avbryt'
+        })) return;
+
+        await this.resetToDefaults(false);
+        this.showToast('Ny timeline skapad', 'info');
     }
 
     initTimelineRange() {
@@ -293,8 +559,8 @@ class TimelineApp {
         });
 
         // Populate month name selects (jan-dec)
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun',
-            'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+        const monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun',
+            'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
         monthNumSelects.forEach(select => {
             select.innerHTML = '';
             monthNames.forEach((name, i) => {
@@ -336,7 +602,6 @@ class TimelineApp {
             if (el) el.addEventListener(event, callback);
         };
 
-        safeBind('viewAll', 'click', () => this.setView('all'));
         safeBind('view2Years', 'click', () => this.setView('2years'));
         safeBind('view1Year', 'click', () => this.setView('1year'));
         safeBind('view3Months', 'click', () => this.setView('3months'));
@@ -361,13 +626,95 @@ class TimelineApp {
             this.render();
             this.updateFilterIndicator();
         });
-
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importFile', 'change', (e) => this.importData(e));
-        safeBind('resetSampleBtn', 'click', () => this.resetToSampleData());
-        safeBind('resetEmptyBtn', 'click', () => this.resetToEmpty());
+        safeBind('resetSampleBtn', 'click', async () => {
+            const confirmed = await this.showConfirm('Är du säker på att du vill återställa till exempeldata? Allt osparat försvinner.');
+            if (confirmed) this.resetToDefaults(true);
+        });
+        safeBind('resetEmptyBtn', 'click', async () => {
+            const confirmed = await this.showConfirm('Är du säker på att du vill rensa allt och börja om på nytt?');
+            if (confirmed) this.resetToDefaults(false);
+        });
+
+        // Theme Toggle
+        safeBind('themeToggle', 'click', (e) => this.toggleTheme(e));
+
+        // Label settings (Döp om fält)
+        document.querySelectorAll('.btn-edit-label').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const row = btn.closest('.label-setting-row');
+                const key = row.dataset.labelKey;
+                const currentLabel = this.labels[key];
+
+                const newLabel = await this.showPrompt(`Döp om "${currentLabel}" till:`, currentLabel);
+
+                if (newLabel && newLabel.trim() !== '') {
+                    const trimmedLabel = newLabel.trim();
+                    this.labels[key] = trimmedLabel;
+
+                    // Automatically update related labels for better UX
+                    if (key === 'project') {
+                        this.labels['projectsPlural'] = trimmedLabel + 'er';
+                        this.labels['addProject'] = trimmedLabel;
+                        this.labels['newProject'] = 'Nytt ' + trimmedLabel.toLowerCase();
+                        this.labels['projectName'] = trimmedLabel + 'namn';
+                        this.labels['projectDetails'] = trimmedLabel + 'detaljer';
+                    } else if (key === 'event') {
+                        const plural = trimmedLabel.endsWith('e') ? trimmedLabel + 'r' : trimmedLabel + 'er';
+                        this.labels['eventsPlural'] = plural;
+                        this.labels['addEvent'] = trimmedLabel;
+                        this.labels['newEvent'] = 'Ny ' + trimmedLabel.toLowerCase();
+                        this.labels['eventName'] = trimmedLabel + 'namn';
+                        this.labels['eventDetails'] = trimmedLabel + 'detaljer';
+                    } else if (key === 'area') {
+                        const plural = trimmedLabel.endsWith('e') ? trimmedLabel + 'n' : trimmedLabel + 'er';
+                        this.labels['areasPlural'] = plural;
+                        this.labels['manageAreas'] = 'Hantera ' + plural.toLowerCase();
+                    }
+
+                    this.saveData('timeline_labels', this.labels);
+                    this.applyLabels();
+                    this.render();
+
+                    this.showToast('Ändringarna visas nu. Kom ihåg att spara projektet permanent.', 'info');
+                }
+            });
+        });
+
+        // Zoom settings
+        document.querySelectorAll('.btn-edit-zoom').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const row = btn.closest('.label-setting-row');
+                const key = row.dataset.zoomKey; // e.g., 'zoom2Years'
+                const currentLabel = this.labels[key + 'Label'];
+                const currentDays = parseInt(this.labels[key + 'Days']);
+
+                const result = await this.showPrompt(`Anpassa "${currentLabel}"`, currentLabel, {
+                    isZoom: true,
+                    days: currentDays
+                });
+
+                if (result) {
+                    if (result.label.trim() !== '') {
+                        this.labels[key + 'Label'] = result.label.trim();
+                    }
+
+                    if (result.days > 0) {
+                        this.labels[key + 'Days'] = result.days.toString();
+                    }
+
+                    this.saveData('timeline_labels', this.labels);
+                    this.applyLabels();
+                    this.render();
+
+                    this.showToast('Zoomnivån uppdaterad. Kom ihåg att spara projektet.', 'info');
+                }
+            });
+        });
+
 
         // Timeline range controls
         safeBind('timelineStartYear', 'change', (e) => this.updateTimelineRange());
@@ -378,6 +725,16 @@ class TimelineApp {
         safeBind('controlPanelClose', 'click', () => this.closeControlPanel());
         const backdrop = document.getElementById('controlPanelBackdrop');
         if (backdrop) backdrop.addEventListener('click', () => this.closeControlPanel());
+
+        // Advanced section toggle
+        const advancedToggle = document.getElementById('advancedToggle');
+        const advancedPanel = document.getElementById('advancedPanel');
+        const advancedContent = document.getElementById('advancedContent');
+        if (advancedToggle && advancedPanel && advancedContent) {
+            advancedToggle.addEventListener('click', () => {
+                advancedPanel.classList.toggle('active');
+            });
+        }
 
         // Area management
         safeBind('areaAddBtn', 'click', () => this.addArea());
@@ -1004,6 +1361,48 @@ class TimelineApp {
         }
     }
 
+    initTheme() {
+        // Check for saved theme
+        const savedTheme = localStorage.getItem('timeline_theme');
+
+        // If no saved theme, default to 'dark' (or we could respect system preference)
+        // const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // const defaultTheme = systemPrefersDark ? 'dark' : 'light';
+        const theme = savedTheme || 'dark';
+
+        // Ensure we set it
+        this.setTheme(theme, false);
+    }
+
+    toggleTheme(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        // Read current state from the attribute which tells the truth about what's rendering (if CSS is working)
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme, true);
+    }
+
+    setTheme(theme, save = true) {
+        if (save) localStorage.setItem('timeline_theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        document.body.setAttribute('data-theme', theme);
+
+        // Update icon
+        const btn = document.getElementById('themeToggle');
+        if (btn) {
+            if (theme === 'light') {
+                // Moon icon for "Switch to Dark"
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
+            } else {
+                // Sun icon for "Switch to Light"
+                btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+            }
+        }
+    }
+
     saveData(key, data) {
         try {
             localStorage.setItem(key, JSON.stringify(data));
@@ -1064,13 +1463,12 @@ class TimelineApp {
             let label = '';
 
             if (this.sortBy === 'status') {
-                const statusMap = { 'early': 'Tidigt skede', 'procurement': 'Upphandling', 'implementation': 'Genomförande', 'completion': 'Slutförande' };
                 key = p.status;
-                label = statusMap[p.status] || 'Okänd';
+                label = this.getStatusLabel(p.status) || 'Okänd';
             } else {
                 // Default to Lead
                 key = p.lead || 'Unassigned';
-                label = p.lead || 'Utan projektledare';
+                label = p.lead || `Utan ${this.labels.projectLead.toLowerCase()}`;
             }
 
             if (!groups[key]) {
@@ -1092,7 +1490,7 @@ class TimelineApp {
             header.innerHTML = `
                 <span class="group-toggle">▼</span>
                 <span class="group-label">${label}</span>
-                <span class="group-count">${groupProjects.length} projekt</span>
+                <span class="group-count">${groupProjects.length} ${this.labels.projectsPlural.toLowerCase()}</span>
             `;
             header.onclick = () => this.toggleGroup(key);
             this.timelineContent.appendChild(header);
@@ -1136,9 +1534,7 @@ class TimelineApp {
         bar.style.backgroundColor = color;
 
         // Content
-        // Status map for display text
-        const statusMap = { 'early': 'Tidigt skede', 'procurement': 'Upphandling', 'implementation': 'Genomförande', 'completion': 'Slutförande' };
-        const statusText = statusMap[project.status] || '';
+        const statusText = this.getStatusLabel(project.status) || '';
 
         if (this.isCompact) {
             bar.innerHTML = `
@@ -1451,22 +1847,22 @@ class TimelineApp {
 
         content.innerHTML = `
             <div class="sidebar-section">
-                <span class="sidebar-label">Område</span>
+                <span class="sidebar-label">${this.labels.area}</span>
                 <div class="sidebar-value" style="display: flex; align-items: center; gap: 8px;">
                     <div style="width: 12px; height: 12px; border-radius: 50%; background: ${project.color || '#3b82f6'}"></div>
-                    ${areaMap[project.color] || 'Övrigt'}
+                    ${areaMap[project.color] || this.labels.all || 'Övrigt'}
                 </div>
             </div>
             <div class="sidebar-section">
-                <span class="sidebar-label">Projektledare</span>
-                <div class="sidebar-value">${project.lead || 'Ej angiven'}</div>
+                <span class="sidebar-label">${this.labels.projectLead}</span>
+                <div class="sidebar-value">${project.lead || this.labels.optional || 'Ej angiven'}</div>
             </div>
             <div class="sidebar-section">
-                <span class="sidebar-label">Status</span>
+                <span class="sidebar-label">${this.labels.status}</span>
                 <div class="sidebar-value">${this.getStatusLabel(project.status || 'implementation')}</div>
             </div>
             <div class="sidebar-section">
-                <span class="sidebar-label">Period</span>
+                <span class="sidebar-label">${this.labels.startDate.split(' ')[0]} / ${this.labels.endDate.split(' ')[0]}</span>
                 <div class="sidebar-value">${this.formatDateDisplay(this.parseDate(project.start), project.startType || 'date')} – ${this.formatDateDisplay(this.parseDate(project.end), project.endType || 'date')}</div>
             </div>
             ${project.comment ? `
@@ -1476,14 +1872,14 @@ class TimelineApp {
             </div>
             ` : ''}
             <div class="sidebar-section">
-                <span class="sidebar-label">Händelser (${projectEvents.length})</span>
+                <span class="sidebar-label">${this.labels.eventsPlural} (${projectEvents.length})</span>
                 <div class="sidebar-events">
                     ${projectEvents.map(e => `
                         <div class="sidebar-event-item sidebar-event-clickable" data-event-id="${e.id}">
                             <div class="sidebar-event-date">${this.formatEventDateRange(e)}</div>
                             <div class="sidebar-event-name">${e.name}</div>
                         </div>
-                    `).join('') || '<div class="sidebar-value" style="font-style: italic; opacity: 0.5;">Inga händelser inlagda</div>'}
+                    `).join('') || `<div class="sidebar-value" style="font-style: italic; opacity: 0.5;">Inga ${this.labels.eventsPlural.toLowerCase()} inlagda</div>`}
                 </div>
             </div>
         `;
@@ -1521,7 +1917,7 @@ class TimelineApp {
         content.innerHTML = `
             ${project ? `
             <div class="sidebar-section">
-                <span class="sidebar-label">Kopplat projekt</span>
+                <span class="sidebar-label">Kopplat ${this.labels.project.toLowerCase()}</span>
                 <div class="sidebar-value" style="display: flex; align-items: center; gap: 8px; cursor: pointer;" id="sidebarLinkedProject">
                     <div style="width: 12px; height: 12px; border-radius: 50%; background: ${project.color || '#3b82f6'}"></div>
                     <span style="text-decoration: underline;">${project.name}</span>
@@ -1631,11 +2027,11 @@ class TimelineApp {
         this.render();
     }
 
-    removeArea(index) {
+    async removeArea(index) {
         const area = this.areas[index];
         const usedBy = this.projects.filter(p => p.color === area.color).length;
         if (usedBy > 0) {
-            if (!confirm(`"${area.name}" används av ${usedBy} projekt. Ta bort ändå?`)) return;
+            if (!await this.showConfirm(`"${area.name}" används av ${usedBy} ${this.labels.projectsPlural.toLowerCase()}. Ta bort ändå?`, { danger: true })) return;
         }
         this.areas.splice(index, 1);
         this.saveData('timeline_areas', this.areas);
@@ -1725,19 +2121,19 @@ class TimelineApp {
                 return;
 
             case '2years':
-                targetDays = 365 * 2;
+                targetDays = parseInt(this.labels['zoom2YearsDays']) || 730;
                 scrollToDate = new Date(today);
                 scrollToDate.setMonth(scrollToDate.getMonth() - 2); // Start 2 months before today
                 break;
 
             case '1year':
-                targetDays = 365;
+                targetDays = parseInt(this.labels['zoom1YearDays']) || 365;
                 scrollToDate = new Date(today);
                 scrollToDate.setMonth(scrollToDate.getMonth() - 1); // Start 1 month before today
                 break;
 
             case '3months':
-                targetDays = 90;
+                targetDays = parseInt(this.labels['zoom3MonthsDays']) || 90;
                 scrollToDate = new Date(today);
                 scrollToDate.setDate(scrollToDate.getDate() - 14); // Start 2 weeks before today
                 break;
@@ -1774,6 +2170,13 @@ class TimelineApp {
         this.render();
         this.updateFilterIndicator();
     }
+
+    render() {
+        this.renderGrid();
+        this.renderProjects();
+        this.updateStickyLabels();
+    }
+
 
     updateLeadFilter() {
         const select = document.getElementById('filterLead');
@@ -1966,11 +2369,11 @@ class TimelineApp {
             cell.style.width = width + 'px';
 
             cell.innerHTML = `
-                <div class="header-main">
-                    <span class="year">${year}</span>
-                    <span class="month">Q${quarter + 1}</span>
-                </div>
-            `;
+            <div class="header-main">
+                <span class="year">${year}</span>
+                <span class="month">Q${quarter + 1}</span>
+            </div>
+        `;
             this.timelineHeader.appendChild(cell);
 
             // Move to next quarter
@@ -2051,12 +2454,12 @@ class TimelineApp {
             }
 
             cell.innerHTML = `
-                <div class="header-main">
-                    <span class="year">${m.year}</span>
-                    <span class="month">${m.name}</span>
-                </div>
-                ${subHeaderHtml}
-            `;
+            <div class="header-main">
+                <span class="year">${m.year}</span>
+                <span class="month">${m.name}</span>
+            </div>
+            ${subHeaderHtml}
+        `;
             this.timelineHeader.appendChild(cell);
         });
 
@@ -2185,9 +2588,9 @@ class TimelineApp {
             const emptyState = document.createElement('div');
             emptyState.className = 'empty-state';
             emptyState.innerHTML = `
-                <p>Inga projekt eller händelser</p>
-                <span>Klicka på "+ Projekt" eller "+ Händelse" för att komma igång</span>
-            `;
+    < p > Inga ${this.labels.projectsPlural.toLowerCase()} eller ${this.labels.eventsPlural.toLowerCase()}</p >
+        <span>Klicka på "${this.labels.addProject}" eller "${this.labels.addEvent}" för att komma igång</span>
+`;
             this.timelineContent.appendChild(emptyState);
             return;
         }
@@ -2291,7 +2694,7 @@ class TimelineApp {
 
             // Position label on its row (taller labels with date info)
             if (current.label) {
-                current.label.style.top = `calc(100% + ${4 + row * 38}px)`;
+                current.label.style.top = `calc(100 % + ${4 + row * 38}px)`;
             }
         }
 
@@ -2303,11 +2706,11 @@ class TimelineApp {
             'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
 
         if (dateType === 'month') {
-            return `${months[date.getMonth()]} ${date.getFullYear()}`;
+            return `${months[date.getMonth()]} ${date.getFullYear()} `;
         } else if (dateType === 'week') {
-            return `Vecka ${this.getWeekNumber(date)}, ${date.getFullYear()}`;
+            return `Vecka ${this.getWeekNumber(date)}, ${date.getFullYear()} `;
         } else {
-            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} `;
         }
     }
 
@@ -2320,7 +2723,7 @@ class TimelineApp {
             const endDate = this.parseDate(event.end);
             const endType = event.endType || 'date';
             const endFormatted = this.formatDateDisplay(endDate, endType);
-            return `${startFormatted} – ${endFormatted}`;
+            return `${startFormatted} – ${endFormatted} `;
         }
         return startFormatted;
     }
@@ -2333,11 +2736,11 @@ class TimelineApp {
 
         let startStr;
         if (startType === 'month') {
-            startStr = `${shortMonths[startDate.getMonth()]}`;
+            startStr = `${shortMonths[startDate.getMonth()]} `;
         } else if (startType === 'week') {
-            startStr = `v${this.getWeekNumber(startDate)}`;
+            startStr = `v${this.getWeekNumber(startDate)} `;
         } else {
-            startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]}`;
+            startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} `;
         }
 
         if (event.end) {
@@ -2345,13 +2748,13 @@ class TimelineApp {
             const endType = event.endType || 'date';
             let endStr;
             if (endType === 'month') {
-                endStr = `${shortMonths[endDate.getMonth()]}`;
+                endStr = `${shortMonths[endDate.getMonth()]} `;
             } else if (endType === 'week') {
-                endStr = `v${this.getWeekNumber(endDate)}`;
+                endStr = `v${this.getWeekNumber(endDate)} `;
             } else {
-                endStr = `${endDate.getDate()} ${shortMonths[endDate.getMonth()]}`;
+                endStr = `${endDate.getDate()} ${shortMonths[endDate.getMonth()]} `;
             }
-            return `${startStr}–${endStr}`;
+            return `${startStr}–${endStr} `;
         }
         return startStr;
     }
@@ -2736,8 +3139,8 @@ class TimelineApp {
         this.render();
     }
 
-    handleDelete() {
-        if (!confirm('Är du säker på att du vill ta bort detta?')) {
+    async handleDelete() {
+        if (!await this.showConfirm('Är du säker på att du vill ta bort detta?', { danger: true })) {
             return;
         }
 
@@ -2767,7 +3170,7 @@ class TimelineApp {
 
     // Utilities
     getMonthName(month) {
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+        const months = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
         return months[month];
     }
 
@@ -2780,7 +3183,7 @@ class TimelineApp {
     // Toast notifications
     showToast(message, type = 'success') {
         const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
+        toast.className = `toast toast - ${type} `;
         toast.textContent = message;
         document.body.appendChild(toast);
 
@@ -2846,10 +3249,10 @@ class TimelineApp {
     // Get status label
     getStatusLabel(status) {
         const labels = {
-            'early': 'Tidigt skede',
-            'procurement': 'Upphandling',
-            'implementation': 'Genomförande',
-            'completion': 'Slutförande'
+            'early': this.labels.statusEarly,
+            'procurement': this.labels.statusProcurement,
+            'implementation': this.labels.statusImplementation,
+            'completion': this.labels.statusCompletion
         };
         return labels[status] || status;
     }
@@ -2874,11 +3277,11 @@ class TimelineApp {
 
             // Title
             doc.setFontSize(20);
-            doc.text('Tidslinje Timeline', 20, 20);
+            doc.text('Timeline', 20, 20);
 
             // Date
             doc.setFontSize(10);
-            doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')}`, 20, 30);
+            doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')} `, 20, 30);
 
             let yPos = 45;
 
@@ -2900,17 +3303,17 @@ class TimelineApp {
                     const status = this.getStatusLabel(project.status || 'implementation');
 
                     doc.setFont(undefined, 'bold');
-                    doc.text(`${index + 1}. ${project.name}`, 20, yPos);
+                    doc.text(`${index + 1}. ${project.name} `, 20, yPos);
                     yPos += 6;
 
                     doc.setFont(undefined, 'normal');
                     if (project.lead) {
-                        doc.text(`   Projektledare: ${project.lead}`, 20, yPos);
+                        doc.text(`   Projektledare: ${project.lead} `, 20, yPos);
                         yPos += 5;
                     }
-                    doc.text(`   Status: ${status}`, 20, yPos);
+                    doc.text(`   Status: ${status} `, 20, yPos);
                     yPos += 5;
-                    doc.text(`   Period: ${startDate} - ${endDate}`, 20, yPos);
+                    doc.text(`   Period: ${startDate} - ${endDate} `, 20, yPos);
                     yPos += 8;
                 });
             }
@@ -2939,21 +3342,21 @@ class TimelineApp {
                     const endDate = event.end ? this.parseDate(event.end).toLocaleDateString('sv-SE') : null;
 
                     doc.setFont(undefined, 'bold');
-                    doc.text(`${index + 1}. ${event.name}`, 20, yPos);
+                    doc.text(`${index + 1}. ${event.name} `, 20, yPos);
                     yPos += 6;
 
                     doc.setFont(undefined, 'normal');
                     if (endDate) {
-                        doc.text(`   Period: ${startDate} - ${endDate}`, 20, yPos);
+                        doc.text(`   Period: ${startDate} - ${endDate} `, 20, yPos);
                     } else {
-                        doc.text(`   Datum: ${startDate}`, 20, yPos);
+                        doc.text(`   Datum: ${startDate} `, 20, yPos);
                     }
                     yPos += 8;
                 });
             }
 
             // Save PDF
-            const filename = `Tidslinje-${new Date().toISOString().split('T')[0]}.pdf`;
+            const filename = `Timeline - ${new Date().toISOString().split('T')[0]}.pdf`;
             doc.save(filename);
             this.showToast('PDF exporterad!', 'success');
         } catch (error) {
@@ -2964,7 +3367,7 @@ class TimelineApp {
 
 
     async exportData() {
-        const defaultFilename = `tidslinje-${new Date().toISOString().split('T')[0]}.json`;
+        const defaultFilename = `timeline - ${new Date().toISOString().split('T')[0]}.json`;
         let handle = null;
 
         // 1. Try to get handle immediately to preserve user gesture
@@ -3013,7 +3416,8 @@ class TimelineApp {
             },
             areas: this.areas,
             projects: this.projects,
-            events: this.events
+            events: this.events,
+            labels: this.labels
         };
 
         const json = JSON.stringify(data, null, 2);
@@ -3050,21 +3454,22 @@ class TimelineApp {
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
             try {
                 const data = JSON.parse(event.target.result);
 
                 if (!data.projects || !data.events) {
-                    alert('Ogiltig fil: saknar projekt eller händelser.');
+                    await this.showAlert('Ogiltig fil: saknar projekt eller händelser.');
                     return;
                 }
 
                 this.pushUndoState();
 
-                const mode = confirm(
+                const mode = await this.showConfirm(
                     'Vill du ersätta alla befintliga data?\n\n' +
                     'OK = Ersätt allt\n' +
-                    'Avbryt = Lägg till (slå ihop med befintliga)'
+                    'Avbryt = Lägg till (slå ihop med befintliga)',
+                    { confirmText: 'Ersätt allt', cancelText: 'Lägg till' }
                 );
 
                 if (mode) {
@@ -3077,6 +3482,13 @@ class TimelineApp {
                         this.areas = data.areas;
                         this.saveData('timeline_areas', this.areas);
                         this.populateAreaSelects();
+                    }
+
+                    // Restore labels if present
+                    if (data.labels) {
+                        this.labels = { ...DEFAULT_LABELS, ...data.labels };
+                        this.saveData('timeline_labels', this.labels);
+                        this.applyLabels();
                     }
 
                     // Restore timeline range if present
@@ -3127,15 +3539,136 @@ class TimelineApp {
                 this.populateDateSelectors();
                 this.render();
 
-                alert(`Import klar! ${data.projects.length} projekt och ${data.events.length} händelser importerades.`);
+                await this.showAlert(`Import klar! ${data.projects.length} projekt och ${data.events.length} händelser importerades.`);
             } catch (err) {
-                alert('Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.');
+                await this.showAlert('Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.');
                 console.error('Import error:', err);
             }
         };
 
         reader.readAsText(file);
         e.target.value = ''; // Reset input so same file can be imported again
+    }
+
+
+    showModal(options = {}) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('customModal');
+            const titleEl = document.getElementById('customModalTitle');
+            const bodyEl = document.getElementById('customModalBody');
+            const input = document.getElementById('customModalInput');
+            const zoomRow = document.getElementById('customModalZoomRow');
+            const amountInput = document.getElementById('customModalAmount');
+            const unitSelect = document.getElementById('customModalUnit');
+            const cancelBtn = document.getElementById('customModalCancel');
+            const confirmBtn = document.getElementById('customModalConfirm');
+
+            if (!overlay || !titleEl) {
+                console.error('Modal elements not found');
+                resolve(null);
+                return;
+            }
+
+            // Reset
+            titleEl.textContent = options.title || '';
+            input.style.display = options.type === 'prompt' ? 'block' : 'none';
+            input.value = options.defaultValue || '';
+            zoomRow.style.display = options.isZoom ? 'flex' : 'none';
+            cancelBtn.style.display = options.type === 'alert' ? 'none' : 'block';
+
+            cancelBtn.textContent = (options.type === 'confirm' && options.cancelText) ? options.cancelText : 'Avbryt';
+            confirmBtn.textContent = (options.type === 'confirm' && options.confirmText) ? options.confirmText : (options.type === 'prompt' ? 'Spara' : 'OK');
+
+            confirmBtn.className = 'custom-modal-btn ' + (options.danger ? 'custom-modal-btn-danger' : 'custom-modal-btn-primary');
+
+            if (options.isZoom) {
+                zoomRow.style.display = 'flex';
+                // Try to determine best unit for existing days
+                const days = options.days || 30;
+                if (days >= 365) {
+                    amountInput.value = Math.round((days / 365.25) * 10) / 10;
+                    unitSelect.value = 'years';
+                } else if (days >= 28) {
+                    amountInput.value = Math.round((days / 30.4375) * 10) / 10;
+                    unitSelect.value = 'months';
+                } else if (days >= 7) {
+                    amountInput.value = Math.round((days / 7) * 10) / 10;
+                    unitSelect.value = 'weeks';
+                } else {
+                    amountInput.value = days;
+                    unitSelect.value = 'days';
+                }
+            }
+
+            overlay.classList.add('active');
+            if (options.type === 'prompt') {
+                input.focus();
+                input.select();
+            } else {
+                confirmBtn.focus();
+            }
+
+            const cleanup = () => {
+                overlay.classList.remove('active');
+                confirmBtn.removeEventListener('click', handleConfirm);
+                cancelBtn.removeEventListener('click', handleCancel);
+                overlay.removeEventListener('click', handleOverlayClick);
+                document.removeEventListener('keydown', handleKeyDown);
+            };
+
+            const handleConfirm = () => {
+                let result;
+                if (options.isZoom) {
+                    const amount = parseFloat(amountInput.value);
+                    const unit = unitSelect.value;
+                    let days = amount;
+                    if (unit === 'weeks') days = amount * 7;
+                    if (unit === 'months') days = amount * 30.4375; // Average month
+                    if (unit === 'years') days = amount * 365.25;
+
+                    result = {
+                        label: input.value,
+                        days: Math.round(days)
+                    };
+                } else if (options.type === 'prompt') {
+                    result = input.value;
+                } else {
+                    // For 'confirm' and 'alert'
+                    result = true;
+                }
+                cleanup();
+                resolve(result);
+            };
+
+            const handleCancel = () => {
+                cleanup();
+                resolve(null);
+            };
+
+            const handleOverlayClick = (e) => { if (e.target === overlay) handleCancel(); };
+
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter') handleConfirm();
+                if (e.key === 'Escape') handleCancel();
+            };
+
+            confirmBtn.addEventListener('click', handleConfirm);
+            cancelBtn.addEventListener('click', handleCancel);
+            overlay.addEventListener('click', handleOverlayClick);
+            document.addEventListener('keydown', handleKeyDown);
+        });
+    }
+
+    async showPrompt(title, defaultValue, options = {}) {
+        return await this.showModal({ ...options, type: 'prompt', title, defaultValue });
+    }
+
+    async showConfirm(title, options = {}) {
+        return await this.showModal({ ...options, type: 'confirm', title });
+    }
+
+    async showAlert(title, options = {}) {
+        return await this.showModal({ ...options, type: 'alert', title });
     }
 }
 
