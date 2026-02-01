@@ -914,14 +914,18 @@ class TimelineApp {
         safeBind('closeSidebar', 'click', () => this.closeProjectSidebar());
         safeBind('sidebarEditBtn', 'click', () => {
             if (this.activeSidebarProject) {
-                this.openEditModal(this.activeSidebarProject, 'project');
+                const project = this.activeSidebarProject;
+                this.closeProjectSidebar();
+                this.openEditModal(project, 'project');
             }
         });
 
         safeBind('closeEventSidebar', 'click', () => this.closeEventSidebar());
         safeBind('eventSidebarEditBtn', 'click', () => {
             if (this.activeSidebarEvent) {
-                this.openEditModal(this.activeSidebarEvent, 'event');
+                const event = this.activeSidebarEvent;
+                this.closeEventSidebar();
+                this.openEditModal(event, 'event');
             }
         });
 
@@ -1304,6 +1308,26 @@ class TimelineApp {
             dateInput.style.display = type === 'date' ? 'block' : 'none';
             if (weekGroup) weekGroup.style.display = type === 'week' ? 'flex' : 'none';
             if (monthGroup) monthGroup.style.display = type === 'month' ? 'flex' : 'none';
+
+            // Set default values to current date if empty or default
+            if (type === 'week') {
+                const now = new Date();
+                const weekNum = document.getElementById(`${prefix}WeekNum`);
+                const weekYear = document.getElementById(`${prefix}WeekYear`);
+                if (weekNum && (!weekNum.value || weekNum.value === '1')) weekNum.value = this.getWeekNumber(now);
+                if (weekYear && (!weekYear.value || weekYear.value === '2025')) weekYear.value = now.getFullYear();
+            } else if (type === 'month') {
+                const now = new Date();
+                const monthNum = document.getElementById(`${prefix}MonthNum`);
+                const monthYear = document.getElementById(`${prefix}MonthYear`);
+                if (monthNum && (!monthNum.value || monthNum.value === '1')) monthNum.value = now.getMonth() + 1;
+                if (monthYear && (!monthYear.value || monthYear.value === '2025')) monthYear.value = now.getFullYear();
+            } else if (type === 'date') {
+                // For date input, we could also default to today if empty
+                if (dateInput && !dateInput.value) {
+                    dateInput.value = new Date().toISOString().split('T')[0];
+                }
+            }
         });
     }
 

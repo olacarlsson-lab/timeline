@@ -54,6 +54,7 @@ body {
 
 .app {
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
 }
@@ -538,6 +539,9 @@ body {
 .btn-icon {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    flex-shrink: 0;
     padding: 0;
     display: flex;
     align-items: center;
@@ -1365,6 +1369,8 @@ body {
     border-radius: 16px;
     width: 100%;
     max-width: 500px;
+    max-height: 90dvh;
+    overflow-y: auto;
     margin: 1rem;
     box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.3);
     border: 1px solid var(--border-color);
@@ -1609,7 +1615,8 @@ form {
     top: 0;
     left: 0;
     width: 280px;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -1649,6 +1656,7 @@ form {
 
 .control-panel-body {
     padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -1657,20 +1665,28 @@ form {
 }
 
 /* Control Panel Scrollbar */
-.control-panel-body::-webkit-scrollbar {
+.control-panel-body::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar,
+.sidebar-content::-webkit-scrollbar {
     width: 6px;
 }
 
-.control-panel-body::-webkit-scrollbar-track {
+.control-panel-body::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track,
+.sidebar-content::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.control-panel-body::-webkit-scrollbar-thumb {
+.control-panel-body::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb,
+.sidebar-content::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
 }
 
-.control-panel-body:hover::-webkit-scrollbar-thumb {
+.control-panel-body:hover::-webkit-scrollbar-thumb,
+.modal-content:hover::-webkit-scrollbar-thumb,
+.sidebar-content:hover::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -2234,7 +2250,8 @@ form {
     position: fixed;
     top: 0;
     width: 400px;
-    height: 100%;
+    height: 100vh;
+    height: 100dvh;
     background-color: var(--glass-bg);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
@@ -2350,6 +2367,7 @@ form {
 
 .sidebar-actions {
     padding: 1.5rem;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
     border-top: 1px solid var(--glass-border);
     display: flex;
     gap: 1rem;
