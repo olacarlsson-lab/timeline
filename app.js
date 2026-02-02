@@ -174,6 +174,7 @@ const DEFAULT_LABELS = {
     status: 'Status',
     addProject: 'Projekt',
     addEvent: 'Händelse',
+    today: 'Idag',
     searchLabel: 'Sök',
     searchPlaceholder: 'Sök projekt...',
     areaPlaceholder: 'Nytt område...',
@@ -198,6 +199,46 @@ const DEFAULT_LABELS = {
     projectDetails: 'Projektdetaljer',
     eventDetails: 'Händelsedetaljer',
     edit: 'Redigera',
+    save: 'Spara',
+    cancel: 'Avbryt',
+    delete: 'Ta bort',
+    confirm: 'Bekräfta',
+    ok: 'OK',
+    resetSampleConfirm: 'Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.',
+    resetEmptyConfirm: 'Är du säker på att du vill rensa allt och skapa en ny timeline?',
+    toastSampleLoaded: 'Exempeldata inläst',
+    toastNewTimeline: 'Ny timeline skapad',
+    toastSettingsSaved: 'Inställningarna visas nu. Kom ihåg att spara projektet permanent.',
+    toastZoomUpdated: 'Zoomnivån uppdaterad. Kom ihåg att spara projektet.',
+    weekPrefix: 'v',
+    monthShortNames: ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'],
+    monthLongNames: ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'],
+    weekWord: 'Vecka',
+    emptyState: 'Inga projekt eller händelser',
+    getStarted: 'för att komma igång',
+    settingsTitle: 'Filter & inställningar',
+    toggleTheme: 'Växla tema',
+    advanced: 'Avancerat',
+    fieldNameLabel: 'Namn på fält',
+    statusValuesLabel: 'Statusvärden',
+    zoomLevelsLabel: 'Zoomnivåer',
+    timelineTitle: 'Timeline',
+    startYear: 'Startår',
+    endYear: 'Slutår',
+    open: 'Öppna',
+    export: 'Spara (Export)',
+    reset: 'Återställ',
+    exampleData: 'Exempeldata',
+    createNew: 'Skapa ny',
+    symbolLabel: 'Symbol',
+    symbolStandard: 'Standard (Balk/Punkt)',
+    symbolStar: 'Stjärna',
+    symbolDiamond: 'Diamant',
+    symbolFlag: 'Flagga',
+    symbolWarning: 'Varning',
+    symbolCheck: 'Klar',
+    comment: 'Kommentar',
+    commentPlaceholder: 'Valfri kommentar...',
     // Zoom levels
     zoom2YearsLabel: '2 år',
     zoom2YearsTitle: 'Två år från idag',
@@ -205,15 +246,109 @@ const DEFAULT_LABELS = {
     zoom1YearLabel: '1 år',
     zoom1YearTitle: 'Ett år framåt',
     zoom1YearDays: '365',
-    zoom3MonthsLabel: '3 månader',
+    zoom3MonthsLabel: '3 mån',
     zoom3MonthsTitle: 'Kommande tre månader',
+    zoom3MonthsDays: '90'
+};
+
+const DEFAULT_LABELS_EN = {
+    project: 'Project',
+    projectsPlural: 'Projects',
+    event: 'Event',
+    eventsPlural: 'Events',
+    area: 'Workstream',
+    areasPlural: 'Workstreams',
+    projectLead: 'Lead',
+    status: 'Status',
+    today: 'Today',
+    addProject: 'Project',
+    addEvent: 'Event',
+    searchLabel: 'Search',
+    searchPlaceholder: 'Search projects...',
+    areaPlaceholder: 'New workstream...',
+    all: 'All',
+    statusEarly: 'Early Stage',
+    statusProcurement: 'Procurement',
+    statusImplementation: 'Implementation',
+    statusCompletion: 'Completion',
+    sort: 'Sort',
+    name: 'Name',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    newProject: 'New Project',
+    projectName: 'Project Name',
+    projectNamePlaceholder: 'Enter project name...',
+    projectLeadPlaceholder: 'Name of responsible...',
+    optional: 'Optional',
+    manageAreas: 'Manage workstreams',
+    newEvent: 'New Event',
+    eventName: 'Event Name',
+    freeText: 'Free text...',
+    projectDetails: 'Project Details',
+    eventDetails: 'Event Details',
+    edit: 'Edit',
+    save: 'Save',
+    cancel: 'Cancel',
+    delete: 'Delete',
+    confirm: 'Confirm',
+    ok: 'OK',
+    resetSampleConfirm: 'Do you want to replace all data with sample data? Current data will be lost.',
+    resetEmptyConfirm: 'Are you sure you want to clear everything and start a new timeline?',
+    toastSampleLoaded: 'Sample data loaded',
+    toastNewTimeline: 'New timeline created',
+    toastSettingsSaved: 'Changes now visible. Remember to export to save permanently.',
+    toastZoomUpdated: 'Zoom level updated. Remember to export to save.',
+    weekPrefix: 'w',
+    monthShortNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    monthLongNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    weekWord: 'Week',
+    emptyState: 'No projects or events',
+    getStarted: 'to get started',
+    settingsTitle: 'Filters & Settings',
+    toggleTheme: 'Toggle Theme',
+    advanced: 'Advanced',
+    fieldNameLabel: 'Field Names',
+    statusValuesLabel: 'Status Values',
+    zoomLevelsLabel: 'Zoom Levels',
+    timelineTitle: 'Timeline',
+    startYear: 'Start Year',
+    endYear: 'End Year',
+    open: 'Open',
+    export: 'Share (Export)',
+    reset: 'Reset',
+    exampleData: 'Example Data',
+    createNew: 'Create New',
+    symbolLabel: 'Symbol',
+    symbolStandard: 'Standard (Bar/Point)',
+    symbolStar: 'Star',
+    symbolDiamond: 'Diamond',
+    symbolFlag: 'Flag',
+    symbolWarning: 'Warning',
+    symbolCheck: 'Done',
+    comment: 'Comment',
+    commentPlaceholder: 'Optional comment...',
+    // Zoom levels
+    zoom2YearsLabel: '2 years',
+    zoom2YearsTitle: 'Two years from today',
+    zoom2YearsDays: '730',
+    zoom1YearLabel: '1 year',
+    zoom1YearTitle: 'One year forward',
+    zoom1YearDays: '365',
+    zoom3MonthsLabel: '3 mo',
+    zoom3MonthsTitle: 'Next three months',
     zoom3MonthsDays: '90'
 };
 
 class TimelineApp {
     constructor() {
         // Configuration
-        this.labels = this.loadData('timeline_labels') || { ...DEFAULT_LABELS };
+        this.language = localStorage.getItem('timeline_language') || 'sv';
+        const savedLabels = this.loadData('timeline_labels');
+        if (savedLabels) {
+            this.labels = savedLabels;
+        } else {
+            this.labels = this.language === 'en' ? { ...DEFAULT_LABELS_EN } : { ...DEFAULT_LABELS };
+        }
         const savedRange = this.loadData('timeline_range');
         this.timelineStartYear = savedRange ? savedRange.startYear : null;
         this.timelineEndYear = savedRange ? savedRange.endYear : null;
@@ -295,11 +430,39 @@ class TimelineApp {
             }
         });
 
+        // UI Language button state
+        const enBtn = document.getElementById('langEn');
+        const svBtn = document.getElementById('langSv');
+        if (enBtn && svBtn) {
+            enBtn.classList.toggle('active', this.language === 'en');
+            svBtn.classList.toggle('active', this.language === 'sv');
+        }
+
         // Some labels are used in tooltips/placeholders that need manual updates
         const searchInput = document.getElementById('searchInput');
         if (searchInput && this.labels.searchPlaceholder) {
             searchInput.placeholder = this.labels.searchPlaceholder;
         }
+
+        document.title = (this.labels.timelineTitle || 'Timeline');
+    }
+
+    setLanguage(lang) {
+        if (lang === this.language) return;
+
+        this.language = lang;
+        localStorage.setItem('timeline_language', lang);
+
+        // Reset labels to defaults for the new language
+        this.labels = lang === 'en' ? { ...DEFAULT_LABELS_EN } : { ...DEFAULT_LABELS };
+        this.saveData('timeline_labels', this.labels);
+
+        this.applyLabels();
+        this.populateDateSelectors();
+        this.renderHeader(); // Ensure header (months/weeks) refresh
+        this.render();
+        this.renderAreaList();
+        this.showToast(this.labels.toastSettingsSaved || 'Language changed', 'success');
     }
 
     getStartDate() {
@@ -410,21 +573,21 @@ class TimelineApp {
     }
 
     async resetToSampleData() {
-        if (!await this.showConfirm('Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.', { danger: true })) return;
+        if (!await this.showConfirm(this.labels.resetSampleConfirm, { danger: true })) return;
 
         await this.loadSampleData();
-        this.showToast('Exempeldata inläst', 'success');
+        this.showToast(this.labels.toastSampleLoaded, 'success');
     }
 
     async resetToEmpty() {
-        if (!await this.showConfirm('Är du säker på att du vill rensa allt och skapa en ny timeline?', {
+        if (!await this.showConfirm(this.labels.resetEmptyConfirm, {
             danger: true,
-            confirmText: 'Rensa allt',
-            cancelText: 'Avbryt'
+            confirmText: this.labels.delete || 'Ta bort',
+            cancelText: this.labels.cancel || 'Avbryt'
         })) return;
 
         await this.resetToDefaults(false);
-        this.showToast('Ny timeline skapad', 'info');
+        this.showToast(this.labels.toastNewTimeline, 'info');
     }
 
     initTimelineRange() {
@@ -559,8 +722,7 @@ class TimelineApp {
         });
 
         // Populate month name selects (jan-dec)
-        const monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun',
-            'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+        const monthNames = this.labels.monthShortNames || ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
         monthNumSelects.forEach(select => {
             select.innerHTML = '';
             monthNames.forEach((name, i) => {
@@ -640,16 +802,20 @@ class TimelineApp {
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importFile', 'change', (e) => this.importData(e));
         safeBind('resetSampleBtn', 'click', async () => {
-            const confirmed = await this.showConfirm('Är du säker på att du vill återställa till exempeldata? Allt osparat försvinner.');
+            const confirmed = await this.showConfirm(this.labels.resetSampleConfirm);
             if (confirmed) this.resetToDefaults(true);
         });
         safeBind('resetEmptyBtn', 'click', async () => {
-            const confirmed = await this.showConfirm('Är du säker på att du vill rensa allt och börja om på nytt?');
+            const confirmed = await this.showConfirm(this.labels.resetEmptyConfirm);
             if (confirmed) this.resetToDefaults(false);
         });
 
         // Theme Toggle
         safeBind('themeToggle', 'click', (e) => this.toggleTheme(e));
+
+        // Language Selectors
+        safeBind('langSv', 'click', () => this.setLanguage('sv'));
+        safeBind('langEn', 'click', () => this.setLanguage('en'));
 
         // Label settings (Döp om fält)
         document.querySelectorAll('.btn-edit-label').forEach(btn => {
@@ -2288,7 +2454,7 @@ class TimelineApp {
         )].sort((a, b) => a.localeCompare(b, 'sv'));
 
         // Rebuild options
-        select.innerHTML = '<option value="">Alla</option>';
+        select.innerHTML = `<option value="">${this.labels.all || 'Alla'}</option>`;
         leads.forEach(lead => {
             const option = document.createElement('option');
             option.value = lead;
@@ -2545,8 +2711,8 @@ class TimelineApp {
                     const weekWidth = daysInWeek * pixelsPerDay;
                     // Only show week number if this is the start of the week (Monday)
                     // This prevents duplicate week numbers when a week spans two months
-                    const isMonday = d.getDay() === 1;
-                    subHeaderHtml += `<div class="sub-cell week" style="width:${weekWidth}px">${isMonday ? 'v' + weekNum : ''}</div>`;
+                    const weekPrefix = this.labels.weekPrefix || 'v';
+                    subHeaderHtml += `<div class="sub-cell week" style="width:${weekWidth}px">${isMonday ? weekPrefix + weekNum : ''}</div>`;
                     d.setDate(d.getDate() + daysInWeek);
                 }
                 subHeaderHtml += '</div>';
@@ -2687,8 +2853,8 @@ class TimelineApp {
             const emptyState = document.createElement('div');
             emptyState.className = 'empty-state';
             emptyState.innerHTML = `
-    < p > Inga ${this.labels.projectsPlural.toLowerCase()} eller ${this.labels.eventsPlural.toLowerCase()}</p >
-        <span>Klicka på "${this.labels.addProject}" eller "${this.labels.addEvent}" för att komma igång</span>
+    <p>${this.labels.emptyState}</p>
+    <span>${this.labels.edit || 'Klicka'} "${this.labels.addProject}" ${this.labels.getStarted}</span>
 `;
             this.timelineContent.appendChild(emptyState);
             return;
@@ -2801,13 +2967,12 @@ class TimelineApp {
     }
 
     formatDateDisplay(date, dateType) {
-        const months = ['januari', 'februari', 'mars', 'april', 'maj', 'juni',
-            'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+        const months = this.labels.monthLongNames || ['januari', 'februari', 'mars', 'april', 'maj', 'juni', 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
 
         if (dateType === 'month') {
             return `${months[date.getMonth()]} ${date.getFullYear()} `;
         } else if (dateType === 'week') {
-            return `Vecka ${this.getWeekNumber(date)}, ${date.getFullYear()} `;
+            return `${this.labels.weekWord || 'Vecka'} ${this.getWeekNumber(date)}, ${date.getFullYear()} `;
         } else {
             return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} `;
         }
@@ -2831,13 +2996,14 @@ class TimelineApp {
     formatShortDate(event) {
         const startDate = this.parseDate(event.start || event.date);
         const startType = event.startType || event.dateType || 'date';
-        const shortMonths = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+        const shortMonths = this.labels.monthShortNames;
+        const weekPrefix = this.labels.weekPrefix || 'v';
 
         let startStr;
         if (startType === 'month') {
             startStr = `${shortMonths[startDate.getMonth()]} `;
         } else if (startType === 'week') {
-            startStr = `v${this.getWeekNumber(startDate)} `;
+            startStr = `${weekPrefix}${this.getWeekNumber(startDate)} `;
         } else {
             startStr = `${startDate.getDate()} ${shortMonths[startDate.getMonth()]} `;
         }
@@ -2849,7 +3015,7 @@ class TimelineApp {
             if (endType === 'month') {
                 endStr = `${shortMonths[endDate.getMonth()]} `;
             } else if (endType === 'week') {
-                endStr = `v${this.getWeekNumber(endDate)} `;
+                endStr = `${weekPrefix}${this.getWeekNumber(endDate)} `;
             } else {
                 endStr = `${endDate.getDate()} ${shortMonths[endDate.getMonth()]} `;
             }
@@ -3269,8 +3435,7 @@ class TimelineApp {
 
     // Utilities
     getMonthName(month) {
-        const months = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-        return months[month];
+        return this.labels.monthShortNames[month];
     }
 
     escapeHtml(text) {
@@ -3466,86 +3631,80 @@ class TimelineApp {
 
 
     async exportData() {
-        const defaultFilename = `timeline - ${new Date().toISOString().split('T')[0]}.json`;
-        let handle = null;
+        try {
+            // 1. Prep data (sync part) - Do this first to ensure we have data
+            const data = {
+                version: 1,
+                exportDate: new Date().toISOString(),
+                timelineRange: {
+                    startYear: this.startDate.getFullYear(),
+                    endYear: this.endDate.getFullYear()
+                },
+                areas: this.areas,
+                projects: this.projects,
+                events: this.events,
+                labels: this.labels
+            };
 
-        // 1. Try to get handle immediately to preserve user gesture
-        if ('showSaveFilePicker' in window) {
-            try {
-                handle = await window.showSaveFilePicker({
-                    suggestedName: defaultFilename,
-                    types: [{
-                        description: 'JSON-fil',
-                        accept: { 'application/json': ['.json'] }
-                    }]
-                });
-            } catch (err) {
-                // If the user cancelled, we stop.
-                if (err.name === 'AbortError') return;
+            const json = JSON.stringify(data, null, 2);
+            if (!json || json === '{}') {
+                throw new Error('Export-data är tom eller ogiltig.');
+            }
 
-                console.warn('showSaveFilePicker failed:', err);
+            const blob = new Blob([json], { type: 'application/json' });
+            const defaultFilename = `timeline - ${new Date().toISOString().split('T')[0]}.json`;
 
-                // Provide specific feedback based on protocol and browser
-                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-                const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            // 2. Attempt modern "Save As" (File System Access API)
+            if ('showSaveFilePicker' in window) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: defaultFilename,
+                        types: [{
+                            description: 'JSON-fil',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
 
-                if (isSafari || isFirefox) {
-                    this.showToast('"Spara som" stöds inte i denna webbläsare. Använd Chrome eller Edge.', 'info');
-                } else if (window.location.protocol === 'file:') {
-                    this.showToast('Webbläsaren blockerar "Spara som" lokalt. Använd Start_App_Mac.command.', 'info');
-                    console.info('Tip: "Spara som"-dialogen blockeras ofta av webbläsaren när man kör via file://. Prova att köra via Start_App_Mac.command för fullt stöd.');
+                    const writable = await handle.createWritable();
+                    await writable.write(blob);
+                    await writable.close();
+
+                    this.showToast('Fil sparad!', 'success');
+                    this.hasUnsavedChanges = false;
+                    return; // Success
+                } catch (err) {
+                    // If user cancelled, just stop
+                    if (err.name === 'AbortError') return;
+
+                    console.warn('showSaveFilePicker failed, trying fallback:', err);
+                    // Continue to fallback
                 }
             }
-        } else {
-            // Check if it's a known unsupported browser
-            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-            const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-            if (isSafari || isFirefox) {
-                console.info('"Spara som" (File System Access API) stöds inte i denna webbläsare.');
-            }
+
+            // 3. Fallback for browsers without File System Access API or when it fails
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = defaultFilename;
+
+            // Append to body to ensure it works in all browsers
+            document.body.appendChild(a);
+            a.click();
+
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+
+            this.showToast('Fil nedladdad!', 'success');
+            this.hasUnsavedChanges = false;
+
+        } catch (error) {
+            console.error('Export error:', error);
+            this.showToast('Kunde inte exportera data: ' + error.message, 'error');
+            await this.showAlert('Export misslyckades. Kontrollera konsolen för detaljer.');
         }
-
-        // 2. Prep data (sync part)
-        const data = {
-            version: 1,
-            exportDate: new Date().toISOString(),
-            timelineRange: {
-                startYear: this.startDate.getFullYear(),
-                endYear: this.endDate.getFullYear()
-            },
-            areas: this.areas,
-            projects: this.projects,
-            events: this.events,
-            labels: this.labels
-        };
-
-        const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-
-        // 3. Write to handle OR fallback to traditional download
-        if (handle) {
-            try {
-                const writable = await handle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                this.showToast('Fil sparad!', 'success');
-                this.hasUnsavedChanges = false;
-                return;
-            } catch (err) {
-                console.error('Error writing to file handle:', err);
-                // If writing fails, we still try the fallback download below
-            }
-        }
-
-        // Fallback for browsers without File System Access API or when it fails
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = defaultFilename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
     }
 
     importData(e) {

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -17,7 +17,7 @@
     <div class="app">
         <header class="header">
             <div class="controls">
-                <button id="controlPanelToggle" title="Filter & inställningar">
+                <button id="controlPanelToggle" data-title="settingsTitle" title="Filter & inställningar">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
                         <line x1="4" y1="21" x2="4" y2="14"></line>
@@ -43,7 +43,7 @@
                     <button id="view3Months" class="btn btn-view active" data-label="zoom3MonthsLabel"
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
-                <button id="todayBtn" class="btn btn-secondary">Idag</button>
+                <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
             </div>
         </header>
 
@@ -83,7 +83,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Startdatum</label>
+                    <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="projectStartType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -102,7 +102,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Slutdatum</label>
+                    <label data-label="endDate">Slutdatum</label>
                     <div class="date-picker">
                         <select id="projectEndType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -121,18 +121,21 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="projectColor">Område</label>
+                    <label for="projectColor" data-label="area">Område</label>
                     <select id="projectColor" class="color-select">
                     </select>
-                    <a href="#" id="openAreasFromProject" class="form-hint-link">Hantera områden</a>
+                    <a href="#" id="openAreasFromProject" class="form-hint-link" data-label="manageAreas">Hantera
+                        områden</a>
                 </div>
                 <div class="form-group">
-                    <label for="projectComment">Kommentar</label>
-                    <textarea id="projectComment" rows="3" placeholder="Valfri kommentar..."></textarea>
+                    <label for="projectComment" data-label="comment">Kommentar</label>
+                    <textarea id="projectComment" rows="3" data-placeholder="commentPlaceholder"
+                        placeholder="Valfri kommentar..."></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelProject">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Spara</button>
+                    <button type="button" class="btn btn-secondary" id="cancelProject"
+                        data-label="cancel">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" data-label="save">Spara</button>
                 </div>
             </form>
         </div>
@@ -151,7 +154,7 @@
                     <input type="text" id="eventName" required data-placeholder="freeText">
                 </div>
                 <div class="form-group">
-                    <label>Startdatum</label>
+                    <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="eventStartType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -170,7 +173,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Slutdatum (valfritt)</label>
+                    <label data-label="endDate">Slutdatum (valfritt)</label>
                     <div class="date-picker">
                         <select id="eventEndType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -196,9 +199,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="eventSymbol">Symbol (valfritt)</label>
+                    <label for="eventSymbol" data-label="symbolLabel">Symbol (valfritt)</label>
                     <select id="eventSymbol">
-                        <option value="">Standard (Balk/Punkt)</option>
+                        <option value="" data-label="symbolStandard">Standard (Balk/Punkt)</option>
                         <option value="star">Stjärna</option>
                         <option value="diamond">Diamant</option>
                         <option value="flag">Flagga</option>
@@ -207,12 +210,13 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="eventComment">Kommentar</label>
-                    <textarea id="eventComment" rows="3" placeholder="Valfri kommentar..."></textarea>
+                    <label for="eventComment" data-label="comment">Kommentar</label>
+                    <textarea id="eventComment" rows="3" data-placeholder="commentPlaceholder"
+                        placeholder="Valfri kommentar..."></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="cancelEvent">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Spara</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEvent" data-label="cancel">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" data-label="save">Spara</button>
                 </div>
             </form>
         </div>
@@ -227,7 +231,7 @@
             </div>
             <form id="editForm">
                 <div class="form-group">
-                    <label for="editName">Namn</label>
+                    <label for="editName" data-label="name">Namn</label>
                     <input type="text" id="editName" required>
                 </div>
                 <div class="form-group" id="editLeadGroup">
@@ -244,7 +248,7 @@
                     </select>
                 </div>
                 <div class="form-group" id="editStartGroup">
-                    <label>Startdatum</label>
+                    <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="editStartType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -263,7 +267,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="editEndGroup">
-                    <label>Slutdatum</label>
+                    <label data-label="endDate">Slutdatum</label>
                     <div class="date-picker">
                         <select id="editEndType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -282,7 +286,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="editEventStartGroup">
-                    <label>Startdatum</label>
+                    <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="editEventStartType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -301,7 +305,7 @@
                     </div>
                 </div>
                 <div class="form-group" id="editEventEndGroup">
-                    <label>Slutdatum (valfritt)</label>
+                    <label data-label="endDate">Slutdatum (valfritt)</label>
                     <div class="date-picker">
                         <select id="editEventEndType" class="date-type-select">
                             <option value="date">Datum</option>
@@ -326,9 +330,10 @@
                     </select>
                 </div>
                 <div class="form-group" id="editSymbolGroup">
-                    <label for="editSymbol">Symbol (<span data-label="optional">valfritt</span>)</label>
+                    <label for="editSymbol" data-label="symbolLabel">Symbol (<span
+                            data-label="optional">valfritt</span>)</label>
                     <select id="editSymbol">
-                        <option value="">Standard (Balk/Punkt)</option>
+                        <option value="" data-label="symbolStandard">Standard (Balk/Punkt)</option>
                         <option value="star">Stjärna</option>
                         <option value="diamond">Diamant</option>
                         <option value="flag">Flagga</option>
@@ -344,15 +349,16 @@
                         områden</a>
                 </div>
                 <div class="form-group" id="editCommentGroup">
-                    <label for="editComment">Kommentar</label>
-                    <textarea id="editComment" rows="3" placeholder="Valfri kommentar..."></textarea>
+                    <label for="editComment" data-label="comment">Kommentar</label>
+                    <textarea id="editComment" rows="3" data-placeholder="commentPlaceholder"
+                        placeholder="Valfri kommentar..."></textarea>
                 </div>
                 <input type="hidden" id="editId">
                 <input type="hidden" id="editType">
                 <div class="form-actions">
-                    <button type="button" class="btn btn-danger" id="deleteItem">Ta bort</button>
-                    <button type="button" class="btn btn-secondary" id="cancelEdit">Avbryt</button>
-                    <button type="submit" class="btn btn-primary">Spara</button>
+                    <button type="button" class="btn btn-danger" id="deleteItem" data-label="delete">Ta bort</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEdit" data-label="cancel">Avbryt</button>
+                    <button type="submit" class="btn btn-primary" data-label="save">Spara</button>
                 </div>
             </form>
         </div>
@@ -403,8 +409,10 @@
                 </div>
             </div>
             <div class="custom-modal-actions">
-                <button id="customModalCancel" class="custom-modal-btn custom-modal-btn-secondary">Avbryt</button>
-                <button id="customModalConfirm" class="custom-modal-btn custom-modal-btn-primary">Spara</button>
+                <button id="customModalCancel" class="custom-modal-btn custom-modal-btn-secondary"
+                    data-label="cancel">Avbryt</button>
+                <button id="customModalConfirm" class="custom-modal-btn custom-modal-btn-primary"
+                    data-label="save">Spara</button>
             </div>
         </div>
     </div>
@@ -413,9 +421,9 @@
     <div id="controlPanelBackdrop" class="control-panel-backdrop"></div>
     <div id="controlPanel" class="control-panel">
         <div class="control-panel-header">
-            <h3>Filter & inställningar</h3>
-            <div style="display: flex; gap: 0.5rem;">
-                <button id="themeToggle" class="btn-icon" title="Växla tema">
+            <h3 data-label="settingsTitle">Filter & inställningar</h3>
+            <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                <button id="themeToggle" class="btn-icon" data-title="toggleTheme" title="Växla tema">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
@@ -429,6 +437,10 @@
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
                 </button>
+                <div class="lang-switcher">
+                    <button id="langSv" class="btn-lang" title="Svenska">SV</button>
+                    <button id="langEn" class="btn-lang" title="English">EN</button>
+                </div>
                 <button id="controlPanelClose" class="btn-icon">&#10005;</button>
             </div>
         </div>
@@ -474,26 +486,27 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
-                <label>Timeline</label>
+                <label data-label="timelineTitle">Timeline</label>
                 <div class="panel-range">
-                    <input type="number" id="timelineStartYear" class="year-input" min="2000" max="2100"
-                        title="Startår">
+                    <input type="number" id="timelineStartYear" class="year-input" min="2000" max="2100" title="Startår"
+                        data-title="startYear">
                     <span class="range-separator">–</span>
-                    <input type="number" id="timelineEndYear" class="year-input" min="2000" max="2100" title="Slutår">
+                    <input type="number" id="timelineEndYear" class="year-input" min="2000" max="2100" title="Slutår"
+                        data-title="endYear">
                 </div>
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section panel-section-row">
-                <button id="exportBtn" class="btn btn-secondary">Spara</button>
-                <button id="importBtn" class="btn btn-secondary">Öppna</button>
+                <button id="exportBtn" class="btn btn-secondary" data-label="export">Spara</button>
+                <button id="importBtn" class="btn btn-secondary" data-label="open">Öppna</button>
                 <input type="file" id="importFile" accept=".json" style="display: none;">
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
-                <label>Återställ</label>
+                <label data-label="reset">Återställ</label>
                 <div class="panel-section-row">
-                    <button id="resetSampleBtn" class="btn btn-secondary">Exempeldata</button>
-                    <button id="resetEmptyBtn" class="btn btn-secondary">Skapa ny</button>
+                    <button id="resetSampleBtn" class="btn btn-secondary" data-label="exampleData">Exempeldata</button>
+                    <button id="resetEmptyBtn" class="btn btn-secondary" data-label="createNew">Skapa ny</button>
                 </div>
             </div>
             <div class="panel-divider"></div>
@@ -510,19 +523,19 @@
             <div class="panel-divider"></div>
             <div class="panel-section panel-collapsible" id="advancedPanel">
                 <div class="panel-collapse-header" id="advancedToggle">
-                    <span>Avancerat</span>
+                    <span data-label="advanced">Avancerat</span>
                     <svg class="collapse-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
                 <div id="advancedContent" class="panel-collapse-content">
-                    <label
+                    <label data-label="fieldNameLabel"
                         style="margin-top: 0.5rem; display: block; font-size: 0.75rem; color: var(--text-muted);">Namn
                         på fält</label>
                     <div class="label-setting-row" data-label-key="event">
                         <span class="label-setting-name" data-label="event">Händelse</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -532,7 +545,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="area">
                         <span class="label-setting-name" data-label="area">Område</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -542,7 +555,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="projectLead">
                         <span class="label-setting-name" data-label="projectLead">Projektledare</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -552,7 +565,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="status">
                         <span class="label-setting-name" data-label="status">Status</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -561,11 +574,11 @@
                         </button>
                     </div>
 
-                    <label
+                    <label data-label="statusValuesLabel"
                         style="margin-top: 0.5rem; display: block; font-size: 0.75rem; color: var(--text-muted); margin-left: 0.5rem;">Statusvärden</label>
                     <div class="label-setting-row" data-label-key="statusEarly">
                         <span class="label-setting-name" data-label="statusEarly">Tidigt skede</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -575,7 +588,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="statusProcurement">
                         <span class="label-setting-name" data-label="statusProcurement">Upphandling</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -585,7 +598,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="statusImplementation">
                         <span class="label-setting-name" data-label="statusImplementation">Genomförande</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -595,7 +608,7 @@
                     </div>
                     <div class="label-setting-row" data-label-key="statusCompletion">
                         <span class="label-setting-name" data-label="statusCompletion">Slutförande</span>
-                        <button class="btn-edit-label" title="Redigera">
+                        <button class="btn-edit-label" data-title="edit" title="Redigera">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
@@ -604,13 +617,13 @@
                         </button>
                     </div>
 
-                    <label
+                    <label data-label="zoomLevelsLabel"
                         style="margin-top: 1rem; display: block; font-size: 0.75rem; color: var(--text-muted);">Zoomnivåer</label>
                     <div class="label-settings">
                         <div class="label-setting-row" data-zoom-key="zoom2Years">
                             <div class="label-setting-name"><span data-label="zoom2YearsLabel">2 år</span></div>
-                            <button class="btn-edit-zoom" title="Anpassa zoom"><svg width="14" height="14"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <button class="btn-edit-zoom" data-title="edit" title="Anpassa zoom"><svg width="14"
+                                    height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -618,8 +631,8 @@
                         </div>
                         <div class="label-setting-row" data-zoom-key="zoom1Year">
                             <div class="label-setting-name"><span data-label="zoom1YearLabel">1 år</span></div>
-                            <button class="btn-edit-zoom" title="Anpassa zoom"><svg width="14" height="14"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <button class="btn-edit-zoom" data-title="edit" title="Anpassa zoom"><svg width="14"
+                                    height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -627,8 +640,8 @@
                         </div>
                         <div class="label-setting-row" data-zoom-key="zoom3Months">
                             <div class="label-setting-name"><span data-label="zoom3MonthsLabel">3 mån</span></div>
-                            <button class="btn-edit-zoom" title="Anpassa zoom"><svg width="14" height="14"
-                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            <button class="btn-edit-zoom" data-title="edit" title="Anpassa zoom"><svg width="14"
+                                    height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -638,7 +651,7 @@
                 </div>
             </div>
         </div>
-        <script src="app.js?v=4"></script>
+        <script src="app.js?v=5"></script>
 </body>
 
 </html>

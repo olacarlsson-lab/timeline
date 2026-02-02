@@ -1655,6 +1655,36 @@ form {
     color: var(--text-primary);
 }
 
+.lang-switcher {
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px;
+    border-radius: 6px;
+    margin-right: 4px;
+}
+
+.btn-lang {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-lang:hover {
+    color: var(--text-primary);
+}
+
+.btn-lang.active {
+    background: var(--accent-color);
+    color: white;
+}
+
 .control-panel-body {
     padding: 0.75rem 1rem;
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
