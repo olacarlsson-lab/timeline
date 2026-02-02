@@ -580,13 +580,22 @@ class TimelineApp {
         return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
     }
 
+    // Helper to format date as YYYY-MM-DD in local time
+    formatDateISO(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
     // Get the Monday of ISO week number in a given year
     getMondayOfWeek(weekNum, year) {
         const jan4 = new Date(year, 0, 4);
         const dayOfWeek = jan4.getDay() || 7;
         const monday = new Date(jan4);
         monday.setDate(jan4.getDate() - dayOfWeek + 1 + (weekNum - 1) * 7);
-        return monday.toISOString().split('T')[0];
+
+        return this.formatDateISO(monday);
     }
 
     bindEvents() {
@@ -1334,16 +1343,27 @@ class TimelineApp {
     getDateValue(prefix) {
         const typeSelect = document.getElementById(`${prefix}Type`);
         const type = typeSelect.value;
+        const isEnd = prefix.toLowerCase().includes('end');
 
         if (type === 'date') {
-            return document.getElementById(`${prefix}Date`).value;
+            const val = document.getElementById(`${prefix}Date`).value;
+            if (isEnd && val) {
+                const d = this.parseDate(val);
+                d.setDate(d.getDate() + 1);
+                return this.formatDateISO(d);
+            }
+            return val;
         } else if (type === 'week') {
             const weekNum = parseInt(document.getElementById(`${prefix}WeekNum`).value);
             const year = parseInt(document.getElementById(`${prefix}WeekYear`).value);
-            return this.getMondayOfWeek(weekNum, year);
+            return this.getMondayOfWeek(isEnd ? weekNum + 1 : weekNum, year);
         } else {
             const month = parseInt(document.getElementById(`${prefix}MonthNum`).value);
             const year = parseInt(document.getElementById(`${prefix}MonthYear`).value);
+            if (isEnd) {
+                const d = new Date(year, month, 1); // 1st of next month (month is 1-indexed here, so month 1 -> index 1 is Feb)
+                return this.formatDateISO(d);
+            }
             return `${year}-${String(month).padStart(2, '0')}-01`;
         }
     }
@@ -1353,22 +1373,32 @@ class TimelineApp {
         const dateInput = document.getElementById(`${prefix}Date`);
         const weekGroup = document.getElementById(`${prefix}WeekGroup`);
         const monthGroup = document.getElementById(`${prefix}MonthGroup`);
+        const isEnd = prefix.toLowerCase().includes('end');
 
         typeSelect.value = type;
         dateInput.style.display = type === 'date' ? 'block' : 'none';
         if (weekGroup) weekGroup.style.display = type === 'week' ? 'flex' : 'none';
         if (monthGroup) monthGroup.style.display = type === 'month' ? 'flex' : 'none';
 
+        let d = this.parseDate(value);
+        if (isEnd && d) {
+            if (type === 'date') {
+                d.setDate(d.getDate() - 1);
+            } else if (type === 'week') {
+                d.setDate(d.getDate() - 3); // Move into the previous week (Monday - 3 days = Friday)
+            } else if (type === 'month') {
+                d.setDate(d.getDate() - 1); // Move into the previous month (1st - 1 day = last day of prev month)
+            }
+        }
+
         if (type === 'date') {
-            dateInput.value = value;
+            dateInput.value = d ? this.formatDateISO(d) : value;
         } else if (type === 'week') {
-            const d = this.parseDate(value);
             const weekNum = this.getWeekNumber(d);
             const year = d.getFullYear();
             document.getElementById(`${prefix}WeekNum`).value = weekNum;
             document.getElementById(`${prefix}WeekYear`).value = year;
         } else {
-            const d = this.parseDate(value);
             document.getElementById(`${prefix}MonthNum`).value = d.getMonth() + 1;
             document.getElementById(`${prefix}MonthYear`).value = d.getFullYear();
         }
@@ -2015,23 +2045,87 @@ class TimelineApp {
         this.areas.forEach((area, index) => {
             const item = document.createElement('div');
             item.className = 'area-item';
+
+            // Generate a unique ID for the color input anchor
+            const areaColorId = `area-color-${index}-${Date.now()}`;
+
             item.innerHTML = `
-                <span class="area-item-swatch" style="background-color: ${area.color}"></span>
+                <label class="area-item-swatch" style="background-color: ${area.color}">
+                    <input type="color" value="${area.color}" data-index="${index}">
+                </label>
                 <span class="area-item-name">${area.name}</span>
                 <button class="area-item-delete" title="Ta bort">&times;</button>
             `;
+
+            const input = item.querySelector('input[type="color"]');
+            const swatch = item.querySelector('.area-item-swatch');
+            let oldColor = area.color;
+
+            // Helper to update colors in DOM without full rerender
+            const updateColorsDirectly = (color) => {
+                // Update swatches
+                swatch.style.backgroundColor = color;
+
+                // Update projects on timeline using the old color
+                const projectElements = document.querySelectorAll('.project-bar');
+                projectElements.forEach(el => {
+                    const bg = el.style.backgroundColor;
+                    // Standardize color format for comparison if possible, but local comparison should work
+                    // for basic hex/rgb. We'll simply find projects that match the project's current color.
+                });
+
+                // Better approach: use the ID or data attribute if projects had them.
+                // For now, we update projects whose data color matches.
+                this.projects.forEach(p => {
+                    if (p.color === oldColor) {
+                        p.color = color;
+                    }
+                });
+
+                // Update area definition
+                this.areas[index].color = color;
+
+                // Trigger a "soft" render (only timeline content, no sidebar/controls)
+                // This is still cleaner than full this.render()
+                this.render(); // We still use this.render() but we could optimize it later if needed.
+                // However, with embedded inputs, the interaction won't be broken by rerender
+                // because the focus is on the native browser picker, not the element itself.
+            };
+
+            input.addEventListener('input', (e) => {
+                const newColor = e.target.value;
+                if (newColor === oldColor) return;
+
+                // Update projects and area
+                this.projects.forEach(p => {
+                    if (p.color === oldColor) {
+                        p.color = newColor;
+                    }
+                });
+                this.areas[index].color = newColor;
+                oldColor = newColor;
+
+                // Full save and render
+                this.saveData('timeline_areas', this.areas);
+                this.saveData('timeline_projects', this.projects);
+                this.render();
+            });
+
+            input.addEventListener('change', () => {
+                this.populateAreaSelects();
+                this.renderAreaList(); // Clean up IDs and ensure sync
+            });
+
             item.querySelector('.area-item-delete').addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.removeArea(index);
             });
-            item.querySelector('.area-item-swatch').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.editAreaColor(index);
-            });
+
             item.querySelector('.area-item-name').addEventListener('dblclick', (e) => {
                 e.stopPropagation();
                 this.editAreaName(index);
             });
+
             list.appendChild(item);
         });
     }
@@ -2064,25 +2158,6 @@ class TimelineApp {
         this.render();
     }
 
-    editAreaColor(index) {
-        const picker = document.createElement('input');
-        picker.type = 'color';
-        picker.value = this.areas[index].color;
-        picker.style.position = 'absolute';
-        picker.style.opacity = '0';
-        document.body.appendChild(picker);
-        picker.addEventListener('input', () => {
-            this.areas[index].color = picker.value;
-            this.saveData('timeline_areas', this.areas);
-            this.populateAreaSelects();
-            this.renderAreaList();
-            this.render();
-        });
-        picker.addEventListener('change', () => {
-            picker.remove();
-        });
-        picker.click();
-    }
 
     editAreaName(index) {
         const list = document.getElementById('areaList');
