@@ -44,6 +44,14 @@
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
                 <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
+                <button id="infoBtn" class="btn btn-icon-round" data-title="helpTitle" title="Hur det fungerar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </button>
             </div>
         </header>
 
@@ -157,9 +165,9 @@
                     <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="eventStartType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="eventStartDate" class="date-input">
                         <div id="eventStartWeekGroup" class="week-group" style="display:none;">
@@ -176,9 +184,9 @@
                     <label data-label="endDate">Slutdatum (valfritt)</label>
                     <div class="date-picker">
                         <select id="eventEndType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="eventEndDate" class="date-input">
                         <div id="eventEndWeekGroup" class="week-group" style="display:none;">
@@ -195,18 +203,19 @@
                     <label for="eventProject"><span data-label="project">Projekt</span> (<span
                             data-label="optional">valfritt</span>)</label>
                     <select id="eventProject">
-                        <option value="" data-label="all">Ingen koppling</option>
+                        <option value="" data-label="none">Ingen koppling</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="eventSymbol" data-label="symbolLabel">Symbol (valfritt)</label>
+                    <label for="eventSymbol"><span data-label="symbolLabel">Symbol</span> (<span
+                            data-label="optional">valfritt</span>)</label>
                     <select id="eventSymbol">
                         <option value="" data-label="symbolStandard">Standard (Balk/Punkt)</option>
-                        <option value="star">Stjärna</option>
-                        <option value="diamond">Diamant</option>
-                        <option value="flag">Flagga</option>
-                        <option value="warning">Varning</option>
-                        <option value="check">Klar</option>
+                        <option value="star" data-label="symbolStar">Stjärna</option>
+                        <option value="diamond" data-label="symbolDiamond">Diamant</option>
+                        <option value="flag" data-label="symbolFlag">Flagga</option>
+                        <option value="warning" data-label="symbolWarning">Varning</option>
+                        <option value="check" data-label="symbolCheck">Klar</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -251,9 +260,9 @@
                     <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="editStartType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="editStartDate" class="date-input">
                         <div id="editStartWeekGroup" class="week-group" style="display:none;">
@@ -270,9 +279,9 @@
                     <label data-label="endDate">Slutdatum</label>
                     <div class="date-picker">
                         <select id="editEndType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="editEndDate" class="date-input">
                         <div id="editEndWeekGroup" class="week-group" style="display:none;">
@@ -289,9 +298,9 @@
                     <label data-label="startDate">Startdatum</label>
                     <div class="date-picker">
                         <select id="editEventStartType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="editEventStartDate" class="date-input">
                         <div id="editEventStartWeekGroup" class="week-group" style="display:none;">
@@ -308,9 +317,9 @@
                     <label data-label="endDate">Slutdatum (valfritt)</label>
                     <div class="date-picker">
                         <select id="editEventEndType" class="date-type-select">
-                            <option value="date">Datum</option>
-                            <option value="week">Vecka</option>
-                            <option value="month">Månad</option>
+                            <option value="date" data-label="dateTypeDate">Datum</option>
+                            <option value="week" data-label="dateTypeWeek">Vecka</option>
+                            <option value="month" data-label="dateTypeMonth">Månad</option>
                         </select>
                         <input type="date" id="editEventEndDate" class="date-input">
                         <div id="editEventEndWeekGroup" class="week-group" style="display:none;">
@@ -326,19 +335,19 @@
                 <div class="form-group" id="editProjectGroup">
                     <label for="editProject" data-label="project">Projekt</label>
                     <select id="editProject">
-                        <option value="" data-label="all">Ingen koppling</option>
+                        <option value="" data-label="none">Ingen koppling</option>
                     </select>
                 </div>
                 <div class="form-group" id="editSymbolGroup">
-                    <label for="editSymbol" data-label="symbolLabel">Symbol (<span
+                    <label for="editSymbol"><span data-label="symbolLabel">Symbol</span> (<span
                             data-label="optional">valfritt</span>)</label>
                     <select id="editSymbol">
                         <option value="" data-label="symbolStandard">Standard (Balk/Punkt)</option>
-                        <option value="star">Stjärna</option>
-                        <option value="diamond">Diamant</option>
-                        <option value="flag">Flagga</option>
-                        <option value="warning">Varning</option>
-                        <option value="check">Klar</option>
+                        <option value="star" data-label="symbolStar">Stjärna</option>
+                        <option value="diamond" data-label="symbolDiamond">Diamant</option>
+                        <option value="flag" data-label="symbolFlag">Flagga</option>
+                        <option value="warning" data-label="symbolWarning">Varning</option>
+                        <option value="check" data-label="symbolCheck">Klar</option>
                     </select>
                 </div>
                 <div class="form-group" id="editColorGroup">
@@ -389,6 +398,36 @@
         </div>
         <div class="sidebar-actions">
             <button id="eventSidebarEditBtn" class="btn btn-primary" data-label="edit">Redigera</button>
+        </div>
+    </div>
+
+    <!-- Information Modal -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-label="helpTitle">Hur det fungerar</h2>
+                <button class="modal-close" id="closeInfoModal">&times;</button>
+            </div>
+            <div class="info-modal-content">
+                <section class="info-section">
+                    <h3 data-label="privacyTitle">Integritet & Lagring</h3>
+                    <p data-label="privacyText">All data lagras lokalt i din webbläsare. Ingenting skickas till molnet
+                        eller lagras på någon server.</p>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="backupTitle">Säkerhetskopiering</h3>
+                    <p data-label="backupText">Eftersom allt lagras lokalt rekommenderar vi att du regelbundet använder
+                        "Spara" funktionen för att exportera en JSON-fil som säkerhetskopia.</p>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="offlineTitle">Offline</h3>
+                    <p data-label="offlineText">Tack vare att appen är en PWA fungerar den utmärkt offline när den väl
+                        är installerad.</p>
+                </section>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="confirmInfo" data-label="infoGotIt">Uppfattat</button>
+            </div>
         </div>
     </div>
 
@@ -469,7 +508,7 @@
             <div class="panel-section">
                 <label for="filterArea" data-label="area">Område</label>
                 <select id="filterArea">
-                    <option value="">Alla</option>
+                    <option value="" data-label="all">Alla</option>
                 </select>
             </div>
             <div class="panel-divider"></div>

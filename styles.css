@@ -199,6 +199,29 @@ body {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
+/* Info Modal Specifics */
+.info-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 1.5rem 1rem;
+}
+
+.info-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.info-section p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    opacity: 0.9;
+}
+
 /* Custom Modal System (Prompt, Confirm, Alert) */
 .custom-modal-overlay {
     position: fixed;
@@ -562,6 +585,37 @@ body {
     color: var(--text-primary);
 }
 
+.btn-icon-round {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    background: transparent;
+    border: none !important;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+    box-shadow: none !important;
+}
+
+.btn-icon-round:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+#confirmInfo {
+    padding: 0.75rem 2.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    min-width: 150px;
+}
+
 .btn-danger {
     background: var(--danger-color);
     color: white;
@@ -616,7 +670,10 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-primary);
-    text-transform: lowercase;
+}
+
+.timeline-header-cell .month.quarter {
+    text-transform: uppercase;
 }
 
 /* Sub-headers for weeks and days */
@@ -734,7 +791,7 @@ body {
 }
 
 .today-marker::before {
-    content: 'Idag';
+    content: attr(data-today);
     position: absolute;
     top: 0;
     left: 50%;
@@ -1547,6 +1604,13 @@ form {
     justify-content: flex-end;
     gap: 0.75rem;
     margin-top: 1.5rem;
+    padding: 0 2rem 2rem 2rem;
+    /* Added padding to move buttons in and up */
+}
+
+#infoModal .form-actions {
+    justify-content: center;
+    padding: 1rem 0 3rem 0;
 }
 
 /* Scrollbar styling */
