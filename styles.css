@@ -630,12 +630,14 @@ body {
     width: 100%;
     padding: 0.5rem 0.75rem;
     text-align: left;
-    background: none;
+    background: var(--bg-secondary);
     border: none;
     color: var(--text-primary);
     font-size: 0.8rem;
     cursor: pointer;
     white-space: nowrap;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .btn-dropdown-item:hover {
@@ -669,6 +671,8 @@ body {
     line-height: 1;
     border-radius: 50%;
     transition: all 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .btn-icon:hover {
@@ -692,6 +696,8 @@ body {
     flex-shrink: 0;
     margin-left: 0.5rem;
     box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .btn-icon-round:hover {
