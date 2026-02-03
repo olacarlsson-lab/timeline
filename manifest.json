@@ -1,6 +1,6 @@
 {
-  "name": "Tidslinje",
-  "short_name": "Tidslinje",
+  "name": "Timeline",
+  "short_name": "Timeline",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
