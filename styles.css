@@ -559,6 +559,69 @@ body {
     border-color: var(--text-muted);
 }
 
+/* Button dropdown */
+.btn-dropdown {
+    position: relative;
+    display: inline-flex;
+}
+
+.btn-dropdown .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+
+.btn-dropdown-toggle {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding: 0.4rem 0.5rem;
+    min-width: unset;
+    font-size: 0.7rem;
+}
+
+.btn-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    display: none;
+    min-width: 180px;
+}
+
+.btn-dropdown-menu.open {
+    display: block;
+}
+
+.btn-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.btn-dropdown-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.btn-dropdown-item:first-child {
+    border-radius: 5px 5px 0 0;
+}
+
+.btn-dropdown-item:last-child {
+    border-radius: 0 0 5px 5px;
+}
+
 .btn-icon {
     width: 32px;
     height: 32px;
@@ -1134,6 +1197,158 @@ body {
 
 .event-container:hover .event-marker {
     transform: scale(1.2);
+}
+
+/* Event Group Badge */
+.event-group-badge {
+    width: 24px;
+    height: 24px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.4);
+}
+
+.event-group:hover .event-group-badge {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+}
+
+.event-group-tooltip .tooltip-event-list {
+    margin-top: 6px;
+    font-size: 0.75rem;
+}
+
+.event-group-tooltip .tooltip-event-item {
+    padding: 2px 0;
+    color: var(--text-secondary);
+}
+
+.event-group-tooltip .tooltip-hint {
+    margin-top: 6px;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Event Group Popup */
+.event-group-popup {
+    position: fixed;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    z-index: 20000;
+    min-width: 250px;
+    max-width: 350px;
+    max-height: 400px;
+    overflow: hidden;
+}
+
+.event-group-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.event-group-popup-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.event-group-popup-close:hover {
+    color: var(--text-primary);
+}
+
+.event-group-popup-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.event-group-popup-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.event-group-popup-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.event-group-popup-symbol {
+    width: 12px;
+    height: 12px;
+    background: var(--text-primary);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.event-group-popup-symbol.symbol-star {
+    background: #f59e0b;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    border-radius: 0;
+    width: 14px;
+    height: 14px;
+}
+
+.event-group-popup-symbol.symbol-diamond {
+    background: #8b5cf6;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    border-radius: 0;
+}
+
+.event-group-popup-symbol.symbol-flag {
+    background: #ef4444;
+    clip-path: polygon(0% 0%, 100% 0%, 80% 50%, 100% 100%, 0% 100%);
+    border-radius: 0;
+}
+
+.event-group-popup-symbol.symbol-warning {
+    background: #f59e0b;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    border-radius: 0;
+}
+
+.event-group-popup-symbol.symbol-check {
+    background: #10b981;
+    border-radius: 50%;
+}
+
+.event-group-popup-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-group-popup-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.event-group-popup-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
 }
 
 /* Compact Mode */

@@ -1,23 +1,23 @@
 // Timeline Application
 const DEFAULT_AREAS = [
-    { name: 'Område A', color: '#BA4A71' },
-    { name: 'Område B', color: '#31567D' },
-    { name: 'Område C', color: '#E8BC1C' },
-    { name: 'Område D', color: '#37B94B' }
+    { name: 'Utställningar', color: '#BA4A71' },
+    { name: 'Pedagogik', color: '#31567D' },
+    { name: 'Kommunikation', color: '#E8BC1C' },
+    { name: 'Drift & Teknik', color: '#37B94B' }
 ];
 
 const DEFAULT_STATUSES = [
-    { id: 'early', name: 'Tidigt skede' },
-    { id: 'procurement', name: 'Upphandling' },
-    { id: 'implementation', name: 'Genomförande' },
-    { id: 'completion', name: 'Slutförande' }
+    { id: 'early', name: 'Idé/Research' },
+    { id: 'procurement', name: 'Planering' },
+    { id: 'implementation', name: 'Produktion' },
+    { id: 'completion', name: 'Visning/Avslut' }
 ];
 
 const DEFAULT_STATUSES_EN = [
-    { id: 'early', name: 'Early Stage' },
-    { id: 'procurement', name: 'Procurement' },
-    { id: 'implementation', name: 'Implementation' },
-    { id: 'completion', name: 'Completion' }
+    { id: 'early', name: 'Idea/Research' },
+    { id: 'procurement', name: 'Planning' },
+    { id: 'implementation', name: 'Production' },
+    { id: 'completion', name: 'Exhibition/Closing' }
 ];
 
 const SAMPLE_DATA = {
@@ -28,157 +28,168 @@ const SAMPLE_DATA = {
         "endYear": 2027
     },
     "areas": [
-        { "name": "Område A", "color": "#BA4A71" },
-        { "name": "Område B", "color": "#31567D" },
-        { "name": "Område C", "color": "#E8BC1C" },
-        { "name": "Område D", "color": "#37B94B" }
+        { "name": "Utställningar", "color": "#BA4A71" },
+        { "name": "Pedagogik", "color": "#31567D" },
+        { "name": "Kommunikation", "color": "#E8BC1C" },
+        { "name": "Drift & Teknik", "color": "#37B94B" }
     ],
     "statuses": [
-        { "id": "early", "name": "Tidigt skede" },
-        { "id": "procurement", "name": "Upphandling" },
-        { "id": "implementation", "name": "Genomförande" },
-        { "id": "completion", "name": "Slutförande" }
+        { "id": "early", "name": "Idé/Research" },
+        { "id": "procurement", "name": "Planering" },
+        { "id": "implementation", "name": "Produktion" },
+        { "id": "completion", "name": "Visning/Avslut" }
     ],
     "projects": [
         {
             "id": "sample-1",
-            "name": "Webbplatsförnyelse",
-            "lead": "Anna Johansson",
+            "name": "Maria Lindberg: Echoes",
+            "lead": "Kuratorsteam",
             "status": "implementation",
             "start": "2025-09-01",
             "startType": "date",
-            "end": "2026-06-30",
+            "end": "2026-05-15",
             "endType": "date",
             "color": "#BA4A71",
-            "comment": "Ny design och teknisk plattform för den publika webbplatsen."
+            "comment": "Soloutställning med nyproducerade ljud- och videoinstallationer. Samarbete med Bildmuseet."
         },
         {
             "id": "sample-2",
-            "name": "Systemintegration CRM",
-            "lead": "Erik Lindgren",
-            "status": "early",
+            "name": "Grupputställning: Threshold",
+            "lead": "Kuratorsteam",
+            "status": "procurement",
             "start": "2026-01-15",
             "startType": "date",
-            "end": "2026-09-30",
+            "end": "2026-10-30",
             "endType": "date",
-            "color": "#31567D",
-            "comment": "Integration mellan CRM-system och ekonomiplattform."
+            "color": "#BA4A71",
+            "comment": "Internationell grupputställning om gränser och passager. 8 konstnärer från 5 länder."
         },
         {
             "id": "sample-3",
-            "name": "Flytt av serverpark",
-            "lead": "Maria Svensson",
-            "status": "procurement",
-            "start": "2025-11-01",
-            "startType": "date",
-            "end": "2026-04-15",
-            "endType": "date",
-            "color": "#E8BC1C",
-            "comment": "Migrering till molntjänst."
-        },
-        {
-            "id": "sample-4",
-            "name": "Utbildningsinsats",
-            "lead": "Anna Johansson",
-            "status": "completion",
-            "start": "2025-06-01",
-            "startType": "date",
-            "end": "2025-12-15",
-            "endType": "date",
-            "color": "#37B94B",
-            "comment": null
-        },
-        {
-            "id": "sample-5",
-            "name": "App-utveckling",
-            "lead": "Erik Lindgren",
-            "status": "implementation",
-            "start": "2026-03-01",
-            "startType": "date",
-            "end": "2026-12-31",
-            "endType": "date",
-            "color": "#BA4A71",
-            "comment": "Mobilapp för kunder, iOS och Android."
-        },
-        {
-            "id": "sample-6",
-            "name": "Säkerhetsrevision",
-            "lead": "Maria Svensson",
+            "name": "Sommarprogrammet 2026",
+            "lead": "Pedagogik",
             "status": "early",
-            "start": "2026-06-01",
+            "start": "2025-11-01",
             "startType": "date",
             "end": "2026-08-31",
             "endType": "date",
-            "color": "#FA4D2D",
-            "comment": "Extern granskning av IT-säkerhet."
+            "color": "#31567D",
+            "comment": "Workshops, familjeaktiviteter och konstläger under juni-augusti."
+        },
+        {
+            "id": "sample-4",
+            "name": "Webbplats redesign",
+            "lead": "Kommunikation",
+            "status": "implementation",
+            "start": "2025-06-01",
+            "startType": "date",
+            "end": "2026-02-28",
+            "endType": "date",
+            "color": "#E8BC1C",
+            "comment": "Ny grafisk profil och tillgänglighetsanpassning enligt WCAG 2.1."
+        },
+        {
+            "id": "sample-5",
+            "name": "Ljusomställning sal 2-3",
+            "lead": "Teknik",
+            "status": "procurement",
+            "start": "2026-03-01",
+            "startType": "date",
+            "end": "2026-06-15",
+            "endType": "date",
+            "color": "#37B94B",
+            "comment": "Uppgradering till LED och nya DMX-styrsystem för utställningssalarna."
+        },
+        {
+            "id": "sample-6",
+            "name": "Artist Residency: höst 2026",
+            "lead": "Kuratorsteam",
+            "status": "early",
+            "start": "2026-02-01",
+            "startType": "date",
+            "end": "2026-12-15",
+            "endType": "date",
+            "color": "#BA4A71",
+            "comment": "Gästkonstnärsprogram, 3 månader. Open call våren 2026."
         }
     ],
     "events": [
         {
             "id": "sample-ev-1",
-            "name": "Projektstart webbplats",
-            "start": "2025-09-01",
-            "startType": "date",
-            "end": null,
-            "endType": null,
-            "projectId": "sample-1",
-            "symbol": "flag",
-            "comment": null
-        },
-        {
-            "id": "sample-ev-2",
-            "name": "Designgranskning",
-            "start": "2025-12-01",
-            "startType": "date",
-            "end": null,
-            "endType": null,
-            "projectId": "sample-1",
-            "symbol": "diamond",
-            "comment": "Presentation av designförslag för ledningsgruppen."
-        },
-        {
-            "id": "sample-ev-3",
-            "name": "Lansering v1",
-            "start": "2026-04-15",
+            "name": "Vernissage: Echoes",
+            "start": "2026-02-07",
             "startType": "date",
             "end": null,
             "endType": null,
             "projectId": "sample-1",
             "symbol": "star",
-            "comment": "Första versionen live."
+            "comment": "Öppning för allmänheten kl 17-21. Konstnärssamtal kl 18."
+        },
+        {
+            "id": "sample-ev-2",
+            "name": "Pressvisning",
+            "start": "2026-02-05",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-1",
+            "symbol": "flag",
+            "comment": "Endast inbjudna medier. Pressmaterial skickas ut 3/2."
+        },
+        {
+            "id": "sample-ev-3",
+            "name": "Katalogdeadline",
+            "start": "2025-12-01",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-1",
+            "symbol": "warning",
+            "comment": "Texter och bildmaterial till tryck."
         },
         {
             "id": "sample-ev-4",
-            "name": "Upphandling klar",
-            "start": "2026-02-28",
+            "name": "Open call stänger",
+            "start": "2026-04-30",
             "startType": "date",
             "end": null,
             "endType": null,
-            "projectId": "sample-3",
-            "symbol": "check",
-            "comment": null
+            "projectId": "sample-6",
+            "symbol": "diamond",
+            "comment": "Sista ansökningsdag för Artist Residency."
         },
         {
             "id": "sample-ev-5",
-            "name": "Budgetbeslut",
-            "start": "2026-03-15",
+            "name": "Teknisk slutbesiktning",
+            "start": "2026-06-10",
+            "startType": "date",
+            "end": null,
+            "endType": null,
+            "projectId": "sample-5",
+            "symbol": "check",
+            "comment": "Genomgång med entreprenör och godkännande."
+        },
+        {
+            "id": "sample-ev-6",
+            "name": "Sommarstängt",
+            "start": "2026-07-06",
+            "startType": "date",
+            "end": "2026-08-02",
+            "endType": "date",
+            "projectId": null,
+            "symbol": null,
+            "comment": "Konsthallen stängd v.28-31."
+        },
+        {
+            "id": "sample-ev-7",
+            "name": "Styrelsemöte",
+            "start": "2026-05-20",
             "startType": "date",
             "end": null,
             "endType": null,
             "projectId": null,
-            "symbol": "warning",
-            "comment": "Beslut om budget för kommande verksamhetsår."
-        },
-        {
-            "id": "sample-ev-6",
-            "name": "Sommarstopp",
-            "start": "2026-06-22",
-            "startType": "date",
-            "end": "2026-08-09",
-            "endType": "date",
-            "projectId": null,
-            "symbol": null,
-            "comment": "Begränsad kapacitet under semesterperiod."
+            "symbol": "flag",
+            "comment": "Halvårsrapport och budgetuppföljning."
         }
     ]
 };
@@ -222,6 +233,8 @@ const DEFAULT_LABELS = {
     save: 'Spara',
     cancel: 'Avbryt',
     delete: 'Ta bort',
+    convertToEvent: 'Gör till händelse',
+    convertToProject: 'Gör till projekt',
     confirm: 'Bekräfta',
     ok: 'OK',
     resetSampleConfirm: 'Vill du ersätta all data med exempeldata? Nuvarande data går förlorad.',
@@ -245,6 +258,10 @@ const DEFAULT_LABELS = {
     startYear: 'Startår',
     endYear: 'Slutår',
     open: 'Öppna',
+    openFile: 'Öppna fil...',
+    importUrl: 'Importera från URL...',
+    importUrlPrompt: 'Ange URL till iCal-kalender (.ics):',
+    importUrlError: 'Kunde inte hämta kalendern. Kontrollera URL:en.',
     export: 'Spara',
     reset: 'Återställ',
     exampleData: 'Exempeldata',
@@ -273,6 +290,8 @@ const DEFAULT_LABELS = {
     privacyText: 'All data lagras lokalt i din webbläsare. Ingenting skickas till molnet eller lagras på någon server.',
     backupTitle: 'Säkerhetskopiering',
     backupText: 'Eftersom allt lagras lokalt rekommenderar vi att du regelbundet använder "Spara" funktionen för att exportera en JSON-fil som säkerhetskopia.',
+    importTitle: 'Import',
+    importText: 'Du kan importera både JSON-filer och iCal-kalenderfiler (.ics). Kalenderfiler är praktiska för att lägga till t.ex. svenska helgdagar.',
     offlineTitle: 'Offline',
     offlineText: 'Tack vare att appen är en PWA fungerar den utmärkt offline när den väl är installerad.',
     infoGotIt: 'Uppfattat'
@@ -318,6 +337,8 @@ const DEFAULT_LABELS_EN = {
     save: 'Save',
     cancel: 'Cancel',
     delete: 'Delete',
+    convertToEvent: 'Convert to event',
+    convertToProject: 'Convert to project',
     confirm: 'Confirm',
     ok: 'OK',
     resetSampleConfirm: 'Do you want to replace all data with sample data? Current data will be lost.',
@@ -341,6 +362,10 @@ const DEFAULT_LABELS_EN = {
     startYear: 'Start Year',
     endYear: 'End Year',
     open: 'Open',
+    openFile: 'Open file...',
+    importUrl: 'Import from URL...',
+    importUrlPrompt: 'Enter URL to iCal calendar (.ics):',
+    importUrlError: 'Could not fetch calendar. Please check the URL.',
     export: 'Save',
     reset: 'Reset',
     exampleData: 'Sample Data',
@@ -369,6 +394,8 @@ const DEFAULT_LABELS_EN = {
     privacyText: 'All data is stored locally in your browser. Nothing is sent to the cloud or stored on any server.',
     backupTitle: 'Backups',
     backupText: 'Since everything is stored locally, we recommend regularly using the "Save" function to export a JSON file as backup.',
+    importTitle: 'Import',
+    importText: 'You can import both JSON files and iCal calendar files (.ics). Calendar files are useful for adding e.g. public holidays.',
     offlineTitle: 'Offline',
     offlineText: 'Since the app is a PWA, it works great offline once installed.',
     infoGotIt: 'Got it'
@@ -878,7 +905,28 @@ class TimelineApp {
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
+        safeBind('importDropdownBtn', 'click', (e) => {
+            e.stopPropagation();
+            document.getElementById('importDropdownMenu').classList.toggle('open');
+        });
+        safeBind('importFileBtn', 'click', () => {
+            document.getElementById('importDropdownMenu').classList.remove('open');
+            document.getElementById('importFile').click();
+        });
+        safeBind('importUrlBtn', 'click', () => {
+            document.getElementById('importDropdownMenu').classList.remove('open');
+            this.importFromUrl();
+        });
         safeBind('importFile', 'change', (e) => this.importData(e));
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('importDropdownMenu');
+            if (dropdown && !e.target.closest('.btn-dropdown')) {
+                dropdown.classList.remove('open');
+            }
+        });
+
         safeBind('resetSampleBtn', 'click', async () => {
             const confirmed = await this.showConfirm(this.labels.resetSampleConfirm);
             if (confirmed) this.resetToDefaults(true);
@@ -1214,6 +1262,7 @@ class TimelineApp {
         safeBind('cancelEdit', 'click', () => this.closeModal('editModal'));
         safeBind('editForm', 'submit', (e) => this.handleEditSubmit(e));
         safeBind('deleteItem', 'click', () => this.handleDelete());
+        safeBind('convertItem', 'click', () => this.handleConvert());
 
         // Close modals on backdrop click
         document.querySelectorAll('.modal').forEach(modal => {
@@ -1604,6 +1653,14 @@ class TimelineApp {
         const type = typeSelect.value;
         const isEnd = prefix.toLowerCase().includes('end');
 
+        // For end dates, check if the date field is empty (user hasn't set an end date)
+        if (isEnd) {
+            const dateInput = document.getElementById(`${prefix}Date`);
+            if (dateInput && !dateInput.value) {
+                return ''; // No end date specified
+            }
+        }
+
         if (type === 'date') {
             const val = document.getElementById(`${prefix}Date`).value;
             if (isEnd && val) {
@@ -1634,12 +1691,26 @@ class TimelineApp {
         const monthGroup = document.getElementById(`${prefix}MonthGroup`);
         const isEnd = prefix.toLowerCase().includes('end');
 
+        // Guard against missing elements
+        if (!typeSelect || !dateInput) return;
+
         typeSelect.value = type;
         dateInput.style.display = type === 'date' ? 'block' : 'none';
         if (weekGroup) weekGroup.style.display = type === 'week' ? 'flex' : 'none';
         if (monthGroup) monthGroup.style.display = type === 'month' ? 'flex' : 'none';
 
+        // Handle empty value - clear the field
+        if (!value || value === '') {
+            dateInput.value = '';
+            return;
+        }
+
         let d = this.parseDate(value);
+        if (!d) {
+            dateInput.value = '';
+            return;
+        }
+
         if (isEnd && d) {
             if (type === 'date') {
                 d.setDate(d.getDate() - 1);
@@ -1651,7 +1722,7 @@ class TimelineApp {
         }
 
         if (type === 'date') {
-            dateInput.value = d ? this.formatDateISO(d) : value;
+            dateInput.value = d ? this.formatDateISO(d) : '';
         } else if (type === 'week') {
             const weekNum = this.getWeekNumber(d);
             const year = d.getFullYear();
@@ -2056,63 +2127,208 @@ class TimelineApp {
             eventRow.style.height = '40px';
             eventRow.style.marginBottom = '1rem';
 
-            standaloneEvents.forEach(event => {
-                const evStart = this.dateToPosition(event.start || event.date);
-                const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
-                const width = event.end ? Math.max(20, evEnd - evStart) : 0;
+            // Group events by date (for point events on same day)
+            const groupedEvents = this.groupEventsByDate(standaloneEvents);
 
-                const el = document.createElement('div');
-                el.className = 'event-container';
-
-                if (event.end) {
-                    // Duration -> Line + symbol/marker at end
-                    el.style.left = evStart + 'px';
-                    el.style.width = width + 'px';
-                    el.style.height = '24px';
-                    el.style.top = '10px';
-
-                    const line = document.createElement('div');
-                    line.className = 'event-connector-line';
-                    line.style.width = '100%';
-                    el.appendChild(line);
-
-                    const endEl = document.createElement('div');
-                    if (event.symbol && event.symbol !== 'default') {
-                        endEl.className = `event-symbol symbol-${event.symbol}`;
-                    } else {
-                        endEl.className = 'event-marker';
-                    }
-                    endEl.style.position = 'absolute';
-                    endEl.style.right = '-10px';
-                    endEl.style.top = '50%';
-                    endEl.style.transform = 'translateY(-50%)';
-                    el.appendChild(endEl);
-
+            groupedEvents.forEach(group => {
+                if (group.events.length === 1) {
+                    // Single event - render normally
+                    const event = group.events[0];
+                    const el = this.renderSingleStandaloneEvent(event);
+                    eventRow.appendChild(el);
                 } else {
-                    // Point event - symbol or marker
-                    el.style.left = evStart + 'px';
-
-                    if (event.symbol && event.symbol !== 'default') {
-                        el.innerHTML = `<div class="event-symbol symbol-${event.symbol}"></div>`;
-                    } else {
-                        el.innerHTML = `<div class="event-marker"></div>`;
-                    }
+                    // Multiple events on same date - render as group
+                    const el = this.renderEventGroup(group);
+                    eventRow.appendChild(el);
                 }
-
-                const tooltip = this.createTooltip(event);
-                el.appendChild(tooltip); // Append to container
-
-                el.addEventListener('click', (e) => {
-                    if (this.hasDragged) return;
-                    e.stopPropagation();
-                    this.openEventSidebar(event);
-                });
-
-                el.addEventListener('dblclick', () => this.openEditModal(event, 'event'));
-                eventRow.appendChild(el);
             });
+
             container.appendChild(eventRow);
         }
+    }
+
+    groupEventsByDate(events) {
+        const groups = [];
+        const threshold = 20; // pixels - events within this distance are grouped
+
+        events.forEach(event => {
+            const evStart = this.dateToPosition(event.start || event.date);
+            const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
+
+            // Duration events (with end date) are not grouped
+            if (event.end) {
+                groups.push({ position: evStart, events: [event], isDuration: true });
+                return;
+            }
+
+            // Find existing group within threshold
+            const existingGroup = groups.find(g =>
+                !g.isDuration && Math.abs(g.position - evStart) < threshold
+            );
+
+            if (existingGroup) {
+                existingGroup.events.push(event);
+            } else {
+                groups.push({ position: evStart, events: [event], isDuration: false });
+            }
+        });
+
+        return groups;
+    }
+
+    renderSingleStandaloneEvent(event) {
+        const evStart = this.dateToPosition(event.start || event.date);
+        const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
+        const width = event.end ? Math.max(20, evEnd - evStart) : 0;
+
+        const el = document.createElement('div');
+        el.className = 'event-container';
+
+        if (event.end) {
+            // Duration -> Line + symbol/marker at end
+            el.style.left = evStart + 'px';
+            el.style.width = width + 'px';
+            el.style.height = '24px';
+            el.style.top = '10px';
+
+            const line = document.createElement('div');
+            line.className = 'event-connector-line';
+            line.style.width = '100%';
+            el.appendChild(line);
+
+            const endEl = document.createElement('div');
+            if (event.symbol && event.symbol !== 'default') {
+                endEl.className = `event-symbol symbol-${event.symbol}`;
+            } else {
+                endEl.className = 'event-marker';
+            }
+            endEl.style.position = 'absolute';
+            endEl.style.right = '-10px';
+            endEl.style.top = '50%';
+            endEl.style.transform = 'translateY(-50%)';
+            el.appendChild(endEl);
+
+        } else {
+            // Point event - symbol or marker
+            el.style.left = evStart + 'px';
+
+            if (event.symbol && event.symbol !== 'default') {
+                el.innerHTML = `<div class="event-symbol symbol-${event.symbol}"></div>`;
+            } else {
+                el.innerHTML = `<div class="event-marker"></div>`;
+            }
+        }
+
+        const tooltip = this.createTooltip(event);
+        el.appendChild(tooltip);
+
+        el.addEventListener('click', (e) => {
+            if (this.hasDragged) return;
+            e.stopPropagation();
+            this.openEventSidebar(event);
+        });
+
+        el.addEventListener('dblclick', () => this.openEditModal(event, 'event'));
+
+        return el;
+    }
+
+    renderEventGroup(group) {
+        const el = document.createElement('div');
+        el.className = 'event-container event-group';
+        el.style.left = group.position + 'px';
+
+        const badge = document.createElement('div');
+        badge.className = 'event-group-badge';
+        badge.textContent = group.events.length;
+        el.appendChild(badge);
+
+        // Tooltip showing all event names
+        const tooltip = document.createElement('div');
+        tooltip.className = 'event-tooltip event-group-tooltip';
+        const eventList = group.events.map(e => `<div class="tooltip-event-item">${e.name}</div>`).join('');
+        tooltip.innerHTML = `
+            <div class="tooltip-title">${group.events.length} händelser</div>
+            <div class="tooltip-event-list">${eventList}</div>
+            <div class="tooltip-hint">Klicka för att visa</div>
+        `;
+        el.appendChild(tooltip);
+
+        el.addEventListener('click', (e) => {
+            if (this.hasDragged) return;
+            e.stopPropagation();
+            this.openEventGroupPopup(group.events, e);
+        });
+
+        return el;
+    }
+
+    openEventGroupPopup(events, clickEvent) {
+        // Remove any existing popup
+        const existingPopup = document.querySelector('.event-group-popup');
+        if (existingPopup) existingPopup.remove();
+
+        const popup = document.createElement('div');
+        popup.className = 'event-group-popup';
+
+        const header = document.createElement('div');
+        header.className = 'event-group-popup-header';
+        header.innerHTML = `
+            <span>${events.length} händelser</span>
+            <button class="event-group-popup-close">&times;</button>
+        `;
+        popup.appendChild(header);
+
+        const list = document.createElement('div');
+        list.className = 'event-group-popup-list';
+
+        events.forEach(event => {
+            const item = document.createElement('div');
+            item.className = 'event-group-popup-item';
+
+            const symbolClass = event.symbol ? `symbol-${event.symbol}` : '';
+            item.innerHTML = `
+                <div class="event-group-popup-symbol ${symbolClass}"></div>
+                <div class="event-group-popup-info">
+                    <div class="event-group-popup-name">${event.name}</div>
+                    <div class="event-group-popup-date">${this.formatEventDateRange(event)}</div>
+                </div>
+            `;
+
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                popup.remove();
+                this.openEventSidebar(event);
+            });
+
+            list.appendChild(item);
+        });
+
+        popup.appendChild(list);
+
+        // Position popup near click
+        document.body.appendChild(popup);
+        const rect = popup.getBoundingClientRect();
+        const x = Math.min(clickEvent.clientX, window.innerWidth - rect.width - 20);
+        const y = Math.min(clickEvent.clientY, window.innerHeight - rect.height - 20);
+        popup.style.left = x + 'px';
+        popup.style.top = y + 'px';
+
+        // Close button
+        popup.querySelector('.event-group-popup-close').addEventListener('click', (e) => {
+            e.stopPropagation();
+            popup.remove();
+        });
+
+        // Close on outside click
+        setTimeout(() => {
+            document.addEventListener('click', function closePopup(e) {
+                if (!popup.contains(e.target)) {
+                    popup.remove();
+                    document.removeEventListener('click', closePopup);
+                }
+            });
+        }, 10);
     }
 
     createTooltip(event) {
@@ -3430,6 +3646,14 @@ class TimelineApp {
             document.getElementById('editComment').value = item.comment || '';
         }
 
+        // Update convert button text based on type
+        const convertBtn = document.getElementById('convertItem');
+        if (convertBtn) {
+            convertBtn.textContent = type === 'project'
+                ? this.labels.convertToEvent
+                : this.labels.convertToProject;
+        }
+
         modal.classList.add('active');
     }
 
@@ -3441,7 +3665,8 @@ class TimelineApp {
             this.setDateValue('projectEnd', '', 'date');
         } else if (modalId === 'eventModal') {
             document.getElementById('eventForm').reset();
-            this.setDateValue('eventDate', '', 'date');
+            this.setDateValue('eventStart', '', 'date');
+            this.setDateValue('eventEnd', '', 'date');
         } else if (modalId === 'editModal') {
             document.getElementById('editForm').reset();
         }
@@ -3484,7 +3709,7 @@ class TimelineApp {
     }
 
 
-    handleEventSubmit(e) {
+    async handleEventSubmit(e) {
         e.preventDefault();
 
         const startType = document.getElementById('eventStartType').value;
@@ -3496,6 +3721,13 @@ class TimelineApp {
         if (endDate && !this.validateDates(startDate, endDate)) {
             this.showToast('Slutdatum måste vara efter startdatum', 'error');
             return;
+        }
+
+        // Check for collisions
+        const collisions = this.findDateCollisions(startDate, endDate);
+        if (collisions.length > 0) {
+            const proceed = await this.showConfirm(this.formatCollisionWarning(collisions));
+            if (!proceed) return;
         }
 
         const event = {
@@ -3519,7 +3751,7 @@ class TimelineApp {
     }
 
 
-    handleEditSubmit(e) {
+    async handleEditSubmit(e) {
         e.preventDefault();
 
         const id = document.getElementById('editId').value;
@@ -3561,6 +3793,13 @@ class TimelineApp {
                 if (endDate && !this.validateDates(startDate, endDate)) {
                     this.showToast('Slutdatum måste vara efter startdatum', 'error');
                     return;
+                }
+
+                // Check for collisions (excluding current event)
+                const collisions = this.findDateCollisions(startDate, endDate, id);
+                if (collisions.length > 0) {
+                    const proceed = await this.showConfirm(this.formatCollisionWarning(collisions));
+                    if (!proceed) return;
                 }
 
                 this.pushUndoState();
@@ -3607,6 +3846,76 @@ class TimelineApp {
             this.events = this.events.filter(e => e.id !== id);
             this.scheduleAutoSave();
             this.showToast('Händelse borttagen!', 'info');
+        }
+
+        this.closeModal('editModal');
+        this.render();
+    }
+
+    async handleConvert() {
+        const id = document.getElementById('editId').value;
+        const type = document.getElementById('editType').value;
+
+        this.pushUndoState();
+
+        if (type === 'project') {
+            // Convert project to event
+            const project = this.projects.find(p => p.id === id);
+            if (!project) return;
+
+            const newEvent = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                name: project.name,
+                start: project.start,
+                startType: project.startType || 'date',
+                end: project.end,
+                endType: project.endType || 'date',
+                projectId: null,
+                symbol: null,
+                comment: project.comment
+            };
+
+            // Remove project and unlink its events
+            this.projects = this.projects.filter(p => p.id !== id);
+            this.events.forEach(e => {
+                if (e.projectId === id) {
+                    e.projectId = null;
+                }
+            });
+
+            // Add the new event
+            this.events.push(newEvent);
+            this.scheduleAutoSave();
+            this.showToast('Projekt konverterat till händelse!', 'success');
+
+        } else {
+            // Convert event to project
+            const event = this.events.find(e => e.id === id);
+            if (!event) return;
+
+            const startDate = event.start || event.date;
+            const endDate = event.end || event.start || event.date;
+
+            const newProject = {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                name: event.name,
+                lead: '',
+                status: this.statuses[0]?.id || 'early',
+                start: startDate,
+                startType: event.startType || event.dateType || 'date',
+                end: endDate,
+                endType: event.endType || event.startType || event.dateType || 'date',
+                color: this.areas[0]?.color || '#BA4A71',
+                comment: event.comment
+            };
+
+            // Remove the event
+            this.events = this.events.filter(e => e.id !== id);
+
+            // Add the new project
+            this.projects.push(newProject);
+            this.scheduleAutoSave();
+            this.showToast('Händelse konverterad till projekt!', 'success');
         }
 
         this.closeModal('editModal');
@@ -3680,7 +3989,7 @@ class TimelineApp {
     // Parse a date string (YYYY-MM-DD) as local date, avoiding UTC timezone shift
     parseDate(dateStr) {
         if (dateStr instanceof Date) return dateStr;
-        if (!dateStr) return new Date();
+        if (!dateStr || dateStr === '') return new Date();
         const [y, m, d] = dateStr.split('-').map(Number);
         return new Date(y, m - 1, d);
     }
@@ -3689,6 +3998,31 @@ class TimelineApp {
     validateDates(startDate, endDate) {
         if (!startDate || !endDate) return true;
         return this.parseDate(startDate) <= this.parseDate(endDate);
+    }
+
+    // Check for date collisions with existing events
+    findDateCollisions(startDate, endDate, excludeId = null) {
+        if (!startDate) return [];
+
+        const start = this.parseDate(startDate);
+        const end = endDate ? this.parseDate(endDate) : start;
+
+        return this.events.filter(event => {
+            if (excludeId && event.id === excludeId) return false;
+
+            const eventStart = this.parseDate(event.start || event.date);
+            const eventEnd = event.end ? this.parseDate(event.end) : eventStart;
+
+            // Check if date ranges overlap
+            return start <= eventEnd && end >= eventStart;
+        });
+    }
+
+    // Format collision warning message
+    formatCollisionWarning(collisions) {
+        const names = collisions.slice(0, 3).map(e => `"${e.name}"`).join(', ');
+        const more = collisions.length > 3 ? ` och ${collisions.length - 3} till` : '';
+        return `Det finns redan händelser på detta datum: ${names}${more}. Vill du fortsätta?`;
     }
 
     // Get status label
@@ -3877,134 +4211,286 @@ class TimelineApp {
         const file = e.target.files[0];
         if (!file) return;
 
+        const isIcal = file.name.toLowerCase().endsWith('.ics');
+
         const reader = new FileReader();
         reader.onload = async (event) => {
-            let data;
-            try {
-                data = JSON.parse(event.target.result);
-            } catch (parseErr) {
-                console.error('JSON parse error:', parseErr);
-                await this.showAlert('Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.');
-                return;
-            }
-
-            if (!data.projects && !data.events) {
-                await this.showAlert('Ogiltig fil: saknar projekt och händelser.');
-                return;
-            }
-
-            // Ensure arrays exist
-            data.projects = data.projects || [];
-            data.events = data.events || [];
-
-            try {
-                this.pushUndoState();
-
-                const mode = await this.showConfirm(
-                    'Vill du ersätta alla befintliga data?\n\n' +
-                    'OK = Ersätt allt\n' +
-                    'Avbryt = Lägg till (slå ihop med befintliga)',
-                    { confirmText: 'Ersätt allt', cancelText: 'Lägg till' }
-                );
-
-                if (mode) {
-                    // Replace all
-                    this.projects = data.projects;
-                    this.events = data.events;
-
-                    // Restore areas if present
-                    if (data.areas) {
-                        this.areas = data.areas;
-                        this.saveData('timeline_areas', this.areas);
-                        this.populateAreaSelects();
-                    }
-
-                    // Restore statuses if present
-                    if (data.statuses) {
-                        this.statuses = data.statuses;
-                        this.saveData('timeline_statuses', this.statuses);
-                        this.populateStatusSelects();
-                    }
-
-                    // Restore labels if present
-                    if (data.labels) {
-                        this.labels = { ...DEFAULT_LABELS, ...data.labels };
-                        this.saveData('timeline_labels', this.labels);
-                        this.applyLabels();
-                    }
-
-                    // Restore timeline range if present
-                    if (data.timelineRange) {
-                        this.timelineStartYear = data.timelineRange.startYear;
-                        this.timelineEndYear = data.timelineRange.endYear;
-                    }
-                } else {
-                    // Merge areas: add any that don't already exist
-                    if (data.areas) {
-                        const existingColors = new Set(this.areas.map(a => a.color));
-                        data.areas.forEach(a => {
-                            if (!existingColors.has(a.color)) {
-                                this.areas.push(a);
-                            }
-                        });
-                        this.saveData('timeline_areas', this.areas);
-                        this.populateAreaSelects();
-                    }
-
-                    // Merge statuses: add any that don't already exist
-                    if (data.statuses) {
-                        const existingIds = new Set(this.statuses.map(s => s.id));
-                        data.statuses.forEach(s => {
-                            if (!existingIds.has(s.id)) {
-                                this.statuses.push(s);
-                            }
-                        });
-                        this.saveData('timeline_statuses', this.statuses);
-                        this.populateStatusSelects();
-                    }
-
-                    // Merge - add imported items with new IDs to avoid conflicts
-                    const idMap = {};
-
-                    data.projects.forEach(project => {
-                        const oldId = project.id;
-                        const newId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-                        idMap[oldId] = newId;
-                        project.id = newId;
-                        this.projects.push(project);
-                    });
-
-                    data.events.forEach(event => {
-                        event.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-                        // Update project reference if it was imported
-                        if (event.projectId && idMap[event.projectId]) {
-                            event.projectId = idMap[event.projectId];
-                        }
-                        this.events.push(event);
-                    });
-                }
-
-                this.saveData('timeline_projects', this.projects);
-                this.saveData('timeline_events', this.events);
-                this.startDate = this.getStartDate();
-                this.endDate = this.getEndDate();
-                this.initTimelineRange();
-                this.populateDateSelectors();
-                this.populateAreaSelects();
-                this.renderAreaList();
-                this.populateStatusSelects();
-                this.renderStatusList();
-                this.setView('3months');
-
-                this.showToast(`Import klar! ${data.projects.length} projekt och ${data.events.length} händelser.`, 'success');
-            } catch (err) {
-                console.error('Import processing error:', err);
-                await this.showAlert('Ett fel uppstod vid import: ' + err.message);
+            if (isIcal) {
+                await this.importIcalData(event.target.result);
+            } else {
+                await this.importJsonData(event.target.result);
             }
         };
 
         reader.readAsText(file);
         e.target.value = ''; // Reset input so same file can be imported again
+    }
+
+    parseIcalDate(dateStr) {
+        // Handle formats: YYYYMMDD or YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
+        if (!dateStr) return null;
+        const clean = dateStr.replace(/[TZ]/g, '').substring(0, 8);
+        if (clean.length !== 8) return null;
+        const year = clean.substring(0, 4);
+        const month = clean.substring(4, 6);
+        const day = clean.substring(6, 8);
+        return `${year}-${month}-${day}`;
+    }
+
+    parseIcalFile(icalText) {
+        const events = [];
+        const lines = icalText.replace(/\r\n /g, '').replace(/\r/g, '\n').split('\n');
+
+        let currentEvent = null;
+
+        for (const line of lines) {
+            if (line === 'BEGIN:VEVENT') {
+                currentEvent = {};
+            } else if (line === 'END:VEVENT' && currentEvent) {
+                if (currentEvent.summary && currentEvent.dtstart) {
+                    events.push({
+                        id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+                        name: currentEvent.summary,
+                        start: this.parseIcalDate(currentEvent.dtstart),
+                        startType: 'date',
+                        end: currentEvent.dtend ? this.parseIcalDate(currentEvent.dtend) : null,
+                        endType: currentEvent.dtend ? 'date' : null,
+                        projectId: null,
+                        symbol: 'star',
+                        comment: currentEvent.description || null
+                    });
+                }
+                currentEvent = null;
+            } else if (currentEvent) {
+                const colonIndex = line.indexOf(':');
+                if (colonIndex > 0) {
+                    let key = line.substring(0, colonIndex).split(';')[0].toLowerCase();
+                    const value = line.substring(colonIndex + 1);
+
+                    if (key === 'summary') currentEvent.summary = value;
+                    else if (key === 'dtstart') currentEvent.dtstart = value;
+                    else if (key === 'dtend') currentEvent.dtend = value;
+                    else if (key === 'description') currentEvent.description = value.replace(/\\n/g, '\n').replace(/\\,/g, ',');
+                }
+            }
+        }
+
+        return events;
+    }
+
+    async importIcalData(icalText) {
+        try {
+            const events = this.parseIcalFile(icalText);
+
+            if (events.length === 0) {
+                await this.showAlert('Inga händelser hittades i kalenderfilen.');
+                return;
+            }
+
+            // Check for collisions with existing events
+            let allCollisions = [];
+            events.forEach(event => {
+                const collisions = this.findDateCollisions(event.start, event.end);
+                collisions.forEach(c => {
+                    if (!allCollisions.find(ac => ac.id === c.id)) {
+                        allCollisions.push(c);
+                    }
+                });
+            });
+
+            if (allCollisions.length > 0) {
+                const msg = `${allCollisions.length} av de importerade händelserna krockar med befintliga händelser. Vill du fortsätta?`;
+                const proceed = await this.showConfirm(msg);
+                if (!proceed) return;
+            }
+
+            this.pushUndoState();
+
+            // iCal imports always merge (add to existing)
+            events.forEach(event => {
+                this.events.push(event);
+            });
+
+            this.saveData('timeline_events', this.events);
+            this.startDate = this.getStartDate();
+            this.endDate = this.getEndDate();
+            this.initTimelineRange();
+            this.populateDateSelectors();
+            this.render();
+
+            this.showToast(`Import klar! ${events.length} händelser från kalenderfil.`, 'success');
+        } catch (err) {
+            console.error('iCal import error:', err);
+            await this.showAlert('Kunde inte läsa kalenderfilen: ' + err.message);
+        }
+    }
+
+    async importFromUrl() {
+        const url = await this.showPrompt(this.labels.importUrlPrompt, '');
+        if (!url || !url.trim()) return;
+
+        let icalUrl = url.trim();
+
+        // Convert webcal:// to https://
+        if (icalUrl.startsWith('webcal://')) {
+            icalUrl = icalUrl.replace('webcal://', 'https://');
+        }
+
+        try {
+            this.showToast('Hämtar kalender...', 'info');
+
+            // Use a CORS proxy for cross-origin requests
+            // Try direct fetch first, then fall back to proxy
+            let response;
+            try {
+                response = await fetch(icalUrl);
+            } catch (corsError) {
+                // Try with CORS proxy
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(icalUrl)}`;
+                response = await fetch(proxyUrl);
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const icalText = await response.text();
+
+            if (!icalText.includes('BEGIN:VCALENDAR')) {
+                throw new Error('Ingen giltig iCal-data hittades');
+            }
+
+            await this.importIcalData(icalText);
+
+        } catch (err) {
+            console.error('iCal URL import error:', err);
+            await this.showAlert(this.labels.importUrlError + '\n\n' + err.message);
+        }
+    }
+
+    async importJsonData(jsonText) {
+        let data;
+        try {
+            data = JSON.parse(jsonText);
+        } catch (parseErr) {
+            console.error('JSON parse error:', parseErr);
+            await this.showAlert('Kunde inte läsa filen. Kontrollera att det är en giltig JSON-fil.');
+            return;
+        }
+
+        if (!data.projects && !data.events) {
+            await this.showAlert('Ogiltig fil: saknar projekt och händelser.');
+            return;
+        }
+
+        // Ensure arrays exist
+        data.projects = data.projects || [];
+        data.events = data.events || [];
+
+        try {
+            this.pushUndoState();
+
+            const mode = await this.showConfirm(
+                'Vill du ersätta alla befintliga data?\n\n' +
+                'OK = Ersätt allt\n' +
+                'Avbryt = Lägg till (slå ihop med befintliga)',
+                { confirmText: 'Ersätt allt', cancelText: 'Lägg till' }
+            );
+
+            if (mode) {
+                // Replace all
+                this.projects = data.projects;
+                this.events = data.events;
+
+                // Restore areas if present
+                if (data.areas) {
+                    this.areas = data.areas;
+                    this.saveData('timeline_areas', this.areas);
+                    this.populateAreaSelects();
+                }
+
+                // Restore statuses if present
+                if (data.statuses) {
+                    this.statuses = data.statuses;
+                    this.saveData('timeline_statuses', this.statuses);
+                    this.populateStatusSelects();
+                }
+
+                // Restore labels if present
+                if (data.labels) {
+                    this.labels = { ...DEFAULT_LABELS, ...data.labels };
+                    this.saveData('timeline_labels', this.labels);
+                    this.applyLabels();
+                }
+
+                // Restore timeline range if present
+                if (data.timelineRange) {
+                    this.timelineStartYear = data.timelineRange.startYear;
+                    this.timelineEndYear = data.timelineRange.endYear;
+                }
+            } else {
+                // Merge areas: add any that don't already exist
+                if (data.areas) {
+                    const existingColors = new Set(this.areas.map(a => a.color));
+                    data.areas.forEach(a => {
+                        if (!existingColors.has(a.color)) {
+                            this.areas.push(a);
+                        }
+                    });
+                    this.saveData('timeline_areas', this.areas);
+                    this.populateAreaSelects();
+                }
+
+                // Merge statuses: add any that don't already exist
+                if (data.statuses) {
+                    const existingIds = new Set(this.statuses.map(s => s.id));
+                    data.statuses.forEach(s => {
+                        if (!existingIds.has(s.id)) {
+                            this.statuses.push(s);
+                        }
+                    });
+                    this.saveData('timeline_statuses', this.statuses);
+                    this.populateStatusSelects();
+                }
+
+                // Merge - add imported items with new IDs to avoid conflicts
+                const idMap = {};
+
+                data.projects.forEach(project => {
+                    const oldId = project.id;
+                    const newId = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                    idMap[oldId] = newId;
+                    project.id = newId;
+                    this.projects.push(project);
+                });
+
+                data.events.forEach(event => {
+                    event.id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
+                    // Update project reference if it was imported
+                    if (event.projectId && idMap[event.projectId]) {
+                        event.projectId = idMap[event.projectId];
+                    }
+                    this.events.push(event);
+                });
+            }
+
+            this.saveData('timeline_projects', this.projects);
+            this.saveData('timeline_events', this.events);
+            this.startDate = this.getStartDate();
+            this.endDate = this.getEndDate();
+            this.initTimelineRange();
+            this.populateDateSelectors();
+            this.populateAreaSelects();
+            this.renderAreaList();
+            this.populateStatusSelects();
+            this.renderStatusList();
+            this.setView('3months');
+
+            this.showToast(`Import klar! ${data.projects.length} projekt och ${data.events.length} händelser.`, 'success');
+        } catch (err) {
+            console.error('Import processing error:', err);
+            await this.showAlert('Ett fel uppstod vid import: ' + err.message);
+        }
     }
 
 

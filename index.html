@@ -358,6 +358,7 @@
                 <input type="hidden" id="editType">
                 <div class="form-actions">
                     <button type="button" class="btn btn-danger" id="deleteItem" data-label="delete">Ta bort</button>
+                    <button type="button" class="btn btn-secondary" id="convertItem" data-label="convertToEvent">Gör till händelse</button>
                     <button type="button" class="btn btn-secondary" id="cancelEdit" data-label="cancel">Avbryt</button>
                     <button type="submit" class="btn btn-primary" data-label="save">Spara</button>
                 </div>
@@ -410,6 +411,11 @@
                     <h3 data-label="backupTitle">Säkerhetskopiering</h3>
                     <p data-label="backupText">Eftersom allt lagras lokalt rekommenderar vi att du regelbundet använder
                         "Spara" funktionen för att exportera en JSON-fil som säkerhetskopia.</p>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="importTitle">Import</h3>
+                    <p data-label="importText">Du kan importera både JSON-filer och iCal-kalenderfiler (.ics).
+                        Kalenderfiler är praktiska för att lägga till t.ex. svenska helgdagar.</p>
                 </section>
                 <section class="info-section">
                     <h3 data-label="offlineTitle">Offline</h3>
@@ -524,9 +530,16 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section panel-section-row">
+                <div class="btn-dropdown">
+                    <button id="importBtn" class="btn btn-secondary" data-label="open">Öppna</button>
+                    <button id="importDropdownBtn" class="btn btn-secondary btn-dropdown-toggle">▾</button>
+                    <div id="importDropdownMenu" class="btn-dropdown-menu">
+                        <button id="importFileBtn" class="btn-dropdown-item" data-label="openFile">Öppna fil...</button>
+                        <button id="importUrlBtn" class="btn-dropdown-item" data-label="importUrl">Importera från URL...</button>
+                    </div>
+                </div>
                 <button id="exportBtn" class="btn btn-secondary" data-label="export">Spara</button>
-                <button id="importBtn" class="btn btn-secondary" data-label="open">Öppna</button>
-                <input type="file" id="importFile" accept=".json" style="display: none;">
+                <input type="file" id="importFile" accept=".json,.ics" style="display: none;">
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
