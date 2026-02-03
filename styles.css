@@ -2041,6 +2041,91 @@ form {
     flex-shrink: 0;
 }
 
+/* Status management */
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 4px;
+    transition: background 0.1s;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.status-item-name {
+    flex: 1;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    cursor: default;
+}
+
+.status-item-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 0.25rem;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.status-item:hover .status-item-delete {
+    opacity: 1;
+}
+
+.status-item-delete:hover {
+    color: var(--danger-color);
+}
+
+.status-add-form {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+.status-name-input {
+    flex: 1;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.status-name-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.status-name-edit {
+    flex: 1;
+    padding: 0.15rem 0.35rem;
+    font-size: 0.8rem;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-color);
+    border-radius: 3px;
+    outline: none;
+}
+
+.status-add-btn {
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.8rem !important;
+    flex-shrink: 0;
+}
+
 .form-hint-link {
     font-size: 0.7rem;
     color: var(--text-muted);
@@ -2133,11 +2218,17 @@ form {
     /* Make interactive elements more touch-friendly */
     .btn,
     select,
-    input,
-    .btn-icon,
-    #controlPanelToggle {
+    input {
         min-height: 44px;
-        /* Native tap target size */
+    }
+
+    .btn-icon,
+    #controlPanelToggle,
+    .btn-icon-round {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
     }
 
     #addProjectBtn,

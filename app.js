@@ -200,10 +200,8 @@ const DEFAULT_LABELS = {
     areaPlaceholder: 'Nytt område...',
     all: 'Alla',
     none: 'Ingen koppling',
-    statusEarly: 'Tidigt skede',
-    statusProcurement: 'Upphandling',
-    statusImplementation: 'Genomförande',
-    statusCompletion: 'Slutförande',
+    statusesPlural: 'Statusar',
+    statusPlaceholder: 'Ny status...',
     sort: 'Sortera',
     name: 'Namn',
     newProject: 'Nytt projekt',
@@ -242,7 +240,6 @@ const DEFAULT_LABELS = {
     toggleTheme: 'Växla tema',
     advanced: 'Avancerat',
     fieldNameLabel: 'Namn på fält',
-    statusValuesLabel: 'Statusvärden',
     zoomLevelsLabel: 'Zoomnivåer',
     timelineTitle: 'Timeline',
     startYear: 'Startår',
@@ -298,10 +295,8 @@ const DEFAULT_LABELS_EN = {
     areaPlaceholder: 'New workstream...',
     all: 'All',
     none: 'No connection',
-    statusEarly: 'Early Stage',
-    statusProcurement: 'Procurement',
-    statusImplementation: 'Implementation',
-    statusCompletion: 'Completion',
+    statusesPlural: 'Statuses',
+    statusPlaceholder: 'New status...',
     sort: 'Sort',
     save: 'Save',
     name: 'Name',
@@ -341,7 +336,6 @@ const DEFAULT_LABELS_EN = {
     toggleTheme: 'Toggle Theme',
     advanced: 'Advanced',
     fieldNameLabel: 'Field Names',
-    statusValuesLabel: 'Status Values',
     zoomLevelsLabel: 'Zoom Levels',
     timelineTitle: 'Timeline',
     startYear: 'Start Year',
@@ -403,6 +397,9 @@ class TimelineApp {
 
         // Data
         this.areas = this.loadData('timeline_areas') || JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.statuses = this.loadData('timeline_statuses') || JSON.parse(JSON.stringify(
+            this.language === 'en' ? DEFAULT_STATUSES_EN : DEFAULT_STATUSES
+        ));
         this.projects = this.loadData('timeline_projects') || [];
         this.events = this.loadData('timeline_events') || [];
         this._firstVisit = !this.loadData('timeline_projects') && !this.loadData('timeline_events');
@@ -501,10 +498,12 @@ class TimelineApp {
 
         this.applyLabels();
         this.populateAreaSelects();
+        this.populateStatusSelects();
         this.populateDateSelectors();
         this.renderHeader(); // Ensure header (months/weeks) refresh
         this.render();
         this.renderAreaList();
+        this.renderStatusList();
         this.showToast(this.labels.toastSettingsSaved || 'Language changed', 'success');
     }
 
@@ -537,6 +536,7 @@ class TimelineApp {
         this.initTimelineRange();
         this.populateDateSelectors();
         this.populateAreaSelects();
+        this.populateStatusSelects();
         this.bindEvents();
         this.applyLabels();
         this.initTheme();
@@ -555,6 +555,7 @@ class TimelineApp {
         this.projects = [];
         this.events = [];
         this.areas = JSON.parse(JSON.stringify(DEFAULT_AREAS));
+        this.statuses = JSON.parse(JSON.stringify(DEFAULT_STATUSES));
         this.labels = JSON.parse(JSON.stringify(DEFAULT_LABELS));
         this.timelineStartYear = null;
         this.timelineEndYear = null;
@@ -567,6 +568,7 @@ class TimelineApp {
         this.saveData('timeline_projects', []);
         this.saveData('timeline_events', []);
         this.saveData('timeline_areas', this.areas);
+        this.saveData('timeline_statuses', this.statuses);
         this.saveData('timeline_labels', this.labels);
         localStorage.removeItem('timeline_range');
 
@@ -585,6 +587,7 @@ class TimelineApp {
             this.projects = data.projects || [];
             this.events = data.events || [];
             if (data.areas) this.areas = data.areas;
+            if (data.statuses) this.statuses = data.statuses;
             if (data.timelineRange) {
                 this.timelineStartYear = data.timelineRange.startYear;
                 this.timelineEndYear = data.timelineRange.endYear;
@@ -593,6 +596,7 @@ class TimelineApp {
             this.saveData('timeline_projects', this.projects);
             this.saveData('timeline_events', this.events);
             this.saveData('timeline_areas', this.areas);
+            this.saveData('timeline_statuses', this.statuses);
         }
 
         // Update UI state
@@ -601,6 +605,8 @@ class TimelineApp {
         this.initTimelineRange();
         this.populateAreaSelects();
         this.renderAreaList();
+        this.populateStatusSelects();
+        this.renderStatusList();
         this.populateDateSelectors();
         this.updateFilterIndicator();
         this.applyLabels();
@@ -727,6 +733,35 @@ class TimelineApp {
                 }
                 this.updateColorDropdown(dropdown, select);
             }
+        });
+    }
+
+    populateStatusSelects() {
+        const filterStatus = document.getElementById('filterStatus');
+        if (filterStatus) {
+            const currentVal = filterStatus.value;
+            filterStatus.innerHTML = `<option value="">${this.labels.all}</option>`;
+            this.statuses.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = s.name;
+                filterStatus.appendChild(opt);
+            });
+            filterStatus.value = currentVal;
+        }
+
+        ['projectStatus', 'editStatus'].forEach(id => {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const currentVal = select.value;
+            select.innerHTML = '';
+            this.statuses.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = s.name;
+                select.appendChild(opt);
+            });
+            if (currentVal) select.value = currentVal;
         });
     }
 
@@ -968,6 +1003,16 @@ class TimelineApp {
             });
         }
         this.renderAreaList();
+
+        // Status management
+        safeBind('statusAddBtn', 'click', () => this.addStatus());
+        const statusNameInput = document.getElementById('statusNewName');
+        if (statusNameInput) {
+            statusNameInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); this.addStatus(); }
+            });
+        }
+        this.renderStatusList();
 
         // "Hantera områden" links from modals
         ['openAreasFromProject', 'openAreasFromEdit'].forEach(id => {
@@ -1630,15 +1675,13 @@ class TimelineApp {
     }
 
     initTheme() {
-        // Check for saved theme
-        const savedTheme = localStorage.getItem('timeline_theme');
-
-        // If no saved theme, default to 'dark' (or we could respect system preference)
-        // const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        // const defaultTheme = systemPrefersDark ? 'dark' : 'light';
+        // Check for saved theme (may be stored raw or JSON-stringified)
+        let savedTheme = localStorage.getItem('timeline_theme');
+        if (savedTheme && savedTheme.startsWith('"')) {
+            try { savedTheme = JSON.parse(savedTheme); } catch(e) {}
+        }
         const theme = savedTheme || 'dark';
-
-        // Ensure we set it
+        this.theme = theme;
         this.setTheme(theme, false);
     }
 
@@ -1654,6 +1697,7 @@ class TimelineApp {
     }
 
     setTheme(theme, save = true) {
+        this.theme = theme;
         if (save) localStorage.setItem('timeline_theme', theme);
         document.documentElement.setAttribute('data-theme', theme);
         document.body.setAttribute('data-theme', theme);
@@ -1793,11 +1837,6 @@ class TimelineApp {
         let color = (this.areas[0] && this.areas[0].color) || '#31567D';
         if (project.color) {
             color = project.color;
-        } else {
-            // Fallback to legacy status color if no specific color is set
-            if (project.status === 'early') color = '#94a3b8'; // gray
-            else if (project.status === 'procurement') color = '#f59e0b'; // amber
-            else if (project.status === 'completion') color = '#10b981'; // green
         }
         bar.style.backgroundColor = color;
 
@@ -2403,6 +2442,101 @@ class TimelineApp {
         });
     }
 
+    renderStatusList() {
+        const list = document.getElementById('statusList');
+        if (!list) return;
+        list.innerHTML = '';
+        this.statuses.forEach((status, index) => {
+            const item = document.createElement('div');
+            item.className = 'status-item';
+            item.innerHTML = `
+                <span class="status-item-name">${status.name}</span>
+                <button class="status-item-delete" title="Ta bort">&times;</button>
+            `;
+
+            item.querySelector('.status-item-delete').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeStatus(index);
+            });
+
+            item.querySelector('.status-item-name').addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.editStatusName(index);
+            });
+
+            list.appendChild(item);
+        });
+    }
+
+    addStatus() {
+        const nameInput = document.getElementById('statusNewName');
+        const name = nameInput.value.trim();
+        if (!name) return;
+
+        const id = name.toLowerCase()
+            .replace(/[^a-z0-9åäöüé]+/g, '-')
+            .replace(/^-|-$/g, '')
+            || 'status-' + Date.now();
+
+        if (this.statuses.some(s => s.id === id)) {
+            this.showToast('En status med det ID:t finns redan', 'info');
+            return;
+        }
+
+        this.statuses.push({ id, name });
+        nameInput.value = '';
+        this.saveData('timeline_statuses', this.statuses);
+        this.populateStatusSelects();
+        this.renderStatusList();
+        this.render();
+    }
+
+    async removeStatus(index) {
+        const status = this.statuses[index];
+        const usedBy = this.projects.filter(p => p.status === status.id).length;
+        if (usedBy > 0) {
+            if (!await this.showConfirm(
+                `"${status.name}" används av ${usedBy} ${this.labels.projectsPlural.toLowerCase()}. Ta bort ändå?`,
+                { danger: true }
+            )) return;
+        }
+        this.statuses.splice(index, 1);
+        this.saveData('timeline_statuses', this.statuses);
+        this.populateStatusSelects();
+        this.renderStatusList();
+        this.render();
+    }
+
+    editStatusName(index) {
+        const list = document.getElementById('statusList');
+        const item = list.children[index];
+        const nameSpan = item.querySelector('.status-item-name');
+        const oldName = this.statuses[index].name;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = oldName;
+        input.className = 'status-name-edit';
+        nameSpan.replaceWith(input);
+        input.focus();
+        input.select();
+
+        const save = () => {
+            const newName = input.value.trim() || oldName;
+            this.statuses[index].name = newName;
+            this.saveData('timeline_statuses', this.statuses);
+            this.populateStatusSelects();
+            this.renderStatusList();
+            this.render();
+        };
+
+        input.addEventListener('blur', save);
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); save(); }
+            if (e.key === 'Escape') { input.value = oldName; save(); }
+        });
+    }
+
     getSymbolLabel(symbol) {
         const labels = {
             'star': 'Stjärna',
@@ -2569,8 +2703,10 @@ class TimelineApp {
                     return this.parseDate(a.end) - this.parseDate(b.end);
 
                 case 'status':
-                    const statusOrder = { 'early': 0, 'procurement': 1, 'implementation': 2, 'completion': 3 };
-                    return (statusOrder[a.status] || 2) - (statusOrder[b.status] || 2);
+                    const statusOrderMap = {};
+                    this.statuses.forEach((s, i) => { statusOrderMap[s.id] = i; });
+                    const defaultIdx = Math.floor(this.statuses.length / 2);
+                    return (statusOrderMap[a.status] ?? defaultIdx) - (statusOrderMap[b.status] ?? defaultIdx);
 
                 default:
                     return 0;
@@ -3535,6 +3671,7 @@ class TimelineApp {
         }
         this.autoSaveTimer = setTimeout(() => {
             this.saveData('timeline_areas', this.areas);
+            this.saveData('timeline_statuses', this.statuses);
             this.saveData('timeline_projects', this.projects);
             this.saveData('timeline_events', this.events);
         }, 500);
@@ -3556,25 +3693,8 @@ class TimelineApp {
 
     // Get status label
     getStatusLabel(status) {
-        const labels = {
-            'early': this.labels.statusEarly,
-            'procurement': this.labels.statusProcurement,
-            'implementation': this.labels.statusImplementation,
-            'completion': this.labels.statusCompletion
-        };
-        return labels[status] || status;
-    }
-
-    // Theme management
-    applyTheme() {
-        document.documentElement.setAttribute('data-theme', this.theme);
-    }
-
-    toggleTheme() {
-        this.theme = this.theme === 'dark' ? 'light' : 'dark';
-        this.applyTheme();
-        this.saveData('timeline_theme', this.theme);
-        this.showToast(`Bytte till ${this.theme === 'dark' ? 'mörkt' : 'ljust'} tema`, 'info');
+        const found = this.statuses.find(s => s.id === status);
+        return found ? found.name : status;
     }
 
     // PDF Export
@@ -3685,6 +3805,7 @@ class TimelineApp {
                     endYear: this.endDate.getFullYear()
                 },
                 areas: JSON.parse(JSON.stringify(this.areas)),
+                statuses: JSON.parse(JSON.stringify(this.statuses)),
                 projects: JSON.parse(JSON.stringify(this.projects)),
                 events: JSON.parse(JSON.stringify(this.events)),
                 labels: JSON.parse(JSON.stringify(this.labels))
@@ -3798,6 +3919,13 @@ class TimelineApp {
                         this.populateAreaSelects();
                     }
 
+                    // Restore statuses if present
+                    if (data.statuses) {
+                        this.statuses = data.statuses;
+                        this.saveData('timeline_statuses', this.statuses);
+                        this.populateStatusSelects();
+                    }
+
                     // Restore labels if present
                     if (data.labels) {
                         this.labels = { ...DEFAULT_LABELS, ...data.labels };
@@ -3821,6 +3949,18 @@ class TimelineApp {
                         });
                         this.saveData('timeline_areas', this.areas);
                         this.populateAreaSelects();
+                    }
+
+                    // Merge statuses: add any that don't already exist
+                    if (data.statuses) {
+                        const existingIds = new Set(this.statuses.map(s => s.id));
+                        data.statuses.forEach(s => {
+                            if (!existingIds.has(s.id)) {
+                                this.statuses.push(s);
+                            }
+                        });
+                        this.saveData('timeline_statuses', this.statuses);
+                        this.populateStatusSelects();
                     }
 
                     // Merge - add imported items with new IDs to avoid conflicts
@@ -3852,6 +3992,8 @@ class TimelineApp {
                 this.populateDateSelectors();
                 this.populateAreaSelects();
                 this.renderAreaList();
+                this.populateStatusSelects();
+                this.renderStatusList();
                 this.setView('3months');
 
                 this.showToast(`Import klar! ${data.projects.length} projekt och ${data.events.length} händelser.`, 'success');
