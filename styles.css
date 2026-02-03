@@ -2617,6 +2617,20 @@ form {
         font-size: 0.85rem;
     }
 
+    /* Hide dropdown toggle on mobile - just use main button */
+    .btn-dropdown-toggle {
+        display: none;
+    }
+
+    .btn-dropdown .btn:first-child {
+        border-radius: 6px;
+        border-right: 1px solid var(--border-color);
+    }
+
+    .btn-dropdown-menu {
+        display: none !important;
+    }
+
     /* Control Panel on Mobile */
     .control-panel {
         width: 100% !important;
