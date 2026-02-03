@@ -44,6 +44,23 @@
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
                 <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
+                <div class="divider"></div>
+                <div class="undo-redo-controls">
+                    <button id="undoBtn" class="btn btn-icon-round" title="Ångra (Ctrl+Z)" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 7v6h6"></path>
+                            <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                        </svg>
+                    </button>
+                    <button id="redoBtn" class="btn btn-icon-round" title="Gör om (Ctrl+Y)" disabled>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 7v6h-6"></path>
+                            <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path>
+                        </svg>
+                    </button>
+                </div>
                 <button id="infoBtn" class="btn btn-icon-round" data-title="helpTitle" title="Hur det fungerar">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                         stroke-linecap="round" stroke-linejoin="round">
@@ -63,6 +80,8 @@
                 <div class="today-marker" id="todayMarker"></div>
             </div>
         </div>
+        <!-- Date indicator for drag/resize -->
+        <div id="dragDateIndicator" class="drag-date-indicator"></div>
     </div>
 
     <!-- Modal för att lägga till projekt -->
@@ -213,6 +232,23 @@
                         <option value="warning" data-label="symbolWarning">Varning</option>
                         <option value="check" data-label="symbolCheck">Klar</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventRepeat"><span data-label="repeatLabel">Upprepa</span> (<span
+                            data-label="optional">valfritt</span>)</label>
+                    <div class="repeat-settings">
+                        <select id="eventRepeat">
+                            <option value="" data-label="repeatNone">Ingen upprepning</option>
+                            <option value="weekly" data-label="repeatWeekly">Varje vecka</option>
+                            <option value="biweekly" data-label="repeatBiweekly">Varannan vecka</option>
+                            <option value="monthly" data-label="repeatMonthly">Varje månad</option>
+                            <option value="yearly" data-label="repeatYearly">Varje år</option>
+                        </select>
+                        <div id="repeatUntilGroup" class="repeat-until-group" style="display:none;">
+                            <label for="eventRepeatUntil" data-label="repeatUntil">Fram till</label>
+                            <input type="date" id="eventRepeatUntil" class="date-input">
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="eventComment" data-label="comment">Kommentar</label>
@@ -396,31 +432,35 @@
 
     <!-- Information Modal -->
     <div class="modal" id="infoModal">
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
-                <h2 data-label="helpTitle">Hur det fungerar</h2>
+                <h2 data-label="helpTitle">Om Tidslinje</h2>
                 <button class="modal-close" id="closeInfoModal">&times;</button>
             </div>
             <div class="info-modal-content">
                 <section class="info-section">
+                    <h3 data-label="aboutTitle">Vad är Tidslinje?</h3>
+                    <p data-label="aboutText">Tidslinje är ett visuellt planeringsverktyg för att hantera projekt och händelser över tid. Perfekt för verksamhetsplanering, utställningsplanering, projektöversikter eller personlig planering.</p>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="featuresTitle">Funktioner</h3>
+                    <ul class="info-list" data-label="featuresList"></ul>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="tipsTitle">Tips</h3>
+                    <ul class="info-list" data-label="tipsList"></ul>
+                </section>
+                <section class="info-section">
+                    <h3 data-label="importTitle">Import & Export</h3>
+                    <p data-label="importText">Importera JSON-filer (sparad data) eller iCal-kalenderfiler (.ics) - praktiskt för t.ex. helgdagar. Du kan även importera från en URL. Exportera som JSON för säkerhetskopiering.</p>
+                </section>
+                <section class="info-section">
                     <h3 data-label="privacyTitle">Integritet & Lagring</h3>
-                    <p data-label="privacyText">All data lagras lokalt i din webbläsare. Ingenting skickas till molnet
-                        eller lagras på någon server.</p>
+                    <p data-label="privacyText">All data lagras lokalt i din webbläsare - ingenting skickas till någon server. Spara regelbundet en JSON-fil som säkerhetskopia.</p>
                 </section>
                 <section class="info-section">
-                    <h3 data-label="backupTitle">Säkerhetskopiering</h3>
-                    <p data-label="backupText">Eftersom allt lagras lokalt rekommenderar vi att du regelbundet använder
-                        "Spara" funktionen för att exportera en JSON-fil som säkerhetskopia.</p>
-                </section>
-                <section class="info-section">
-                    <h3 data-label="importTitle">Import</h3>
-                    <p data-label="importText">Du kan importera både JSON-filer och iCal-kalenderfiler (.ics).
-                        Kalenderfiler är praktiska för att lägga till t.ex. svenska helgdagar.</p>
-                </section>
-                <section class="info-section">
-                    <h3 data-label="offlineTitle">Offline</h3>
-                    <p data-label="offlineText">Tack vare att appen är en PWA fungerar den utmärkt offline när den väl
-                        är installerad.</p>
+                    <h3 data-label="offlineTitle">Offline & Installation</h3>
+                    <p data-label="offlineText">Tidslinje är en PWA och kan installeras på din enhet. När den är installerad fungerar den även offline.</p>
                 </section>
             </div>
             <div class="form-actions">

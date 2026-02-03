@@ -285,16 +285,28 @@ const DEFAULT_LABELS = {
     zoom3MonthsLabel: '3 mån',
     zoom3MonthsTitle: 'Kommande tre månader',
     zoom3MonthsDays: '90',
-    helpTitle: 'Hur det fungerar',
+    helpTitle: 'Om Tidslinje',
+    aboutTitle: 'Vad är Tidslinje?',
+    aboutText: 'Tidslinje är ett visuellt planeringsverktyg för att hantera projekt och händelser över tid. Perfekt för verksamhetsplanering, utställningsplanering, projektöversikter eller personlig planering.',
+    featuresTitle: 'Funktioner',
+    featuresList: '<li><strong>Projekt</strong> - Skapa projekt med start- och slutdatum, färgkodning, status och ansvarig</li><li><strong>Händelser</strong> - Lägg till händelser, fristående eller kopplade till projekt</li><li><strong>Områden</strong> - Organisera projekt i olika områden/kategorier</li><li><strong>Statusar</strong> - Definiera egna statusnivåer för att följa projektens framsteg</li><li><strong>Zoomning</strong> - Zooma in och ut för att se olika tidsperioder</li><li><strong>Filter</strong> - Filtrera vyn efter område och status</li><li><strong>Kompakt läge</strong> - Växla mellan detaljerad och kompakt vy</li>',
+    tipsTitle: 'Tips',
+    tipsList: '<li><strong>Dubbelklicka</strong> på ett projekt eller händelse för att redigera</li><li><strong>Klicka</strong> på ett projekt för att se detaljer i sidopanelen</li><li><strong>Dra i tidslinjen</strong> för att panorera horisontellt</li><li><strong>Konvertera</strong> händelser till projekt och vice versa via redigeringsmodalen</li>',
     privacyTitle: 'Integritet & Lagring',
-    privacyText: 'All data lagras lokalt i din webbläsare. Ingenting skickas till molnet eller lagras på någon server.',
-    backupTitle: 'Säkerhetskopiering',
-    backupText: 'Eftersom allt lagras lokalt rekommenderar vi att du regelbundet använder "Spara" funktionen för att exportera en JSON-fil som säkerhetskopia.',
-    importTitle: 'Import',
-    importText: 'Du kan importera både JSON-filer och iCal-kalenderfiler (.ics). Kalenderfiler är praktiska för att lägga till t.ex. svenska helgdagar.',
-    offlineTitle: 'Offline',
-    offlineText: 'Tack vare att appen är en PWA fungerar den utmärkt offline när den väl är installerad.',
-    infoGotIt: 'Uppfattat'
+    privacyText: 'All data lagras lokalt i din webbläsare - ingenting skickas till någon server. Spara regelbundet en JSON-fil som säkerhetskopia.',
+    importTitle: 'Import & Export',
+    importText: 'Importera JSON-filer (sparad data) eller iCal-kalenderfiler (.ics) - praktiskt för t.ex. helgdagar. Du kan även importera från en URL. Exportera som JSON för säkerhetskopiering.',
+    offlineTitle: 'Offline & Installation',
+    offlineText: 'Tidslinje är en PWA och kan installeras på din enhet. När den är installerad fungerar den även offline.',
+    infoGotIt: 'Uppfattat',
+    // Repeat
+    repeatLabel: 'Upprepa',
+    repeatNone: 'Ingen upprepning',
+    repeatWeekly: 'Varje vecka',
+    repeatBiweekly: 'Varannan vecka',
+    repeatMonthly: 'Varje månad',
+    repeatYearly: 'Varje år',
+    repeatUntil: 'Fram till'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -389,16 +401,28 @@ const DEFAULT_LABELS_EN = {
     zoom3MonthsLabel: '3 mo',
     zoom3MonthsTitle: 'Next three months',
     zoom3MonthsDays: '90',
-    helpTitle: 'How it works',
+    helpTitle: 'About Timeline',
+    aboutTitle: 'What is Timeline?',
+    aboutText: 'Timeline is a visual planning tool for managing projects and events over time. Perfect for organizational planning, exhibition planning, project overviews, or personal planning.',
+    featuresTitle: 'Features',
+    featuresList: '<li><strong>Projects</strong> - Create projects with start and end dates, color coding, status and responsible person</li><li><strong>Events</strong> - Add events, standalone or linked to projects</li><li><strong>Workstreams</strong> - Organize projects into different workstreams/categories</li><li><strong>Statuses</strong> - Define custom status levels to track project progress</li><li><strong>Zooming</strong> - Zoom in and out to see different time periods</li><li><strong>Filters</strong> - Filter the view by workstream and status</li><li><strong>Compact mode</strong> - Toggle between detailed and compact view</li>',
+    tipsTitle: 'Tips',
+    tipsList: '<li><strong>Double-click</strong> on a project or event to edit</li><li><strong>Click</strong> on a project to see details in the side panel</li><li><strong>Drag the timeline</strong> to pan horizontally</li><li><strong>Convert</strong> events to projects and vice versa via the edit modal</li>',
     privacyTitle: 'Privacy & Storage',
-    privacyText: 'All data is stored locally in your browser. Nothing is sent to the cloud or stored on any server.',
-    backupTitle: 'Backups',
-    backupText: 'Since everything is stored locally, we recommend regularly using the "Save" function to export a JSON file as backup.',
-    importTitle: 'Import',
-    importText: 'You can import both JSON files and iCal calendar files (.ics). Calendar files are useful for adding e.g. public holidays.',
-    offlineTitle: 'Offline',
-    offlineText: 'Since the app is a PWA, it works great offline once installed.',
-    infoGotIt: 'Got it'
+    privacyText: 'All data is stored locally in your browser - nothing is sent to any server. Save a JSON file regularly as backup.',
+    importTitle: 'Import & Export',
+    importText: 'Import JSON files (saved data) or iCal calendar files (.ics) - useful for e.g. public holidays. You can also import from a URL. Export as JSON for backup.',
+    offlineTitle: 'Offline & Installation',
+    offlineText: 'Timeline is a PWA and can be installed on your device. Once installed, it also works offline.',
+    infoGotIt: 'Got it',
+    // Repeat
+    repeatLabel: 'Repeat',
+    repeatNone: 'No repeat',
+    repeatWeekly: 'Every week',
+    repeatBiweekly: 'Every two weeks',
+    repeatMonthly: 'Every month',
+    repeatYearly: 'Every year',
+    repeatUntil: 'Until'
 };
 
 class TimelineApp {
@@ -432,6 +456,7 @@ class TimelineApp {
         this._firstVisit = !this.loadData('timeline_projects') && !this.loadData('timeline_events');
         this.autoSaveTimer = null;
         this.undoStack = [];
+        this.redoStack = [];
         this.maxUndoSteps = 30;
         this.sortBy = 'lead'; // Default sort
         this.filterLead = ''; // Filter by project lead
@@ -459,16 +484,29 @@ class TimelineApp {
         this.resizeStartX = 0;
         this.resizeOrigLeft = 0;
         this.resizeOrigWidth = 0;
+        // Project dragging state
+        this.isProjectDragging = false;
+        this.dragProject = null;
+        this.dragBar = null;
+        this.dragStartX = 0;
+        this.dragOrigLeft = 0;
 
         this.init();
     }
 
     applyLabels() {
+        // Keys that should use innerHTML instead of textContent (for HTML content)
+        const htmlKeys = ['featuresList', 'tipsList'];
+
         // Apply text labels
         document.querySelectorAll('[data-label]').forEach(el => {
             const key = el.getAttribute('data-label');
             if (this.labels[key]) {
-                el.textContent = this.labels[key];
+                if (htmlKeys.includes(key)) {
+                    el.innerHTML = this.labels[key];
+                } else {
+                    el.textContent = this.labels[key];
+                }
             }
         });
 
@@ -560,6 +598,7 @@ class TimelineApp {
 
     async init() {
         this.timelineContainer.classList.add('compact-mode');
+
         this.initTimelineRange();
         this.populateDateSelectors();
         this.populateAreaSelects();
@@ -883,6 +922,10 @@ class TimelineApp {
         safeBind('view3Months', 'click', () => this.setView('3months'));
         safeBind('todayBtn', 'click', () => this.scrollToToday());
 
+        // Undo/Redo buttons
+        safeBind('undoBtn', 'click', () => this.undo());
+        safeBind('redoBtn', 'click', () => this.redo());
+
         safeBind('searchInput', 'input', (e) => {
             this.searchQuery = e.target.value.toLowerCase();
             this.render();
@@ -1093,9 +1136,15 @@ class TimelineApp {
                 return;
             }
 
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
+                e.preventDefault();
+                this.redo();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
                 e.preventDefault();
                 this.undo();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+                e.preventDefault();
+                this.redo();
             }
             if (e.key === 'Escape') {
                 const activeModal = document.querySelector('.modal.active');
@@ -1141,12 +1190,32 @@ class TimelineApp {
         });
 
         document.addEventListener('mousemove', (e) => {
+            // Handle project dragging (move entire project)
+            if (this.isProjectDragging && this.dragBar) {
+                const dx = e.clientX - this.projectDragStartX;
+                if (Math.abs(dx) > 5) {
+                    if (!this.projectDragMoved) {
+                        this.pushUndoState();
+                        this.projectDragMoved = true;
+                    }
+                    const newLeft = this.dragOrigLeft + dx;
+                    this.dragBar.style.left = newLeft + 'px';
+                    this.updateStickyLabels();
+
+                    // Show date indicator
+                    const width = parseFloat(this.dragBar.style.width);
+                    this.showDragDateIndicator(newLeft, width, e.clientX, e.clientY);
+                }
+                return;
+            }
+
             if (this.isResizing) {
                 const dx = e.clientX - this.resizeStartX;
                 const newWidth = Math.max(20, this.resizeOrigWidth + (this.resizeSide === 'right' ? dx : -dx));
+                let newLeft = this.resizeOrigLeft;
 
                 if (this.resizeSide === 'left') {
-                    const newLeft = this.resizeOrigLeft + dx;
+                    newLeft = this.resizeOrigLeft + dx;
                     // Ensure we don't push the left edge past the right edge (enforced by minWidth)
                     if (newLeft < this.resizeOrigLeft + this.resizeOrigWidth - 20) {
                         this.resizeBar.style.left = newLeft + 'px';
@@ -1157,6 +1226,11 @@ class TimelineApp {
                 }
 
                 this.updateStickyLabels();
+
+                // Show date indicator with preserved date
+                const currentLeft = parseFloat(this.resizeBar.style.left);
+                const currentWidth = parseFloat(this.resizeBar.style.width);
+                this.showResizeDateIndicator(currentLeft, currentWidth, e.clientX, e.clientY);
                 return;
             }
 
@@ -1171,22 +1245,63 @@ class TimelineApp {
         });
 
         document.addEventListener('mouseup', (e) => {
+            // Hide date indicator
+            this.hideDragDateIndicator();
+
+            // Handle project drag end
+            if (this.isProjectDragging && this.dragBar) {
+                if (this.projectDragMoved) {
+                    const finalLeft = parseFloat(this.dragBar.style.left);
+                    const finalWidth = parseFloat(this.dragBar.style.width);
+
+                    // Calculate new dates based on position
+                    const startDays = finalLeft / (this.dayWidth * this.zoomLevel);
+                    const durationDays = finalWidth / (this.dayWidth * this.zoomLevel);
+
+                    const startDate = new Date(this.startDate);
+                    startDate.setDate(startDate.getDate() + Math.round(startDays));
+
+                    const endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + Math.round(durationDays));
+
+                    this.dragProject.start = startDate.toISOString().split('T')[0];
+                    this.dragProject.end = endDate.toISOString().split('T')[0];
+
+                    this.scheduleAutoSave();
+                    this.render();
+                }
+
+                this.dragBar.style.cursor = '';
+                this.dragBar.classList.remove('dragging');
+                this.isProjectDragging = false;
+                this.dragProject = null;
+                this.dragBar = null;
+                this.projectDragMoved = false;
+                return;
+            }
+
             if (this.isResizing) {
                 const finalLeft = parseFloat(this.resizeBar.style.left);
                 const finalWidth = parseFloat(this.resizeBar.style.width);
 
-                // Update project data
-                const startDays = finalLeft / (this.dayWidth * this.zoomLevel);
-                const durationDays = finalWidth / (this.dayWidth * this.zoomLevel);
+                // Calculate new date based on which side was dragged
+                const dayWidth = this.dayWidth * this.zoomLevel;
 
-                const startDate = new Date(this.startDate);
-                startDate.setDate(startDate.getDate() + Math.round(startDays));
-
-                const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + Math.round(durationDays));
-
-                this.resizeProject.start = startDate.toISOString().split('T')[0];
-                this.resizeProject.end = endDate.toISOString().split('T')[0];
+                if (this.resizeSide === 'left') {
+                    // Dragging start - keep original end date
+                    const startDays = finalLeft / dayWidth;
+                    const newStartDate = new Date(this.startDate);
+                    newStartDate.setDate(newStartDate.getDate() + Math.round(startDays));
+                    this.resizeProject.start = newStartDate.toISOString().split('T')[0];
+                    this.resizeProject.end = this.resizeOrigEndDate; // Keep original end
+                } else {
+                    // Dragging end - keep original start date
+                    const endDays = (finalLeft + finalWidth) / dayWidth;
+                    const newEndDate = new Date(this.startDate);
+                    newEndDate.setDate(newEndDate.getDate() + Math.round(endDays));
+                    this.resizeProject.start = this.resizeOrigStartDate; // Keep original start
+                    this.resizeProject.end = newEndDate.toISOString().split('T')[0];
+                }
 
                 this.isResizing = false;
                 this.resizeProject = null;
@@ -1291,12 +1406,34 @@ class TimelineApp {
         this.bindDateTypeSelector('editEventStart');
         this.bindDateTypeSelector('editEventEnd');
 
+        // Repeat event selector
+        this.bindRepeatSelector('eventRepeat', 'repeatUntilGroup');
+
         // Symbol and project dropdowns are rebuilt each time modals open
         // (rebuildSymbolDropdown / rebuildProjectDropdown in openEventModal / openEditModal)
 
         // Color selectors with color preview
         this.bindColorSelector('projectColor');
         this.bindColorSelector('editColor');
+    }
+
+    bindRepeatSelector(selectId, untilGroupId) {
+        const select = document.getElementById(selectId);
+        const untilGroup = document.getElementById(untilGroupId);
+        if (!select || !untilGroup) return;
+
+        select.addEventListener('change', () => {
+            untilGroup.style.display = select.value ? 'flex' : 'none';
+            // Set default "until" date to 1 year from now
+            if (select.value) {
+                const untilInput = untilGroup.querySelector('input[type="date"]');
+                if (untilInput && !untilInput.value) {
+                    const oneYearFromNow = new Date();
+                    oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+                    untilInput.value = oneYearFromNow.toISOString().split('T')[0];
+                }
+            }
+        });
     }
 
     bindSymbolSelector(id) {
@@ -1653,11 +1790,23 @@ class TimelineApp {
         const type = typeSelect.value;
         const isEnd = prefix.toLowerCase().includes('end');
 
-        // For end dates, check if the date field is empty (user hasn't set an end date)
+        // For end dates, check if the relevant field is empty (user hasn't set an end date)
         if (isEnd) {
-            const dateInput = document.getElementById(`${prefix}Date`);
-            if (dateInput && !dateInput.value) {
-                return ''; // No end date specified
+            if (type === 'date') {
+                const dateInput = document.getElementById(`${prefix}Date`);
+                if (dateInput && !dateInput.value) {
+                    return ''; // No end date specified
+                }
+            } else if (type === 'week') {
+                const weekNum = document.getElementById(`${prefix}WeekNum`);
+                if (!weekNum || !weekNum.value) {
+                    return ''; // No end date specified
+                }
+            } else if (type === 'month') {
+                const monthNum = document.getElementById(`${prefix}MonthNum`);
+                if (!monthNum || !monthNum.value) {
+                    return ''; // No end date specified
+                }
             }
         }
 
@@ -1950,16 +2099,35 @@ class TimelineApp {
             this.resizeStartX = e.clientX;
             this.resizeOrigLeft = parseFloat(bar.style.left);
             this.resizeOrigWidth = parseFloat(bar.style.width);
+            // Store original dates to preserve one end while resizing
+            this.resizeOrigStartDate = project.start;
+            this.resizeOrigEndDate = project.end;
             this.pushUndoState();
         };
 
         leftHandle.addEventListener('mousedown', (e) => initResize(e, 'left'));
         rightHandle.addEventListener('mousedown', (e) => initResize(e, 'right'));
 
-        // Comment popup removed in favor of sidebar, or kept as secondary?
-        // Let's use single-click for sidebar as requested.
+        // Drag to move entire project
+        bar.addEventListener('mousedown', (e) => {
+            // Don't start drag if clicking on resize handles or events
+            if (e.target.closest('.resize-handle')) return;
+            if (e.target.closest('.project-event-marker') || e.target.closest('.project-event-bar') || e.target.closest('.event-container-duration-symbol')) return;
+
+            e.stopPropagation();
+            this.isProjectDragging = true;
+            this.dragProject = project;
+            this.dragBar = bar;
+            this.projectDragStartX = e.clientX;
+            this.dragOrigLeft = parseFloat(bar.style.left);
+            this.projectDragMoved = false;
+            bar.style.cursor = 'grabbing';
+            bar.classList.add('dragging');
+        });
+
+        // Single-click for sidebar
         bar.addEventListener('click', (e) => {
-            if (this.hasDragged) return;
+            if (this.hasDragged || this.projectDragMoved) return;
             if (e.target.closest('.project-event-marker') || e.target.closest('.project-event-bar') || e.target.closest('.event-container-duration-symbol')) return;
             e.stopPropagation();
             this.openProjectSidebar(project);
@@ -1982,128 +2150,37 @@ class TimelineApp {
         // Track event elements for collision detection
         const projectEventElements = [];
 
-        projectEvents.forEach(event => {
-            const evStart = this.dateToPosition(event.start || event.date);
-            const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
-            const evWidth = Math.max(20, evEnd - evStart);
+        // Group events by date (for point events on same day)
+        const groupedProjectEvents = this.groupEventsByDate(projectEvents);
 
-            let element;
-            let label;
+        groupedProjectEvents.forEach(group => {
+            if (group.events.length === 1) {
+                // Single event - render normally
+                const event = group.events[0];
+                const { element, label } = this.renderSingleProjectEvent(event, row);
 
-            if (event.end) {
-                // Event with duration -> Render thin line + symbol/marker at end
                 const evStart = this.dateToPosition(event.start || event.date);
-                const evEnd = this.dateToPosition(event.end);
-                const evWidth = Math.max(0, evEnd - evStart);
+                const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
 
-                const containerEl = document.createElement('div');
-                containerEl.className = 'event-container-duration-symbol';
-                containerEl.style.position = 'absolute';
-                containerEl.style.left = evStart + 'px';
-                containerEl.style.width = evWidth + 'px';
-                containerEl.style.height = '100%';
-
-                // 1. Connector Line
-                const line = document.createElement('div');
-                line.className = 'event-connector-line';
-                line.style.width = '100%';
-                containerEl.appendChild(line);
-
-                // 2. Symbol or marker at the end
-                const endEl = document.createElement('div');
-                if (event.symbol && event.symbol !== 'default') {
-                    endEl.className = `event-symbol symbol-${event.symbol}`;
-                } else {
-                    endEl.className = 'project-event-marker';
-                }
-                endEl.style.position = 'absolute';
-                endEl.style.right = '-10px';
-                endEl.style.top = '50%';
-                endEl.style.transform = 'translateY(-50%)';
-
-                const tooltip = this.createTooltip(event);
-                endEl.appendChild(tooltip);
-
-                containerEl.appendChild(endEl);
-
-                // Label
-                const labelDiv = document.createElement('div');
-                labelDiv.className = 'project-event-label';
-                const dateStr = this.formatShortDate ? this.formatShortDate(event) : (event.start || '');
-                labelDiv.innerHTML = `
-                        <span class="label-name">${event.name}</span>
-                        <span class="label-date">${dateStr}</span>
-                    `;
-                labelDiv.style.position = 'absolute';
-                labelDiv.style.right = '0';
-                labelDiv.style.transform = 'translateX(50%)';
-                labelDiv.style.textAlign = 'center';
-
-                endEl.appendChild(labelDiv);
-
-                containerEl.addEventListener('click', (e) => {
-                    if (this.hasDragged) return;
-                    e.stopPropagation();
-                    this.openEventSidebar(event);
+                projectEventElements.push({
+                    element: element,
+                    label: label,
+                    left: evStart - (event.end ? 0 : 8),
+                    right: evEnd + (event.end ? 0 : 16),
+                    level: 0
                 });
-
-                containerEl.addEventListener('dblclick', (e) => {
-                    e.stopPropagation();
-                    this.openEditModal(event, 'event');
-                });
-
-                row.appendChild(containerEl);
-
-                element = containerEl;
-                label = labelDiv;
-
             } else {
-                // Render as marker/symbol
-                const el = document.createElement('div');
+                // Multiple events on same date - render as group badge
+                const el = this.renderProjectEventGroup(group, row);
 
-                if (event.symbol && event.symbol !== 'default') {
-                    el.className = `event-symbol symbol-${event.symbol}`;
-                } else {
-                    el.className = 'project-event-marker';
-                    const labelDiv = document.createElement('div');
-                    labelDiv.className = 'project-event-label';
-                    // Use formatShortDate if available, otherwise fallback to start date string
-                    const dateStr = this.formatShortDate ? this.formatShortDate(event) : (event.start || '');
-                    labelDiv.innerHTML = `
-                            <span class="label-name">${event.name}</span>
-                            <span class="label-date">${dateStr}</span>
-                        `;
-                    el.appendChild(labelDiv);
-                }
-                el.style.left = evStart + 'px';
-
-                const tooltip = this.createTooltip(event);
-                el.appendChild(tooltip);
-
-                el.addEventListener('click', (e) => {
-                    if (this.hasDragged) return;
-                    e.stopPropagation();
-                    this.openEventSidebar(event);
+                projectEventElements.push({
+                    element: el,
+                    label: null,
+                    left: group.position - 10,
+                    right: group.position + 10,
+                    level: 0
                 });
-
-                el.addEventListener('dblclick', (e) => {
-                    e.stopPropagation();
-                    this.openEditModal(event, 'event');
-                });
-                row.appendChild(el);
-
-                element = el;
-                label = el.querySelector('.project-event-label');
             }
-
-            // Add to tracking array for collision resolution
-            projectEventElements.push({
-                element: element,
-                label: label,
-                left: evStart - (event.end ? 0 : 8),
-                right: evEnd + (event.end ? 0 : 16),
-                level: 0
-            });
         });
 
         // Resolve collisions within the project bar ONLY if NOT in compact mode
@@ -2260,6 +2337,159 @@ class TimelineApp {
             this.openEventGroupPopup(group.events, e);
         });
 
+        return el;
+    }
+
+    renderSingleProjectEvent(event, row) {
+        const evStart = this.dateToPosition(event.start || event.date);
+        const evEnd = event.end ? this.dateToPosition(event.end) : evStart;
+
+        let element;
+        let label;
+
+        if (event.end) {
+            // Event with duration -> Render thin line + symbol/marker at end
+            const evWidth = Math.max(0, evEnd - evStart);
+
+            const containerEl = document.createElement('div');
+            containerEl.className = 'event-container-duration-symbol';
+            containerEl.style.position = 'absolute';
+            containerEl.style.left = evStart + 'px';
+            containerEl.style.width = evWidth + 'px';
+            containerEl.style.height = '100%';
+
+            // 1. Connector Line
+            const line = document.createElement('div');
+            line.className = 'event-connector-line';
+            line.style.width = '100%';
+            containerEl.appendChild(line);
+
+            // 2. Symbol or marker at the end
+            const endEl = document.createElement('div');
+            if (event.symbol && event.symbol !== 'default') {
+                endEl.className = `event-symbol symbol-${event.symbol}`;
+            } else {
+                endEl.className = 'project-event-marker';
+            }
+            endEl.style.position = 'absolute';
+            endEl.style.right = '-10px';
+            endEl.style.top = '50%';
+            endEl.style.transform = 'translateY(-50%)';
+
+            const tooltip = this.createTooltip(event);
+            endEl.appendChild(tooltip);
+
+            containerEl.appendChild(endEl);
+
+            // Label
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'project-event-label';
+            const dateStr = this.formatShortDate ? this.formatShortDate(event) : (event.start || '');
+            labelDiv.innerHTML = `
+                <span class="label-name">${event.name}</span>
+                <span class="label-date">${dateStr}</span>
+            `;
+            labelDiv.style.position = 'absolute';
+            labelDiv.style.right = '0';
+            labelDiv.style.transform = 'translateX(50%)';
+            labelDiv.style.textAlign = 'center';
+
+            endEl.appendChild(labelDiv);
+
+            containerEl.addEventListener('click', (e) => {
+                if (this.hasDragged) return;
+                e.stopPropagation();
+                this.openEventSidebar(event);
+            });
+
+            containerEl.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.openEditModal(event, 'event');
+            });
+
+            row.appendChild(containerEl);
+
+            element = containerEl;
+            label = labelDiv;
+
+        } else {
+            // Render as marker/symbol
+            const el = document.createElement('div');
+
+            if (event.symbol && event.symbol !== 'default') {
+                el.className = `event-symbol symbol-${event.symbol}`;
+            } else {
+                el.className = 'project-event-marker';
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'project-event-label';
+                const dateStr = this.formatShortDate ? this.formatShortDate(event) : (event.start || '');
+                labelDiv.innerHTML = `
+                    <span class="label-name">${event.name}</span>
+                    <span class="label-date">${dateStr}</span>
+                `;
+                el.appendChild(labelDiv);
+            }
+            el.style.left = evStart + 'px';
+
+            const tooltip = this.createTooltip(event);
+            el.appendChild(tooltip);
+
+            el.addEventListener('click', (e) => {
+                if (this.hasDragged) return;
+                e.stopPropagation();
+                this.openEventSidebar(event);
+            });
+
+            el.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                this.openEditModal(event, 'event');
+            });
+            row.appendChild(el);
+
+            element = el;
+            label = el.querySelector('.project-event-label');
+        }
+
+        return { element, label };
+    }
+
+    renderProjectEventGroup(group, row) {
+        const el = document.createElement('div');
+        el.className = 'project-event-marker event-group';
+        el.style.left = group.position + 'px';
+
+        const badge = document.createElement('div');
+        badge.className = 'event-group-badge project-event-group-badge';
+        badge.textContent = group.events.length;
+        el.appendChild(badge);
+
+        // Label showing count
+        const labelDiv = document.createElement('div');
+        labelDiv.className = 'project-event-label';
+        labelDiv.innerHTML = `
+            <span class="label-name">${group.events.length} händelser</span>
+            <span class="label-date">${this.formatShortDate ? this.formatShortDate(group.events[0]) : ''}</span>
+        `;
+        el.appendChild(labelDiv);
+
+        // Tooltip showing all event names
+        const tooltip = document.createElement('div');
+        tooltip.className = 'event-tooltip event-group-tooltip';
+        const eventList = group.events.map(e => `<div class="tooltip-event-item">${e.name}</div>`).join('');
+        tooltip.innerHTML = `
+            <div class="tooltip-title">${group.events.length} händelser</div>
+            <div class="tooltip-event-list">${eventList}</div>
+            <div class="tooltip-hint">Klicka för att visa</div>
+        `;
+        el.appendChild(tooltip);
+
+        el.addEventListener('click', (e) => {
+            if (this.hasDragged) return;
+            e.stopPropagation();
+            this.openEventGroupPopup(group.events, e);
+        });
+
+        row.appendChild(el);
         return el;
     }
 
@@ -3562,6 +3792,14 @@ class TimelineApp {
         document.getElementById('eventSymbol').value = '';
         this.rebuildSymbolDropdown('eventSymbol');
 
+        // Reset repeat settings
+        document.getElementById('eventRepeat').value = '';
+        document.getElementById('eventRepeatUntil').value = '';
+        document.getElementById('repeatUntilGroup').style.display = 'none';
+
+        // Reset comment
+        document.getElementById('eventComment').value = '';
+
         document.getElementById('eventModal').classList.add('active');
     }
 
@@ -3716,6 +3954,8 @@ class TimelineApp {
         const endType = document.getElementById('eventEndType').value;
         const startDate = this.getDateValue('eventStart');
         const endDate = this.getDateValue('eventEnd');
+        const repeatType = document.getElementById('eventRepeat').value;
+        const repeatUntil = document.getElementById('eventRepeatUntil').value;
 
         // Validate dates if end date exists
         if (endDate && !this.validateDates(startDate, endDate)) {
@@ -3723,19 +3963,16 @@ class TimelineApp {
             return;
         }
 
-        // Check for collisions
+        // Check for collisions (only for first event if repeating)
         const collisions = this.findDateCollisions(startDate, endDate);
         if (collisions.length > 0) {
             const proceed = await this.showConfirm(this.formatCollisionWarning(collisions));
             if (!proceed) return;
         }
 
-        const event = {
-            id: Date.now().toString(),
+        const baseEvent = {
             name: document.getElementById('eventName').value.trim(),
-            start: startDate,
             startType: startType,
-            end: endDate || null,
             endType: endDate ? endType : null,
             projectId: document.getElementById('eventProject').value || null,
             symbol: document.getElementById('eventSymbol').value || null,
@@ -3743,11 +3980,79 @@ class TimelineApp {
         };
 
         this.pushUndoState();
-        this.events.push(event);
+
+        // Generate repeating events or single event
+        const events = this.generateRepeatingEvents(baseEvent, startDate, endDate, repeatType, repeatUntil);
+        events.forEach(event => this.events.push(event));
+
         this.scheduleAutoSave();
         this.closeModal('eventModal');
         this.render();
-        this.showToast('Händelse skapad!', 'success');
+
+        if (events.length > 1) {
+            this.showToast(`${events.length} händelser skapade!`, 'success');
+        } else {
+            this.showToast('Händelse skapad!', 'success');
+        }
+    }
+
+    generateRepeatingEvents(baseEvent, startDate, endDate, repeatType, repeatUntil) {
+        const events = [];
+        const start = this.parseDate(startDate);
+        const duration = endDate ? (this.parseDate(endDate) - start) : 0;
+        const until = repeatUntil ? this.parseDate(repeatUntil) : null;
+
+        if (!repeatType || !until) {
+            // Single event
+            events.push({
+                ...baseEvent,
+                id: Date.now().toString(),
+                start: startDate,
+                end: endDate || null
+            });
+            return events;
+        }
+
+        let currentStart = new Date(start);
+        let counter = 0;
+        const maxEvents = 100; // Safety limit
+
+        while (currentStart <= until && counter < maxEvents) {
+            const eventStart = this.formatDateISO(currentStart);
+            let eventEnd = null;
+            if (duration > 0) {
+                const endDateObj = new Date(currentStart.getTime() + duration);
+                eventEnd = this.formatDateISO(endDateObj);
+            }
+
+            events.push({
+                ...baseEvent,
+                id: (Date.now() + counter).toString(),
+                start: eventStart,
+                end: eventEnd,
+                repeatGroup: baseEvent.name + '_' + startDate, // Group identifier
+                repeatType: repeatType
+            });
+
+            // Advance to next occurrence
+            switch (repeatType) {
+                case 'weekly':
+                    currentStart.setDate(currentStart.getDate() + 7);
+                    break;
+                case 'biweekly':
+                    currentStart.setDate(currentStart.getDate() + 14);
+                    break;
+                case 'monthly':
+                    currentStart.setMonth(currentStart.getMonth() + 1);
+                    break;
+                case 'yearly':
+                    currentStart.setFullYear(currentStart.getFullYear() + 1);
+                    break;
+            }
+            counter++;
+        }
+
+        return events;
     }
 
 
@@ -3947,7 +4252,7 @@ class TimelineApp {
         }, 3000);
     }
 
-    // Undo support
+    // Undo/Redo support
     pushUndoState() {
         this.undoStack.push({
             projects: JSON.parse(JSON.stringify(this.projects)),
@@ -3956,6 +4261,9 @@ class TimelineApp {
         if (this.undoStack.length > this.maxUndoSteps) {
             this.undoStack.shift();
         }
+        // Clear redo stack when new action is performed
+        this.redoStack = [];
+        this.updateUndoRedoButtons();
     }
 
     undo() {
@@ -3963,13 +4271,139 @@ class TimelineApp {
             this.showToast('Inget att ångra', 'info');
             return;
         }
+        // Save current state to redo stack
+        this.redoStack.push({
+            projects: JSON.parse(JSON.stringify(this.projects)),
+            events: JSON.parse(JSON.stringify(this.events))
+        });
+
         const state = this.undoStack.pop();
         this.projects = state.projects;
         this.events = state.events;
         this.saveData('timeline_projects', this.projects);
         this.saveData('timeline_events', this.events);
         this.render();
+        this.updateUndoRedoButtons();
         this.showToast('Ångrade senaste ändringen', 'success');
+    }
+
+    redo() {
+        if (this.redoStack.length === 0) {
+            this.showToast('Inget att göra om', 'info');
+            return;
+        }
+        // Save current state to undo stack
+        this.undoStack.push({
+            projects: JSON.parse(JSON.stringify(this.projects)),
+            events: JSON.parse(JSON.stringify(this.events))
+        });
+
+        const state = this.redoStack.pop();
+        this.projects = state.projects;
+        this.events = state.events;
+        this.saveData('timeline_projects', this.projects);
+        this.saveData('timeline_events', this.events);
+        this.render();
+        this.updateUndoRedoButtons();
+        this.showToast('Gjorde om ändringen', 'success');
+    }
+
+    updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        if (undoBtn) {
+            undoBtn.disabled = this.undoStack.length === 0;
+        }
+        if (redoBtn) {
+            redoBtn.disabled = this.redoStack.length === 0;
+        }
+    }
+
+    showDragDateIndicator(left, width, mouseX, mouseY) {
+        const indicator = document.getElementById('dragDateIndicator');
+        if (!indicator) return;
+
+        // Calculate dates from position
+        const startDays = left / (this.dayWidth * this.zoomLevel);
+        const durationDays = width / (this.dayWidth * this.zoomLevel);
+
+        const startDate = new Date(this.startDate);
+        startDate.setDate(startDate.getDate() + Math.round(startDays));
+
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + Math.round(durationDays));
+
+        // Format dates
+        const formatDate = (d) => d.toLocaleDateString('sv-SE', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        indicator.innerHTML = `
+            <div class="date-range">
+                <span class="date-value">${formatDate(startDate)}</span>
+                <span class="date-arrow">→</span>
+                <span class="date-value">${formatDate(endDate)}</span>
+            </div>
+        `;
+
+        // Position indicator near cursor
+        indicator.style.left = (mouseX + 15) + 'px';
+        indicator.style.top = (mouseY - 40) + 'px';
+        indicator.classList.add('visible');
+    }
+
+    hideDragDateIndicator() {
+        const indicator = document.getElementById('dragDateIndicator');
+        if (indicator) {
+            indicator.classList.remove('visible');
+        }
+    }
+
+    showResizeDateIndicator(left, width, mouseX, mouseY) {
+        const indicator = document.getElementById('dragDateIndicator');
+        if (!indicator) return;
+
+        const dayWidth = this.dayWidth * this.zoomLevel;
+
+        // Format date helper
+        const formatDate = (d) => d.toLocaleDateString('sv-SE', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+
+        let startDateStr, endDateStr;
+
+        if (this.resizeSide === 'left') {
+            // Dragging start - calculate new start, keep original end
+            const startDays = left / dayWidth;
+            const newStartDate = new Date(this.startDate);
+            newStartDate.setDate(newStartDate.getDate() + Math.round(startDays));
+            startDateStr = formatDate(newStartDate);
+            endDateStr = formatDate(this.parseDate(this.resizeOrigEndDate));
+        } else {
+            // Dragging end - keep original start, calculate new end
+            const endDays = (left + width) / dayWidth;
+            const newEndDate = new Date(this.startDate);
+            newEndDate.setDate(newEndDate.getDate() + Math.round(endDays));
+            startDateStr = formatDate(this.parseDate(this.resizeOrigStartDate));
+            endDateStr = formatDate(newEndDate);
+        }
+
+        indicator.innerHTML = `
+            <div class="date-range">
+                <span class="date-value">${startDateStr}</span>
+                <span class="date-arrow">→</span>
+                <span class="date-value">${endDateStr}</span>
+            </div>
+        `;
+
+        // Position indicator near cursor
+        indicator.style.left = (mouseX + 15) + 'px';
+        indicator.style.top = (mouseY - 40) + 'px';
+        indicator.classList.add('visible');
     }
 
     // Auto-save with debounce
@@ -3989,7 +4423,7 @@ class TimelineApp {
     // Parse a date string (YYYY-MM-DD) as local date, avoiding UTC timezone shift
     parseDate(dateStr) {
         if (dateStr instanceof Date) return dateStr;
-        if (!dateStr || dateStr === '') return new Date();
+        if (!dateStr || dateStr === '') return null;
         const [y, m, d] = dateStr.split('-').map(Number);
         return new Date(y, m - 1, d);
     }
@@ -3997,7 +4431,10 @@ class TimelineApp {
     // Date validation
     validateDates(startDate, endDate) {
         if (!startDate || !endDate) return true;
-        return this.parseDate(startDate) <= this.parseDate(endDate);
+        const start = this.parseDate(startDate);
+        const end = this.parseDate(endDate);
+        if (!start || !end) return true;
+        return start <= end;
     }
 
     // Check for date collisions with existing events
@@ -4005,12 +4442,14 @@ class TimelineApp {
         if (!startDate) return [];
 
         const start = this.parseDate(startDate);
+        if (!start) return [];
         const end = endDate ? this.parseDate(endDate) : start;
 
         return this.events.filter(event => {
             if (excludeId && event.id === excludeId) return false;
 
             const eventStart = this.parseDate(event.start || event.date);
+            if (!eventStart) return false;
             const eventEnd = event.end ? this.parseDate(event.end) : eventStart;
 
             // Check if date ranges overlap
@@ -4030,103 +4469,6 @@ class TimelineApp {
         const found = this.statuses.find(s => s.id === status);
         return found ? found.name : status;
     }
-
-    // PDF Export
-    exportToPDF() {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            // Title
-            doc.setFontSize(20);
-            doc.text('Timeline', 20, 20);
-
-            // Date
-            doc.setFontSize(10);
-            doc.text(`Exporterad: ${new Date().toLocaleDateString('sv-SE')} `, 20, 30);
-
-            let yPos = 45;
-
-            // Projects
-            if (this.projects.length > 0) {
-                doc.setFontSize(14);
-                doc.text('Projekt', 20, yPos);
-                yPos += 10;
-
-                doc.setFontSize(10);
-                this.projects.forEach((project, index) => {
-                    if (yPos > 270) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-
-                    const startDate = this.parseDate(project.start).toLocaleDateString('sv-SE');
-                    const endDate = this.parseDate(project.end).toLocaleDateString('sv-SE');
-                    const status = this.getStatusLabel(project.status || 'implementation');
-
-                    doc.setFont(undefined, 'bold');
-                    doc.text(`${index + 1}. ${project.name} `, 20, yPos);
-                    yPos += 6;
-
-                    doc.setFont(undefined, 'normal');
-                    if (project.lead) {
-                        doc.text(`   Projektledare: ${project.lead} `, 20, yPos);
-                        yPos += 5;
-                    }
-                    doc.text(`   Status: ${status} `, 20, yPos);
-                    yPos += 5;
-                    doc.text(`   Period: ${startDate} - ${endDate} `, 20, yPos);
-                    yPos += 8;
-                });
-            }
-
-            // Events
-            const standaloneEvents = this.events.filter(e => !e.projectId);
-            if (standaloneEvents.length > 0) {
-                yPos += 5;
-                if (yPos > 270) {
-                    doc.addPage();
-                    yPos = 20;
-                }
-
-                doc.setFontSize(14);
-                doc.text('Händelser', 20, yPos);
-                yPos += 10;
-
-                doc.setFontSize(10);
-                standaloneEvents.forEach((event, index) => {
-                    if (yPos > 270) {
-                        doc.addPage();
-                        yPos = 20;
-                    }
-
-                    const startDate = this.parseDate(event.start || event.date).toLocaleDateString('sv-SE');
-                    const endDate = event.end ? this.parseDate(event.end).toLocaleDateString('sv-SE') : null;
-
-                    doc.setFont(undefined, 'bold');
-                    doc.text(`${index + 1}. ${event.name} `, 20, yPos);
-                    yPos += 6;
-
-                    doc.setFont(undefined, 'normal');
-                    if (endDate) {
-                        doc.text(`   Period: ${startDate} - ${endDate} `, 20, yPos);
-                    } else {
-                        doc.text(`   Datum: ${startDate} `, 20, yPos);
-                    }
-                    yPos += 8;
-                });
-            }
-
-            // Save PDF
-            const filename = `Timeline - ${new Date().toISOString().split('T')[0]}.pdf`;
-            doc.save(filename);
-            this.showToast('PDF exporterad!', 'success');
-        } catch (error) {
-            console.error('PDF export error:', error);
-            this.showToast('Kunde inte exportera PDF', 'error');
-        }
-    }
-
 
     async exportData() {
         try {
