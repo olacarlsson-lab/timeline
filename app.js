@@ -2042,6 +2042,11 @@ class TimelineApp {
 
     // Extracted helper for rendering a single project row to allow reuse
     renderProjectRow(project, container) {
+        // Skip projects with missing dates
+        if (!project.start || !project.end) {
+            console.warn('Skipping project with missing dates:', project.name);
+            return;
+        }
         const startPos = this.dateToPosition(project.start);
         const endPos = this.dateToPosition(project.end);
         const width = Math.max(2, endPos - startPos); // Minimum 2px width
@@ -4728,6 +4733,22 @@ class TimelineApp {
         // Ensure arrays exist
         data.projects = data.projects || [];
         data.events = data.events || [];
+
+        // Validate and fix projects with missing dates
+        data.projects = data.projects.filter(project => {
+            // Project must have a start date
+            if (!project.start) {
+                console.warn('Skipping project without start date:', project.name);
+                return false;
+            }
+            // If end date is missing, default to start date
+            if (!project.end) {
+                console.warn('Project missing end date, defaulting to start date:', project.name);
+                project.end = project.start;
+                project.endType = project.startType || 'date';
+            }
+            return true;
+        });
 
         try {
             this.pushUndoState();
