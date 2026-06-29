@@ -317,7 +317,10 @@ const DEFAULT_LABELS = {
     phaseName: 'Fasnamn',
     addPhase: '+ Lägg till fas',
     addStdPhases: 'Lägg till standardfaser',
-    importExcel: 'Importera Excel (konstprojekt)...'
+    importExcel: 'Importera Excel (konstprojekt)...',
+    phaseDisplay: 'Faser',
+    phaseInbar: 'I projektstapeln',
+    phaseBelow: 'Under projektet (kompakt)'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -444,7 +447,10 @@ const DEFAULT_LABELS_EN = {
     phaseName: 'Phase name',
     addPhase: '+ Add phase',
     addStdPhases: 'Add standard phases',
-    importExcel: 'Import Excel (art projects)...'
+    importExcel: 'Import Excel (art projects)...',
+    phaseDisplay: 'Phases',
+    phaseInbar: 'Inside the project bar',
+    phaseBelow: 'Below the project (compact)'
 };
 
 class TimelineApp {
@@ -497,6 +503,7 @@ class TimelineApp {
 
         // Layout state
         this.isCompact = true;
+        this.phaseDisplay = this.loadData('timeline_phasedisplay') || 'inbar';
         this.collapsedGroups = new Set();
         this.groupingEnabled = true;
         this.isResizing = false;
@@ -968,6 +975,9 @@ class TimelineApp {
             this.updateFilterIndicator();
         });
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
+        safeBind('phaseDisplaySelect', 'change', (e) => this.setPhaseDisplay(e.target.value));
+        const phaseDisplaySelect = document.getElementById('phaseDisplaySelect');
+        if (phaseDisplaySelect) phaseDisplaySelect.value = this.phaseDisplay;
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importDropdownBtn', 'click', (e) => {
@@ -1216,6 +1226,30 @@ class TimelineApp {
         });
 
         document.addEventListener('mousemove', (e) => {
+            // Handle phase segment dragging / resizing inside a project bar
+            if (this.isPhaseDragging && this.phaseSeg) {
+                const dx = e.clientX - this.phaseStartX;
+                if (!this.phaseMoved && Math.abs(dx) > 3) {
+                    this.pushUndoState();
+                    this.phaseMoved = true;
+                }
+                const containerWidth = this.phaseContainerWidth;
+                let newLeft = this.phaseOrigLeft;
+                let newWidth = this.phaseOrigWidth;
+                if (this.phaseMode === 'move') {
+                    newLeft = Math.max(0, Math.min(containerWidth - this.phaseOrigWidth, this.phaseOrigLeft + dx));
+                } else if (this.phaseMode === 'left') {
+                    newLeft = Math.max(0, Math.min(this.phaseOrigLeft + this.phaseOrigWidth - 4, this.phaseOrigLeft + dx));
+                    newWidth = this.phaseOrigWidth + (this.phaseOrigLeft - newLeft);
+                } else { // right
+                    newWidth = Math.max(4, Math.min(containerWidth - this.phaseOrigLeft, this.phaseOrigWidth + dx));
+                }
+                this.phaseSeg.style.left = newLeft + 'px';
+                this.phaseSeg.style.width = newWidth + 'px';
+                this.showDragDateIndicator(this.phaseOriginPx + newLeft, newWidth, e.clientX, e.clientY);
+                return;
+            }
+
             // Handle project dragging (move entire project)
             if (this.isProjectDragging && this.dragBar) {
                 const dx = e.clientX - this.projectDragStartX;
@@ -1273,6 +1307,32 @@ class TimelineApp {
         document.addEventListener('mouseup', (e) => {
             // Hide date indicator
             this.hideDragDateIndicator();
+
+            // Handle phase segment drag/resize end
+            if (this.isPhaseDragging && this.phaseSeg) {
+                if (this.phaseMoved) {
+                    const dayWidth = this.dayWidth * this.zoomLevel;
+                    const segLeft = parseFloat(this.phaseSeg.style.left);
+                    const segWidth = parseFloat(this.phaseSeg.style.width);
+                    const absStart = this.phaseOriginPx + segLeft;
+                    const absEnd = absStart + segWidth;
+                    const startDate = new Date(this.startDate);
+                    startDate.setDate(startDate.getDate() + Math.round(absStart / dayWidth));
+                    const endDate = new Date(this.startDate);
+                    endDate.setDate(endDate.getDate() + Math.round(absEnd / dayWidth));
+                    const phase = this.phaseProject.phases[this.phaseIndex];
+                    if (phase) {
+                        phase.start = startDate.toISOString().split('T')[0];
+                        phase.end = endDate.toISOString().split('T')[0];
+                    }
+                    this.scheduleAutoSave();
+                    this.render();
+                }
+                this.isPhaseDragging = false;
+                this.phaseSeg = null;
+                this.phaseProject = null;
+                return;
+            }
 
             // Handle project drag end
             if (this.isProjectDragging && this.dragBar) {
@@ -2079,6 +2139,62 @@ class TimelineApp {
     }
 
     // Extracted helper for rendering a single project row to allow reuse
+    // Build one interactive phase element (in-bar segment or below sub-bar).
+    createPhaseSegment(project, phaseIndex, phase, opts) {
+        const seg = document.createElement('div');
+        seg.className = opts.className;
+        seg.dataset.projectId = project.id;
+        seg.dataset.phaseIndex = phaseIndex;
+        seg.style.left = opts.leftPx + 'px';
+        seg.style.width = opts.widthPx + 'px';
+        seg.style.backgroundColor = phase.color || opts.color;
+        seg.title = `${phase.name}: ${this.formatDateDisplay(this.parseDate(phase.start), 'date')} – ${this.formatDateDisplay(this.parseDate(phase.end), 'date')}`;
+
+        if (opts.widthPx > opts.labelMinWidth) {
+            const lbl = document.createElement('span');
+            lbl.className = 'phase-seg-label';
+            lbl.textContent = phase.name || '';
+            seg.appendChild(lbl);
+        }
+
+        const leftHandle = document.createElement('div');
+        leftHandle.className = 'phase-resize phase-resize-left';
+        const rightHandle = document.createElement('div');
+        rightHandle.className = 'phase-resize phase-resize-right';
+        seg.appendChild(leftHandle);
+        seg.appendChild(rightHandle);
+
+        const origin = opts.originPx;
+        const container = opts.containerWidth;
+        leftHandle.addEventListener('mousedown', (e) => this.beginPhaseDrag(e, 'left', project, phaseIndex, seg, origin, container));
+        rightHandle.addEventListener('mousedown', (e) => this.beginPhaseDrag(e, 'right', project, phaseIndex, seg, origin, container));
+        seg.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.phase-resize')) return;
+            this.beginPhaseDrag(e, 'move', project, phaseIndex, seg, origin, container);
+        });
+        // Prevent a phase click that followed a drag from toggling the sidebar.
+        seg.addEventListener('click', (e) => {
+            if (this.phaseMoved) { e.stopPropagation(); this.phaseMoved = false; }
+        });
+        return seg;
+    }
+
+    beginPhaseDrag(e, mode, project, phaseIndex, seg, originPx, containerWidth) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.isPhaseDragging = true;
+        this.phaseMode = mode;
+        this.phaseProject = project;
+        this.phaseIndex = phaseIndex;
+        this.phaseSeg = seg;
+        this.phaseStartX = e.clientX;
+        this.phaseOrigLeft = parseFloat(seg.style.left);
+        this.phaseOrigWidth = parseFloat(seg.style.width);
+        this.phaseOriginPx = originPx;
+        this.phaseContainerWidth = containerWidth;
+        this.phaseMoved = false;
+    }
+
     renderProjectRow(project, container) {
         // Skip projects with missing dates
         if (!project.start || !project.end) {
@@ -2125,23 +2241,53 @@ class TimelineApp {
 
         // Phase segments (faser) drawn inside the bar, positioned absolutely
         // relative to the bar's own left edge so they share the timeline scale.
-        if (Array.isArray(project.phases) && project.phases.length) {
-            project.phases.forEach(phase => {
+        // Each segment can be dragged to move and has edge handles to resize.
+        const hasPhases = Array.isArray(project.phases) && project.phases.length;
+        if (hasPhases && this.phaseDisplay !== 'below') {
+            // In-bar mode: tiles positioned relative to the bar's left edge.
+            project.phases.forEach((phase, phaseIndex) => {
                 if (!phase.start || !phase.end) return;
                 const pStart = this.dateToPosition(phase.start);
                 const pEnd = this.dateToPosition(phase.end);
-                const seg = document.createElement('div');
-                seg.className = 'project-phase-segment';
-                // Clamp so phases never spill outside the bar visually.
                 const left = Math.max(0, pStart - startPos);
                 const segWidth = Math.max(2, Math.min(width, pEnd - startPos) - left);
-                seg.style.left = left + 'px';
-                seg.style.width = segWidth + 'px';
-                seg.style.backgroundColor = phase.color || color;
-                seg.title = `${phase.name}: ${this.formatDateDisplay(this.parseDate(phase.start), 'date')} – ${this.formatDateDisplay(this.parseDate(phase.end), 'date')}`;
+                const seg = this.createPhaseSegment(project, phaseIndex, phase, {
+                    className: 'project-phase-segment',
+                    leftPx: left,
+                    widthPx: segWidth,
+                    color: color,
+                    originPx: startPos,
+                    containerWidth: width,
+                    labelMinWidth: 34
+                });
                 bar.appendChild(seg);
             });
             bar.classList.add('has-phases');
+        } else if (hasPhases && this.phaseDisplay === 'below') {
+            // Compact below mode: a thin phase track beneath the bar, with
+            // sub-bars positioned absolutely on the full timeline scale.
+            const totalWidth = this.getTotalWidth();
+            const track = document.createElement('div');
+            track.className = 'project-phase-track';
+            track.style.width = totalWidth + 'px';
+            project.phases.forEach((phase, phaseIndex) => {
+                if (!phase.start || !phase.end) return;
+                const pStart = this.dateToPosition(phase.start);
+                const pEnd = this.dateToPosition(phase.end);
+                const subWidth = Math.max(4, pEnd - pStart);
+                const sub = this.createPhaseSegment(project, phaseIndex, phase, {
+                    className: 'project-phase-subbar',
+                    leftPx: pStart,
+                    widthPx: subWidth,
+                    color: color,
+                    originPx: 0,
+                    containerWidth: totalWidth,
+                    labelMinWidth: 28
+                });
+                track.appendChild(sub);
+            });
+            row.classList.add('phase-below');
+            row.appendChild(track);
         }
 
         // Drag handles for resizing
@@ -3148,6 +3294,12 @@ class TimelineApp {
         this.render();
     }
 
+    setPhaseDisplay(mode) {
+        this.phaseDisplay = (mode === 'below') ? 'below' : 'inbar';
+        this.saveData('timeline_phasedisplay', this.phaseDisplay);
+        this.render();
+    }
+
     setFilterLead(lead) {
         this.filterLead = lead;
         this.render();
@@ -3858,12 +4010,16 @@ class TimelineApp {
         const row = document.createElement('div');
         row.className = 'phase-row';
         row.innerHTML = `
-            <input type="text" class="phase-name" placeholder="${this.labels.phaseName || 'Fasnamn'}" value="${(phase.name || '').replace(/"/g, '&quot;')}">
-            <input type="date" class="phase-start" value="${phase.start || ''}">
-            <span class="phase-sep">–</span>
-            <input type="date" class="phase-end" value="${phase.end || ''}">
-            <input type="color" class="phase-color" value="${phase.color || '#31567D'}">
-            <button type="button" class="phase-remove" title="${this.labels.delete || 'Ta bort'}">&times;</button>
+            <div class="phase-row-top">
+                <input type="color" class="phase-color" value="${phase.color || '#31567D'}">
+                <input type="text" class="phase-name" placeholder="${this.labels.phaseName || 'Fasnamn'}" value="${(phase.name || '').replace(/"/g, '&quot;')}">
+                <button type="button" class="phase-remove" title="${this.labels.delete || 'Ta bort'}">&times;</button>
+            </div>
+            <div class="phase-row-dates">
+                <input type="date" class="phase-start" value="${phase.start || ''}">
+                <span class="phase-sep">–</span>
+                <input type="date" class="phase-end" value="${phase.end || ''}">
+            </div>
         `;
         row.querySelector('.phase-remove').addEventListener('click', () => row.remove());
         return row;
