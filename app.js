@@ -325,7 +325,9 @@ const DEFAULT_LABELS = {
     budgetTotal: 'Total investeringsbudget',
     budgetPerYear: 'Per år',
     budgetPerLead: 'Per projektledare',
-    budgetMissing: 'utan budget'
+    budgetMissing: 'utan budget',
+    filterShort: 'Filtrera',
+    clearFilters: 'Rensa'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -460,7 +462,9 @@ const DEFAULT_LABELS_EN = {
     budgetTotal: 'Total investment budget',
     budgetPerYear: 'Per year',
     budgetPerLead: 'Per project lead',
-    budgetMissing: 'without budget'
+    budgetMissing: 'without budget',
+    filterShort: 'Filter',
+    clearFilters: 'Clear'
 };
 
 class TimelineApp {
@@ -501,6 +505,7 @@ class TimelineApp {
         this.filterStatus = '';
         this.filterAreaValue = '';
         this.searchQuery = '';
+        this.searchText = '';
         this.activeSidebarProject = null;
 
         // DOM Elements
@@ -786,19 +791,19 @@ class TimelineApp {
     }
 
     populateAreaSelects() {
-        // Filter select
-        const filterArea = document.getElementById('filterArea');
-        if (filterArea) {
-            const currentVal = filterArea.value;
-            filterArea.innerHTML = `<option value="">${this.labels.all}</option>`;
+        // Filter selects (panel + visible filter bar)
+        [['filterArea', this.labels.all], ['barArea', this.labels.area || 'Område']].forEach(([id, allLabel]) => {
+            const filterArea = document.getElementById(id);
+            if (!filterArea) return;
+            filterArea.innerHTML = `<option value="">${allLabel}</option>`;
             this.areas.forEach(a => {
                 const opt = document.createElement('option');
                 opt.value = a.color;
                 opt.textContent = a.name;
                 filterArea.appendChild(opt);
             });
-            filterArea.value = currentVal;
-        }
+            filterArea.value = this.filterAreaValue || '';
+        });
 
         // Project color select + Edit color select
         ['projectColor', 'editColor'].forEach(id => {
@@ -842,18 +847,18 @@ class TimelineApp {
     }
 
     populateStatusSelects() {
-        const filterStatus = document.getElementById('filterStatus');
-        if (filterStatus) {
-            const currentVal = filterStatus.value;
-            filterStatus.innerHTML = `<option value="">${this.labels.all}</option>`;
+        [['filterStatus', this.labels.all], ['barStatus', this.labels.status || 'Status']].forEach(([id, allLabel]) => {
+            const sel = document.getElementById(id);
+            if (!sel) return;
+            sel.innerHTML = `<option value="">${allLabel}</option>`;
             this.statuses.forEach(s => {
                 const opt = document.createElement('option');
                 opt.value = s.id;
                 opt.textContent = s.name;
-                filterStatus.appendChild(opt);
+                sel.appendChild(opt);
             });
-            filterStatus.value = currentVal;
-        }
+            sel.value = this.filterStatus || '';
+        });
 
         ['projectStatus', 'editStatus'].forEach(id => {
             const select = document.getElementById(id);
@@ -965,25 +970,21 @@ class TimelineApp {
         safeBind('undoBtn', 'click', () => this.undo());
         safeBind('redoBtn', 'click', () => this.redo());
 
-        safeBind('searchInput', 'input', (e) => {
-            this.searchQuery = e.target.value.toLowerCase();
-            this.render();
-            this.updateFilterIndicator();
-        });
+        const onSearch = (val) => {
+            this.searchText = val || '';
+            this.searchQuery = this.searchText.toLowerCase();
+            this.afterFilterChange();
+        };
+        safeBind('searchInput', 'input', (e) => onSearch(e.target.value));
+        safeBind('barSearch', 'input', (e) => onSearch(e.target.value));
 
-        safeBind('filterLead', 'change', (e) => this.setFilterLead(e.target.value));
-
-        safeBind('filterStatus', 'change', (e) => {
-            this.filterStatus = e.target.value;
-            this.render();
-            this.updateFilterIndicator();
-        });
-
-        safeBind('filterArea', 'change', (e) => {
-            this.filterAreaValue = e.target.value;
-            this.render();
-            this.updateFilterIndicator();
-        });
+        safeBind('filterLead', 'change', (e) => { this.filterLead = e.target.value; this.afterFilterChange(); });
+        safeBind('barLead', 'change', (e) => { this.filterLead = e.target.value; this.afterFilterChange(); });
+        safeBind('filterStatus', 'change', (e) => { this.filterStatus = e.target.value; this.afterFilterChange(); });
+        safeBind('barStatus', 'change', (e) => { this.filterStatus = e.target.value; this.afterFilterChange(); });
+        safeBind('filterArea', 'change', (e) => { this.filterAreaValue = e.target.value; this.afterFilterChange(); });
+        safeBind('barArea', 'change', (e) => { this.filterAreaValue = e.target.value; this.afterFilterChange(); });
+        safeBind('barClear', 'click', () => this.clearFilters());
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
         safeBind('phaseDisplaySelect', 'change', (e) => this.setPhaseDisplay(e.target.value));
         const phaseDisplaySelect = document.getElementById('phaseDisplaySelect');
@@ -3357,37 +3358,79 @@ class TimelineApp {
 
     setFilterLead(lead) {
         this.filterLead = lead;
+        this.afterFilterChange();
+    }
+
+    // Apply a filter change everywhere: re-render, refresh indicators and keep
+    // the panel filters and the visible filter bar in sync.
+    afterFilterChange() {
         this.render();
         this.updateFilterIndicator();
+        this.syncFilterUI();
+    }
+
+    syncFilterUI() {
+        const set = (id, v) => {
+            const el = document.getElementById(id);
+            if (el && el.value !== v) el.value = v;
+        };
+        set('searchInput', this.searchText || '');
+        set('barSearch', this.searchText || '');
+        set('filterLead', this.filterLead || '');
+        set('barLead', this.filterLead || '');
+        set('filterStatus', this.filterStatus || '');
+        set('barStatus', this.filterStatus || '');
+        set('filterArea', this.filterAreaValue || '');
+        set('barArea', this.filterAreaValue || '');
+        this.updateFilterCount();
+    }
+
+    clearFilters() {
+        this.searchText = '';
+        this.searchQuery = '';
+        this.filterLead = '';
+        this.filterStatus = '';
+        this.filterAreaValue = '';
+        this.afterFilterChange();
+    }
+
+    updateFilterCount() {
+        const el = document.getElementById('filterCount');
+        if (!el) return;
+        const total = this.projects.length;
+        const shown = this.getFilteredProjects().length;
+        const active = this.searchQuery || this.filterLead || this.filterStatus || this.filterAreaValue;
+        el.textContent = active ? `${shown} / ${total}` : `${total}`;
+        const bar = document.getElementById('filterBar');
+        if (bar) bar.classList.toggle('has-active-filter', !!active);
     }
 
 
     updateLeadFilter() {
-        const select = document.getElementById('filterLead');
-        const currentValue = select.value;
-
         // Get unique leads from projects
         const leads = [...new Set(this.projects
             .map(p => p.lead)
             .filter(lead => lead && lead.trim())
         )].sort((a, b) => a.localeCompare(b, 'sv'));
 
-        // Rebuild options
-        select.innerHTML = `<option value="">${this.labels.all || 'Alla'}</option>`;
-        leads.forEach(lead => {
-            const option = document.createElement('option');
-            option.value = lead;
-            option.textContent = lead;
-            select.appendChild(option);
-        });
+        if (!leads.includes(this.filterLead)) this.filterLead = '';
 
-        // Restore selection if still valid
-        if (leads.includes(currentValue)) {
-            select.value = currentValue;
-        } else {
-            select.value = '';
-            this.filterLead = '';
-        }
+        // Populate both the panel filter and the visible filter-bar select.
+        ['filterLead', 'barLead'].forEach(id => {
+            const select = document.getElementById(id);
+            if (!select) return;
+            const allLabel = id === 'barLead'
+                ? (this.labels.projectLead || 'Projektledare')
+                : (this.labels.all || 'Alla');
+            select.innerHTML = `<option value="">${allLabel}</option>`;
+            leads.forEach(lead => {
+                const option = document.createElement('option');
+                option.value = lead;
+                option.textContent = lead;
+                select.appendChild(option);
+            });
+            select.value = this.filterLead;
+        });
     }
 
     getFilteredProjects() {
@@ -3494,6 +3537,7 @@ class TimelineApp {
         }
 
         this.renderTodayMarker();
+        this.updateFilterCount();
 
         // Restore scroll position
         if (this.timelineBody) {
