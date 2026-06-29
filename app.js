@@ -506,6 +506,12 @@ class TimelineApp {
         this.filterAreaValue = '';
         this.searchQuery = '';
         this.searchText = '';
+        // UI prototype state
+        this.brushMode = false;
+        this.focusProjectId = null;
+        this.showRibbon = true;
+        this.cmdIndex = 0;
+        this.cmdCommands = [];
         this.activeSidebarProject = null;
 
         // DOM Elements
@@ -959,6 +965,7 @@ class TimelineApp {
         safeBind('view1Year', 'click', () => this.setView('1year'));
         safeBind('view3Months', 'click', () => this.setView('3months'));
         safeBind('todayBtn', 'click', () => this.scrollToToday());
+        this.bindPrototypeEvents(safeBind);
 
         // Undo/Redo buttons
         safeBind('undoBtn', 'click', () => this.undo());
@@ -1254,6 +1261,11 @@ class TimelineApp {
                 }
                 this.phaseSeg.style.left = newLeft + 'px';
                 this.phaseSeg.style.width = newWidth + 'px';
+                // 11. Snap guide on the edge being dragged.
+                const edgePx = (this.phaseMode === 'right')
+                    ? this.phaseOriginPx + newLeft + newWidth
+                    : this.phaseOriginPx + newLeft;
+                this.showSnapGuide(this.snapPosition(edgePx).px);
                 this.showDragDateIndicator(this.phaseOriginPx + newLeft, newWidth, e.clientX, e.clientY);
                 return;
             }
@@ -1324,24 +1336,23 @@ class TimelineApp {
                     const segWidth = parseFloat(this.phaseSeg.style.width);
                     const absStart = this.phaseOriginPx + segLeft;
                     const absEnd = absStart + segWidth;
-                    const startDate = new Date(this.startDate);
-                    startDate.setDate(startDate.getDate() + Math.round(absStart / dayWidth));
-                    const endDate = new Date(this.startDate);
-                    endDate.setDate(endDate.getDate() + Math.round(absEnd / dayWidth));
                     const phases = this.phaseProject.phases;
                     const phase = phases[this.phaseIndex];
                     if (phase) {
-                        // Only update the edge(s) actually dragged so pixel→day
-                        // rounding can't nudge the edge that should stay put.
+                        // 11. Snap the dragged edge(s) to the zoom-appropriate grid.
                         if (this.phaseMode === 'move') {
-                            phase.start = this.formatDateISO(startDate);
-                            phase.end = this.formatDateISO(endDate);
+                            const snappedStart = this.snapPosition(absStart).date;
+                            const durationDays = Math.round(segWidth / dayWidth);
+                            const endD = new Date(snappedStart);
+                            endD.setDate(endD.getDate() + durationDays);
+                            phase.start = this.formatDateISO(snappedStart);
+                            phase.end = this.formatDateISO(endD);
                         } else if (this.phaseMode === 'left') {
-                            phase.start = this.formatDateISO(startDate);
+                            phase.start = this.formatDateISO(this.snapPosition(absStart).date);
                             const prev = phases[this.phaseIndex - 1];
                             if (prev && prev.end && (!prev.start || phase.start >= prev.start)) prev.end = phase.start;
                         } else { // right
-                            phase.end = this.formatDateISO(endDate);
+                            phase.end = this.formatDateISO(this.snapPosition(absEnd).date);
                             const next = phases[this.phaseIndex + 1];
                             if (next && next.start && (!next.end || phase.end <= next.end)) next.start = phase.end;
                         }
@@ -1349,6 +1360,7 @@ class TimelineApp {
                     this.scheduleAutoSave();
                     this.render();
                 }
+                this.hideSnapGuide();
                 this.isPhaseDragging = false;
                 this.phaseSeg = null;
                 this.phaseProject = null;
@@ -1465,6 +1477,14 @@ class TimelineApp {
                 const project = this.activeSidebarProject;
                 this.closeProjectSidebar();
                 this.openEditModal(project, 'project');
+            }
+        });
+
+        safeBind('sidebarFocusBtn', 'click', () => {
+            if (this.activeSidebarProject) {
+                const id = this.activeSidebarProject.id;
+                this.closeProjectSidebar();
+                this.setFocus(this.focusProjectId === id ? null : id);
             }
         });
 
@@ -2296,7 +2316,21 @@ class TimelineApp {
         // relative to the bar's own left edge so they share the timeline scale.
         // Each segment can be dragged to move and has edge handles to resize.
         const hasPhases = Array.isArray(project.phases) && project.phases.length;
-        if (hasPhases && this.phaseDisplay !== 'below') {
+        const pixelsPerDay = this.dayWidth * this.zoomLevel;
+        if (hasPhases && this.phaseDisplay !== 'below' && pixelsPerDay < 3) {
+            // 2. Semantic zoom: when zoomed far out, collapse phase tiles to thin
+            // boundary ticks so the bar stays a clean solid block.
+            project.phases.forEach(phase => {
+                if (!phase.start) return;
+                const left = Math.max(0, Math.min(width, this.dateToPosition(phase.start) - startPos));
+                const tick = document.createElement('div');
+                tick.className = 'phase-tick';
+                tick.style.left = left + 'px';
+                tick.style.background = phase.color || 'rgba(255,255,255,0.6)';
+                bar.appendChild(tick);
+            });
+            bar.classList.add('has-phases');
+        } else if (hasPhases && this.phaseDisplay !== 'below') {
             // In-bar mode: tiles positioned relative to the bar's left edge.
             project.phases.forEach((phase, phaseIndex) => {
                 if (!phase.start || !phase.end) return;
@@ -2341,6 +2375,22 @@ class TimelineApp {
             });
             row.classList.add('phase-below');
             row.appendChild(track);
+        }
+
+        // 8. Focus / spotlight: highlight the focused row, dim the rest.
+        if (this.focusProjectId === project.id) row.classList.add('focused');
+
+        // 9. Countdown to inauguration / completion.
+        const milestone = this.getProjectMilestone(project);
+        if (milestone) {
+            const months = this.monthsUntil(milestone);
+            if (months !== null && months >= 0 && months <= 60) {
+                const chip = document.createElement('div');
+                chip.className = 'countdown-chip';
+                chip.style.left = Math.min(width - 4, this.dateToPosition(milestone) - startPos) + 'px';
+                chip.textContent = '🎉 ' + this.formatCountdown(months);
+                bar.appendChild(chip);
+            }
         }
 
         // Drag handles for resizing
@@ -2393,6 +2443,8 @@ class TimelineApp {
             if (this.hasDragged || this.projectDragMoved) return;
             if (e.target.closest('.project-event-marker') || e.target.closest('.project-event-bar') || e.target.closest('.event-container-duration-symbol')) return;
             e.stopPropagation();
+            // 10. Brush mode: clicking a project splits it into standard phases.
+            if (this.brushMode) { this.brushProject(project); return; }
             this.openProjectSidebar(project);
         });
 
@@ -3535,6 +3587,10 @@ class TimelineApp {
 
         this.renderTodayMarker();
         this.updateFilterCount();
+        this.renderStageLegend();
+        this.renderBudgetRibbon();
+        this.renderMiniMap();
+        if (this.timelineContent) this.timelineContent.classList.toggle('focus-mode', !!this.focusProjectId);
 
         // Restore scroll position
         if (this.timelineBody) {
@@ -3546,7 +3602,311 @@ class TimelineApp {
         requestAnimationFrame(() => {
             this.updateStickyLabels();
             this.syncGridHeight();
+            this.updateMiniMapViewport();
         });
+    }
+
+    // ===================== UI prototypes =====================
+
+    // Colour for a stage/status id (from the art-stage palette when available).
+    getStatusColor(id) {
+        if (typeof KonstprojektImport !== 'undefined' && KonstprojektImport.STADIE) {
+            const s = KonstprojektImport.STADIE.find(x => x.id === id);
+            if (s) return s.color;
+        }
+        const palette = ['#9AA5B1', '#6B7280', '#31567D', '#E8BC1C', '#BA4A71', '#37B94B'];
+        const idx = this.statuses.findIndex(s => s.id === id);
+        return palette[(idx + palette.length) % palette.length] || '#7c83e8';
+    }
+
+    // 5. Stage legend that doubles as a status filter.
+    renderStageLegend() {
+        const el = document.getElementById('stageLegend');
+        if (!el) return;
+        el.innerHTML = '';
+        el.classList.toggle('has-active', !!this.filterStatus);
+        this.statuses.forEach(s => {
+            const chip = document.createElement('span');
+            chip.className = 'stage-chip' + (this.filterStatus === s.id ? ' active' : '');
+            const color = this.getStatusColor(s.id);
+            if (this.filterStatus === s.id) chip.style.background = color;
+            chip.innerHTML = `<span class="dot" style="background:${color}"></span>${this.escapeHtml(s.name)}`;
+            chip.addEventListener('click', () => {
+                this.filterStatus = (this.filterStatus === s.id) ? '' : s.id;
+                this.afterFilterChange();
+            });
+            el.appendChild(chip);
+        });
+    }
+
+    // 6. Budget ribbon: investment per year distributed across project spans.
+    renderBudgetRibbon() {
+        const ribbon = document.getElementById('budgetRibbon');
+        const container = document.getElementById('timelineContainer');
+        if (!ribbon || !container) return;
+        container.classList.toggle('show-ribbon', !!this.showRibbon);
+        if (!this.showRibbon) { ribbon.innerHTML = ''; return; }
+
+        const byYear = {};
+        this.getFilteredProjects().forEach(p => {
+            if (!p.budget) return;
+            const s = this.parseDate(p.start), e = this.parseDate(p.end) || s;
+            if (!s) return;
+            const y0 = s.getFullYear(), y1 = Math.max(y0, e.getFullYear());
+            const per = p.budget / (y1 - y0 + 1);
+            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + per;
+        });
+        const years = Object.keys(byYear).map(Number);
+        if (!years.length) { ribbon.innerHTML = ''; return; }
+        const max = Math.max(...years.map(y => byYear[y]));
+        ribbon.style.width = this.getTotalWidth() + 'px';
+        ribbon.innerHTML = years.map(y => {
+            const left = this.dateToPosition(`${y}-01-01`);
+            const right = this.dateToPosition(`${y}-12-31`);
+            const h = Math.max(4, Math.round(byYear[y] / max * 34));
+            const mkr = (byYear[y] / 1e6).toFixed(1);
+            return `<div class="budget-ribbon-bar" style="left:${left}px;width:${Math.max(2, right - left - 2)}px;height:${h}px"></div>
+                    <div class="budget-ribbon-label" style="left:${left}px">${mkr} mkr</div>`;
+        }).join('');
+    }
+
+    // 1. Mini-map / overview strip.
+    renderMiniMap() {
+        const track = document.getElementById('miniMapTrack');
+        const map = document.getElementById('miniMap');
+        if (!track || !map) return;
+        const mapW = map.clientWidth || 1;
+        const totalW = this.getTotalWidth();
+        const scale = mapW / totalW;
+        const projects = this.getFilteredProjects().filter(p => p.start && p.end);
+        const lineH = Math.max(2, Math.min(4, Math.floor(48 / Math.max(1, projects.length))));
+        track.innerHTML = projects.map((p, i) => {
+            const left = this.dateToPosition(p.start) * scale;
+            const w = Math.max(1, (this.dateToPosition(p.end) - this.dateToPosition(p.start)) * scale);
+            const top = 3 + i * (lineH + 1);
+            return `<div class="mini-map-line" style="left:${left}px;width:${w}px;top:${top}px;height:${lineH}px;background:${p.color || '#7c83e8'}"></div>`;
+        }).join('');
+    }
+
+    updateMiniMapViewport() {
+        const vp = document.getElementById('miniMapViewport');
+        const map = document.getElementById('miniMap');
+        if (!vp || !map || !this.timelineBody) return;
+        const mapW = map.clientWidth || 1;
+        const totalW = this.getTotalWidth();
+        const scale = mapW / totalW;
+        vp.style.left = (this.timelineBody.scrollLeft * scale) + 'px';
+        vp.style.width = Math.max(12, this.timelineBody.clientWidth * scale) + 'px';
+    }
+
+    scrollFromMiniMap(clientX, centered = true) {
+        const map = document.getElementById('miniMap');
+        if (!map) return;
+        const rect = map.getBoundingClientRect();
+        const scale = (map.clientWidth || 1) / this.getTotalWidth();
+        let x = (clientX - rect.left) / scale;
+        if (centered) x -= this.timelineBody.clientWidth / 2;
+        this.timelineBody.scrollLeft = x;
+        this.updateMiniMapViewport();
+    }
+
+    // 9. Find a project's inauguration/completion date for the countdown.
+    getProjectMilestone(project) {
+        const evs = this.events.filter(e => e.projectId === project.id && (e.start || e.date));
+        const inv = evs.find(e => /invigning/i.test(e.name || ''));
+        if (inv) return inv.start || inv.date;
+        const avs = evs.find(e => /avslut/i.test(e.name || ''));
+        if (avs) return avs.start || avs.date;
+        return project.end || null;
+    }
+
+    monthsUntil(iso) {
+        const d = this.parseDate(iso);
+        if (!d) return null;
+        const now = new Date();
+        return Math.round((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+    }
+
+    formatCountdown(months) {
+        if (months <= 1) return 'snart';
+        if (months < 12) return `om ${months} mån`;
+        const years = Math.floor(months / 12);
+        const rem = months % 12;
+        return rem ? `om ${years}å ${rem}m` : `om ${years} år`;
+    }
+
+    // 8. Focus / spotlight mode.
+    setFocus(projectId) {
+        this.focusProjectId = projectId;
+        this.render();
+        if (projectId) {
+            const p = this.projects.find(x => x.id === projectId);
+            if (p) this.scrollToProject(p);
+        }
+    }
+
+    scrollToProject(project) {
+        if (!project.start || !this.timelineBody) return;
+        const pos = this.dateToPosition(project.start);
+        this.timelineBody.scrollLeft = pos - this.timelineBody.clientWidth / 3;
+    }
+
+    // 3. Command palette.
+    buildCommands() {
+        const cmds = [
+            { kind: 'Vy', label: '3 månader', run: () => this.setView('3months') },
+            { kind: 'Vy', label: '1 år', run: () => this.setView('1year') },
+            { kind: 'Vy', label: '2 år', run: () => this.setView('2years') },
+            { kind: 'Gå', label: 'Idag', run: () => this.scrollToToday() },
+            { kind: 'Åtgärd', label: 'Lägg till projekt', run: () => this.openProjectModal() },
+            { kind: 'Åtgärd', label: 'Investeringsplan', run: () => this.openBudgetSummary() },
+            { kind: 'Åtgärd', label: 'Rensa filter', run: () => this.clearFilters() },
+            { kind: 'Åtgärd', label: 'Avsluta fokusläge', run: () => this.setFocus(null) }
+        ];
+        this.projects.forEach(p => {
+            cmds.push({ kind: 'Projekt', label: p.name, run: () => { this.openProjectSidebar(p); this.scrollToProject(p); } });
+            cmds.push({ kind: 'Fokus', label: 'Fokusera: ' + p.name, run: () => this.setFocus(p.id) });
+        });
+        return cmds;
+    }
+
+    openCommandPalette() {
+        this.cmdCommands = this.buildCommands();
+        this.cmdIndex = 0;
+        const overlay = document.getElementById('commandPalette');
+        const input = document.getElementById('cmdInput');
+        overlay.classList.add('active');
+        input.value = '';
+        this.renderCommandList('');
+        setTimeout(() => input.focus(), 0);
+    }
+
+    closeCommandPalette() {
+        document.getElementById('commandPalette').classList.remove('active');
+    }
+
+    renderCommandList(query) {
+        const list = document.getElementById('cmdList');
+        const q = (query || '').toLowerCase();
+        this.cmdFiltered = this.cmdCommands
+            .filter(c => !q || c.label.toLowerCase().includes(q) || c.kind.toLowerCase().includes(q))
+            .slice(0, 40);
+        if (this.cmdIndex >= this.cmdFiltered.length) this.cmdIndex = 0;
+        list.innerHTML = this.cmdFiltered.map((c, i) =>
+            `<div class="cmd-item${i === this.cmdIndex ? ' active' : ''}" data-i="${i}">
+                <span>${this.escapeHtml(c.label)}</span><span class="cmd-kind">${c.kind}</span>
+            </div>`).join('') || '<div class="cmd-item">Inga träffar</div>';
+        list.querySelectorAll('.cmd-item[data-i]').forEach(el => {
+            el.addEventListener('click', () => this.runCommand(parseInt(el.dataset.i, 10)));
+        });
+    }
+
+    runCommand(i) {
+        const c = this.cmdFiltered && this.cmdFiltered[i];
+        this.closeCommandPalette();
+        if (c && c.run) c.run();
+    }
+
+    // 10. Phase brush: split a project into the standard phases in one click.
+    brushProject(project) {
+        if (!project.start || !project.end) return;
+        const defaults = this.getDefaultPhases();
+        const start = this.parseDate(project.start);
+        const end = this.parseDate(project.end);
+        const totalMonths = defaults.reduce((s, p) => s + (p.months || 6), 0);
+        const totalMs = end.getTime() - start.getTime();
+        let cursor = start.getTime();
+        this.pushUndoState();
+        project.phases = defaults.map(def => {
+            const segEnd = cursor + ((def.months || 6) / totalMonths) * totalMs;
+            const ph = { name: def.sv || def.name, start: this.formatDateISO(new Date(cursor)), end: this.formatDateISO(new Date(segEnd)), color: def.color };
+            cursor = segEnd;
+            return ph;
+        });
+        this.scheduleAutoSave();
+        this.render();
+        this.showToast(`Delade "${project.name}" i ${defaults.length} faser`, 'success');
+    }
+
+    // 11. Snap a pixel position to the nearest grid boundary for the zoom level.
+    snapPosition(px) {
+        const ppd = this.dayWidth * this.zoomLevel;
+        const days = px / ppd;
+        const date = new Date(this.startDate);
+        date.setDate(date.getDate() + Math.round(days));
+        if (ppd >= 8) {
+            // snap to Monday (week)
+            const dow = (date.getDay() + 6) % 7;
+            date.setDate(date.getDate() - dow);
+        } else if (ppd >= 1.5) {
+            date.setDate(1); // month start
+        } else {
+            date.setMonth(Math.floor(date.getMonth() / 3) * 3, 1); // quarter start
+        }
+        return { px: this.dateToPosition(date), date };
+    }
+
+    showSnapGuide(px) {
+        const g = document.getElementById('snapGuide');
+        if (!g) return;
+        g.style.left = px + 'px';
+        g.classList.add('visible');
+    }
+    hideSnapGuide() {
+        const g = document.getElementById('snapGuide');
+        if (g) g.classList.remove('visible');
+    }
+
+    bindPrototypeEvents(safeBind) {
+        // 10. Brush mode toggle
+        safeBind('brushToggle', 'click', () => {
+            this.brushMode = !this.brushMode;
+            document.getElementById('brushToggle').classList.toggle('brush-on', this.brushMode);
+            document.body.classList.toggle('brush-active', this.brushMode);
+            this.showToast(this.brushMode ? 'Pensel på: klicka ett projekt för att dela i standardfaser' : 'Pensel av', 'info');
+        });
+
+        // 3. Command palette
+        safeBind('cmdBtn', 'click', () => this.openCommandPalette());
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                this.openCommandPalette();
+            } else if (e.key === 'Escape') {
+                const cmd = document.getElementById('commandPalette');
+                if (cmd && cmd.classList.contains('active')) { this.closeCommandPalette(); return; }
+                if (this.focusProjectId) this.setFocus(null);
+            }
+        });
+        safeBind('cmdInput', 'input', (e) => { this.cmdIndex = 0; this.renderCommandList(e.target.value); });
+        safeBind('cmdInput', 'keydown', (e) => {
+            const n = (this.cmdFiltered || []).length;
+            if (e.key === 'ArrowDown') { e.preventDefault(); this.cmdIndex = Math.min(n - 1, this.cmdIndex + 1); this.renderCommandList(e.target.value); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); this.cmdIndex = Math.max(0, this.cmdIndex - 1); this.renderCommandList(e.target.value); }
+            else if (e.key === 'Enter') { e.preventDefault(); this.runCommand(this.cmdIndex); }
+        });
+        const cmdOverlay = document.getElementById('commandPalette');
+        if (cmdOverlay) cmdOverlay.addEventListener('click', (e) => { if (e.target === cmdOverlay) this.closeCommandPalette(); });
+
+        // 1. Mini-map navigation
+        const map = document.getElementById('miniMap');
+        if (map) {
+            let dragging = false;
+            const onMove = (e) => { if (dragging) this.scrollFromMiniMap(e.clientX); };
+            map.addEventListener('mousedown', (e) => {
+                dragging = true;
+                const onVp = e.target.id === 'miniMapViewport';
+                this.scrollFromMiniMap(e.clientX, !onVp ? true : true);
+            });
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', () => { dragging = false; });
+        }
+
+        // Keep mini-map viewport in sync while scrolling the timeline
+        if (this.timelineBody) {
+            this.timelineBody.addEventListener('scroll', () => this.updateMiniMapViewport());
+        }
+        window.addEventListener('resize', () => { this.renderMiniMap(); this.updateMiniMapViewport(); });
     }
 
     syncGridHeight() {
