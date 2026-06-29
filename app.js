@@ -316,7 +316,7 @@ const DEFAULT_LABELS = {
     phase: 'Fas',
     phaseName: 'Fasnamn',
     addPhase: '+ Lägg till fas',
-    addStdPhases: 'Lägg till standardfaser',
+    addStdPhases: '✨ Lägg till standardfaser',
     importExcel: 'Importera Excel (konstprojekt)...',
     phaseDisplay: 'Faser',
     phaseInbar: 'I projektstapeln',
@@ -327,7 +327,12 @@ const DEFAULT_LABELS = {
     budgetPerLead: 'Per projektledare',
     budgetMissing: 'utan budget',
     filterShort: 'Filtrera',
-    clearFilters: 'Rensa'
+    clearFilters: 'Rensa',
+    viewLayers: 'Visa lager',
+    layerLegend: 'Stadie-legend',
+    layerRibbon: 'Budget per år',
+    layerMiniMap: 'Mini-karta',
+    layerCountdown: 'Nedräkningar'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -453,7 +458,7 @@ const DEFAULT_LABELS_EN = {
     phase: 'Phase',
     phaseName: 'Phase name',
     addPhase: '+ Add phase',
-    addStdPhases: 'Add standard phases',
+    addStdPhases: '✨ Add standard phases',
     importExcel: 'Import Excel (art projects)...',
     phaseDisplay: 'Phases',
     phaseInbar: 'Inside the project bar',
@@ -464,7 +469,12 @@ const DEFAULT_LABELS_EN = {
     budgetPerLead: 'Per project lead',
     budgetMissing: 'without budget',
     filterShort: 'Filter',
-    clearFilters: 'Clear'
+    clearFilters: 'Clear',
+    viewLayers: 'Show layers',
+    layerLegend: 'Stage legend',
+    layerRibbon: 'Budget per year',
+    layerMiniMap: 'Mini-map',
+    layerCountdown: 'Countdowns'
 };
 
 class TimelineApp {
@@ -506,10 +516,13 @@ class TimelineApp {
         this.filterAreaValue = '';
         this.searchQuery = '';
         this.searchText = '';
-        // UI prototype state
-        this.brushMode = false;
+        // Optional view layers (off by default for a clean, readable timeline)
         this.focusProjectId = null;
-        this.showRibbon = true;
+        const layers = this.loadData('timeline_layers') || {};
+        this.showLegend = !!layers.showLegend;
+        this.showRibbon = !!layers.showRibbon;
+        this.showMiniMap = !!layers.showMiniMap;
+        this.showCountdown = !!layers.showCountdown;
         this.cmdIndex = 0;
         this.cmdCommands = [];
         this.activeSidebarProject = null;
@@ -2381,7 +2394,7 @@ class TimelineApp {
         if (this.focusProjectId === project.id) row.classList.add('focused');
 
         // 9. Countdown to inauguration / completion.
-        const milestone = this.getProjectMilestone(project);
+        const milestone = this.showCountdown ? this.getProjectMilestone(project) : null;
         if (milestone) {
             const months = this.monthsUntil(milestone);
             if (months !== null && months >= 0 && months <= 60) {
@@ -2443,8 +2456,6 @@ class TimelineApp {
             if (this.hasDragged || this.projectDragMoved) return;
             if (e.target.closest('.project-event-marker') || e.target.closest('.project-event-bar') || e.target.closest('.event-container-duration-symbol')) return;
             e.stopPropagation();
-            // 10. Brush mode: clicking a project splits it into standard phases.
-            if (this.brushMode) { this.brushProject(project); return; }
             this.openProjectSidebar(project);
         });
 
@@ -3619,10 +3630,23 @@ class TimelineApp {
         return palette[(idx + palette.length) % palette.length] || '#7c83e8';
     }
 
+    setLayer(key, val) {
+        this[key] = !!val;
+        this.saveData('timeline_layers', {
+            showLegend: this.showLegend,
+            showRibbon: this.showRibbon,
+            showMiniMap: this.showMiniMap,
+            showCountdown: this.showCountdown
+        });
+        this.render();
+    }
+
     // 5. Stage legend that doubles as a status filter.
     renderStageLegend() {
         const el = document.getElementById('stageLegend');
         if (!el) return;
+        el.style.display = this.showLegend ? 'flex' : 'none';
+        if (!this.showLegend) { el.innerHTML = ''; return; }
         el.innerHTML = '';
         el.classList.toggle('has-active', !!this.filterStatus);
         this.statuses.forEach(s => {
@@ -3675,6 +3699,8 @@ class TimelineApp {
         const track = document.getElementById('miniMapTrack');
         const map = document.getElementById('miniMap');
         if (!track || !map) return;
+        map.style.display = this.showMiniMap ? 'block' : 'none';
+        if (!this.showMiniMap) { track.innerHTML = ''; return; }
         const mapW = map.clientWidth || 1;
         const totalW = this.getTotalWidth();
         const scale = mapW / totalW;
@@ -3858,13 +3884,16 @@ class TimelineApp {
     }
 
     bindPrototypeEvents(safeBind) {
-        // 10. Brush mode toggle
-        safeBind('brushToggle', 'click', () => {
-            this.brushMode = !this.brushMode;
-            document.getElementById('brushToggle').classList.toggle('brush-on', this.brushMode);
-            document.body.classList.toggle('brush-active', this.brushMode);
-            this.showToast(this.brushMode ? 'Pensel på: klicka ett projekt för att dela i standardfaser' : 'Pensel av', 'info');
-        });
+        // View-layer toggles (declutter for readability)
+        safeBind('toggleLegend', 'change', (e) => this.setLayer('showLegend', e.target.checked));
+        safeBind('toggleRibbon', 'change', (e) => this.setLayer('showRibbon', e.target.checked));
+        safeBind('toggleMiniMap', 'change', (e) => this.setLayer('showMiniMap', e.target.checked));
+        safeBind('toggleCountdown', 'change', (e) => this.setLayer('showCountdown', e.target.checked));
+        const setChk = (id, v) => { const el = document.getElementById(id); if (el) el.checked = v; };
+        setChk('toggleLegend', this.showLegend);
+        setChk('toggleRibbon', this.showRibbon);
+        setChk('toggleMiniMap', this.showMiniMap);
+        setChk('toggleCountdown', this.showCountdown);
 
         // 3. Command palette
         safeBind('cmdBtn', 'click', () => this.openCommandPalette());

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=12">
+    <link rel="stylesheet" href="styles.css?v=13">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -44,7 +44,6 @@
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
                 <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
-                <button id="brushToggle" class="btn btn-secondary" title="Fas-pensel: klicka ett projekt för att dela i standardfaser">✨ Pensel</button>
                 <button id="cmdBtn" class="btn btn-secondary" title="Kommandopalett (Ctrl/Cmd+K)">⌘K</button>
                 <div class="divider"></div>
                 <div class="undo-redo-controls">
@@ -653,6 +652,16 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
+                <label data-label="viewLayers">Visa lager</label>
+                <div class="layer-toggles">
+                    <label class="layer-toggle"><input type="checkbox" id="toggleLegend"> <span data-label="layerLegend">Stadie-legend</span></label>
+                    <label class="layer-toggle"><input type="checkbox" id="toggleRibbon"> <span data-label="layerRibbon">Budget per år</span></label>
+                    <label class="layer-toggle"><input type="checkbox" id="toggleMiniMap"> <span data-label="layerMiniMap">Mini-karta</span></label>
+                    <label class="layer-toggle"><input type="checkbox" id="toggleCountdown"> <span data-label="layerCountdown">Nedräkningar</span></label>
+                </div>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="panel-section">
                 <label data-label="timelineTitle">Timeline</label>
                 <div class="panel-range">
                     <input type="number" id="timelineStartYear" class="year-input" min="2000" max="2100" title="Startår"
@@ -798,7 +807,7 @@
             </div>
         </div>
         <script src="konstprojekt-import.js?v=1"></script>
-        <script src="app.js?v=12"></script>
+        <script src="app.js?v=13"></script>
 </body>
 
 </html>
