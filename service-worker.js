@@ -1,14 +1,16 @@
-const CACHE_NAME = 'tidslinje-v2';
+const CACHE_NAME = 'tidslinje-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './styles.css',
     './app.js',
+    './konstprojekt-import.js',
     './manifest.json',
     './icon.svg',
     './icon-192.png',
     './icon-512.png',
-    './sample-data.json'
+    './sample-data.json',
+    './konstprojekt-data.json'
 ];
 
 // Install event: Cache assets
