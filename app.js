@@ -306,7 +306,18 @@ const DEFAULT_LABELS = {
     repeatBiweekly: 'Varannan vecka',
     repeatMonthly: 'Varje månad',
     repeatYearly: 'Varje år',
-    repeatUntil: 'Fram till'
+    repeatUntil: 'Fram till',
+    startDate: 'Startdatum',
+    endDate: 'Slutdatum',
+    // Phases & art-project fields
+    budget: 'Investeringsbudget (kr)',
+    projectCode: 'Projektkod',
+    phases: 'Faser',
+    phase: 'Fas',
+    phaseName: 'Fasnamn',
+    addPhase: '+ Lägg till fas',
+    addStdPhases: 'Lägg till standardfaser',
+    importExcel: 'Importera Excel (konstprojekt)...'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -422,7 +433,18 @@ const DEFAULT_LABELS_EN = {
     repeatBiweekly: 'Every two weeks',
     repeatMonthly: 'Every month',
     repeatYearly: 'Every year',
-    repeatUntil: 'Until'
+    repeatUntil: 'Until',
+    startDate: 'Start date',
+    endDate: 'End date',
+    // Phases & art-project fields
+    budget: 'Investment budget',
+    projectCode: 'Project code',
+    phases: 'Phases',
+    phase: 'Phase',
+    phaseName: 'Phase name',
+    addPhase: '+ Add phase',
+    addStdPhases: 'Add standard phases',
+    importExcel: 'Import Excel (art projects)...'
 };
 
 class TimelineApp {
@@ -956,6 +978,10 @@ class TimelineApp {
             document.getElementById('importDropdownMenu').classList.remove('open');
             document.getElementById('importFile').click();
         });
+        safeBind('importExcelBtn', 'click', () => {
+            document.getElementById('importDropdownMenu').classList.remove('open');
+            document.getElementById('importFile').click();
+        });
         safeBind('importUrlBtn', 'click', () => {
             document.getElementById('importDropdownMenu').classList.remove('open');
             this.importFromUrl();
@@ -1365,6 +1391,18 @@ class TimelineApp {
         safeBind('closeProjectModal', 'click', () => this.closeModal('projectModal'));
         safeBind('cancelProject', 'click', () => this.closeModal('projectModal'));
         safeBind('projectForm', 'submit', (e) => this.handleProjectSubmit(e));
+        safeBind('projectAddPhase', 'click', () => {
+            document.getElementById('projectPhasesList').appendChild(this.buildPhaseRow({}));
+        });
+        safeBind('projectAddStdPhases', 'click', () => {
+            this.fillStandardPhases('projectPhasesList', 'projectStart', 'projectEnd');
+        });
+        safeBind('editAddPhase', 'click', () => {
+            document.getElementById('editPhasesList').appendChild(this.buildPhaseRow({}));
+        });
+        safeBind('editAddStdPhases', 'click', () => {
+            this.fillStandardPhases('editPhasesList', 'editStart', 'editEnd');
+        });
 
         // Event modal
         safeBind('addEventBtn', 'click', () => this.openEventModal());
@@ -2085,6 +2123,27 @@ class TimelineApp {
             `;
         }
 
+        // Phase segments (faser) drawn inside the bar, positioned absolutely
+        // relative to the bar's own left edge so they share the timeline scale.
+        if (Array.isArray(project.phases) && project.phases.length) {
+            project.phases.forEach(phase => {
+                if (!phase.start || !phase.end) return;
+                const pStart = this.dateToPosition(phase.start);
+                const pEnd = this.dateToPosition(phase.end);
+                const seg = document.createElement('div');
+                seg.className = 'project-phase-segment';
+                // Clamp so phases never spill outside the bar visually.
+                const left = Math.max(0, pStart - startPos);
+                const segWidth = Math.max(2, Math.min(width, pEnd - startPos) - left);
+                seg.style.left = left + 'px';
+                seg.style.width = segWidth + 'px';
+                seg.style.backgroundColor = phase.color || color;
+                seg.title = `${phase.name}: ${this.formatDateDisplay(this.parseDate(phase.start), 'date')} – ${this.formatDateDisplay(this.parseDate(phase.end), 'date')}`;
+                bar.appendChild(seg);
+            });
+            bar.classList.add('has-phases');
+        }
+
         // Drag handles for resizing
         const leftHandle = document.createElement('div');
         leftHandle.className = 'resize-handle resize-handle-left';
@@ -2623,6 +2682,32 @@ class TimelineApp {
                 <span class="sidebar-label">${this.labels.startDate.split(' ')[0]} / ${this.labels.endDate.split(' ')[0]}</span>
                 <div class="sidebar-value">${this.formatDateDisplay(this.parseDate(project.start), project.startType || 'date')} – ${this.formatDateDisplay(this.parseDate(project.end), project.endType || 'date')}</div>
             </div>
+            ${(project.budget !== null && project.budget !== undefined) ? `
+            <div class="sidebar-section">
+                <span class="sidebar-label">${this.labels.budget || 'Investeringsbudget'}</span>
+                <div class="sidebar-value">${this.formatBudget(project.budget)}</div>
+            </div>
+            ` : ''}
+            ${project.projectCode ? `
+            <div class="sidebar-section">
+                <span class="sidebar-label">${this.labels.projectCode || 'Projektkod'}</span>
+                <div class="sidebar-value">${project.projectCode}</div>
+            </div>
+            ` : ''}
+            ${(Array.isArray(project.phases) && project.phases.length) ? `
+            <div class="sidebar-section">
+                <span class="sidebar-label">${this.labels.phases || 'Faser'} (${project.phases.length})</span>
+                <div class="sidebar-phases">
+                    ${project.phases.map(ph => `
+                        <div class="sidebar-phase-item">
+                            <span class="sidebar-phase-dot" style="background:${ph.color || '#31567D'}"></span>
+                            <span class="sidebar-phase-name">${ph.name || ''}</span>
+                            <span class="sidebar-phase-date">${ph.start ? this.formatDateDisplay(this.parseDate(ph.start), 'date') : ''}${ph.end ? ' – ' + this.formatDateDisplay(this.parseDate(ph.end), 'date') : ''}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            ` : ''}
             ${project.comment ? `
             <div class="sidebar-section">
                 <span class="sidebar-label">Kommentar</span>
@@ -3752,6 +3837,109 @@ class TimelineApp {
         });
     }
 
+    // ---- Phase (fas) editor helpers --------------------------------------
+
+    // Default phase blueprint, shared with the Excel importer when available.
+    getDefaultPhases() {
+        if (typeof KonstprojektImport !== 'undefined' && KonstprojektImport.PHASES) {
+            return KonstprojektImport.PHASES;
+        }
+        return [
+            { id: 'tidigt', sv: 'Tidigt skede', color: '#9AA5B1', months: 12 },
+            { id: 'konstprogram', sv: 'Konstprogram', color: '#31567D', months: 9 },
+            { id: 'upphandling', sv: 'Upphandling', color: '#E8BC1C', months: 6 },
+            { id: 'produktion', sv: 'Produktion', color: '#BA4A71', months: 18 },
+            { id: 'visning', sv: 'Visning/Avslut', color: '#37B94B', months: 4 }
+        ];
+    }
+
+    buildPhaseRow(phase) {
+        phase = phase || {};
+        const row = document.createElement('div');
+        row.className = 'phase-row';
+        row.innerHTML = `
+            <input type="text" class="phase-name" placeholder="${this.labels.phaseName || 'Fasnamn'}" value="${(phase.name || '').replace(/"/g, '&quot;')}">
+            <input type="date" class="phase-start" value="${phase.start || ''}">
+            <span class="phase-sep">–</span>
+            <input type="date" class="phase-end" value="${phase.end || ''}">
+            <input type="color" class="phase-color" value="${phase.color || '#31567D'}">
+            <button type="button" class="phase-remove" title="${this.labels.delete || 'Ta bort'}">&times;</button>
+        `;
+        row.querySelector('.phase-remove').addEventListener('click', () => row.remove());
+        return row;
+    }
+
+    formatBudget(amount) {
+        if (amount === null || amount === undefined || amount === '') return '';
+        const locale = this.language === 'en' ? 'en-US' : 'sv-SE';
+        try {
+            return new Intl.NumberFormat(locale).format(amount) + ' kr';
+        } catch (e) {
+            return amount + ' kr';
+        }
+    }
+
+    parseBudgetInput(inputId) {
+        const v = document.getElementById(inputId).value.trim();
+        if (!v) return null;
+        const n = parseFloat(v);
+        return isNaN(n) ? null : Math.round(n);
+    }
+
+    renderPhaseList(containerId, phases) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        (phases || []).forEach(p => container.appendChild(this.buildPhaseRow(p)));
+    }
+
+    readPhaseList(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        const phases = [];
+        container.querySelectorAll('.phase-row').forEach(row => {
+            const name = row.querySelector('.phase-name').value.trim();
+            const start = row.querySelector('.phase-start').value;
+            const end = row.querySelector('.phase-end').value;
+            const color = row.querySelector('.phase-color').value;
+            // Keep a phase only if it has at least a name or a date.
+            if (!name && !start && !end) return;
+            phases.push({ name: name || (this.labels.phase || 'Fas'), start: start || null, end: end || null, color });
+        });
+        return phases;
+    }
+
+    // Populate a phase list with the standard art-project lifecycle, spread
+    // evenly across the project's current start/end dates.
+    fillStandardPhases(containerId, startId, endId) {
+        const defaults = this.getDefaultPhases();
+        const startStr = this.getDateValue(startId);
+        const endStr = this.getDateValue(endId);
+        const start = startStr ? this.parseDate(startStr) : new Date();
+        let end = endStr ? this.parseDate(endStr) : null;
+        if (!end || end <= start) {
+            const totalMonths = defaults.reduce((s, p) => s + (p.months || 6), 0);
+            end = new Date(start.getTime());
+            end.setMonth(end.getMonth() + totalMonths);
+        }
+        const totalMonths = defaults.reduce((s, p) => s + (p.months || 6), 0);
+        const totalMs = end.getTime() - start.getTime();
+        const phases = [];
+        let cursor = start.getTime();
+        defaults.forEach(def => {
+            const share = (def.months || 6) / totalMonths;
+            const segEnd = cursor + share * totalMs;
+            phases.push({
+                name: def.sv || def.name,
+                start: this.formatDateISO(new Date(cursor)),
+                end: this.formatDateISO(new Date(segEnd)),
+                color: def.color
+            });
+            cursor = segEnd;
+        });
+        this.renderPhaseList(containerId, phases);
+    }
+
     // Modal handling
     openProjectModal() {
         const today = new Date().toISOString().split('T')[0];
@@ -3759,6 +3947,9 @@ class TimelineApp {
         this.setDateValue('projectEnd', today, 'date');
         document.getElementById('projectLead').value = '';
         document.getElementById('projectComment').value = '';
+        document.getElementById('projectBudget').value = '';
+        document.getElementById('projectCode').value = '';
+        this.renderPhaseList('projectPhasesList', []);
         // Reset color to first option and update dropdown
         const colorSelect = document.getElementById('projectColor');
         colorSelect.selectedIndex = 0;
@@ -3846,9 +4037,21 @@ class TimelineApp {
             if (editColorDropdown) {
                 this.updateColorDropdown(editColorDropdown, document.getElementById('editColor'));
             }
+            // Budget, project code and phases
+            const editMetaGroup = document.getElementById('editMetaGroup');
+            const editPhasesGroup = document.getElementById('editPhasesGroup');
+            if (editMetaGroup) editMetaGroup.style.display = 'flex';
+            if (editPhasesGroup) editPhasesGroup.style.display = 'block';
+            document.getElementById('editBudget').value = (item.budget !== null && item.budget !== undefined) ? item.budget : '';
+            document.getElementById('editCode').value = item.projectCode || '';
+            this.renderPhaseList('editPhasesList', item.phases || []);
             document.getElementById('editComment').value = item.comment || '';
 
         } else {
+            const editMetaGroup = document.getElementById('editMetaGroup');
+            const editPhasesGroup = document.getElementById('editPhasesGroup');
+            if (editMetaGroup) editMetaGroup.style.display = 'none';
+            if (editPhasesGroup) editPhasesGroup.style.display = 'none';
             title.textContent = 'Redigera händelse';
             leadGroup.style.display = 'none';
             document.getElementById('editStatusGroup').style.display = 'none';
@@ -3940,6 +4143,9 @@ class TimelineApp {
             end: endDate,
             endType: endType,
             color: document.getElementById('projectColor').value,
+            budget: this.parseBudgetInput('projectBudget'),
+            projectCode: document.getElementById('projectCode').value.trim() || null,
+            phases: this.readPhaseList('projectPhasesList'),
             comment: document.getElementById('projectComment').value.trim() || null
         };
 
@@ -4089,6 +4295,9 @@ class TimelineApp {
                 project.end = endDate;
                 project.endType = document.getElementById('editEndType').value;
                 project.color = document.getElementById('editColor').value;
+                project.budget = this.parseBudgetInput('editBudget');
+                project.projectCode = document.getElementById('editCode').value.trim() || null;
+                project.phases = this.readPhaseList('editPhasesList');
                 project.comment = document.getElementById('editComment').value.trim() || null;
                 this.scheduleAutoSave();
                 this.showToast('Projekt uppdaterat!', 'success');
@@ -4558,19 +4767,50 @@ class TimelineApp {
         const file = e.target.files[0];
         if (!file) return;
 
-        const isIcal = file.name.toLowerCase().endsWith('.ics');
+        const name = file.name.toLowerCase();
+        const isIcal = name.endsWith('.ics');
+        const isExcel = name.endsWith('.xlsx');
 
         const reader = new FileReader();
         reader.onload = async (event) => {
-            if (isIcal) {
+            if (isExcel) {
+                await this.importExcelData(event.target.result);
+            } else if (isIcal) {
                 await this.importIcalData(event.target.result);
             } else {
                 await this.importJsonData(event.target.result);
             }
         };
 
-        reader.readAsText(file);
+        if (isExcel) {
+            reader.readAsArrayBuffer(file);
+        } else {
+            reader.readAsText(file);
+        }
         e.target.value = ''; // Reset input so same file can be imported again
+    }
+
+    async importExcelData(arrayBuffer) {
+        if (typeof KonstprojektImport === 'undefined') {
+            await this.showAlert('Excel-importmodulen kunde inte laddas.');
+            return;
+        }
+        try {
+            this.showToast('Läser Excel-fil...', 'info');
+            const data = await KonstprojektImport.importXlsxToTimeline(arrayBuffer, {
+                referenceDate: new Date()
+            });
+            if (!data.projects || data.projects.length === 0) {
+                await this.showAlert('Inga projekt hittades i Excel-filen. Kontrollera att det är konstprojekt-exporten.');
+                return;
+            }
+            // Route the generated timeline object through the normal JSON import
+            // so replace/merge, undo and persistence all behave identically.
+            await this.importJsonData(JSON.stringify(data));
+        } catch (err) {
+            console.error('Excel import error:', err);
+            await this.showAlert('Kunde inte läsa Excel-filen: ' + err.message);
+        }
     }
 
     parseIcalDate(dateStr) {

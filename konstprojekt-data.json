@@ -1,0 +1,1564 @@
+{
+  "version": 1,
+  "exportDate": "2026-06-29T09:02:56.719Z",
+  "timelineRange": {
+    "startYear": 2022,
+    "endYear": 2035
+  },
+  "areas": [
+    {
+      "name": "Ola Carlsson",
+      "color": "#BA4A71"
+    },
+    {
+      "name": "Emelie Storm",
+      "color": "#31567D"
+    },
+    {
+      "name": "Brita Bahlenberg",
+      "color": "#E8BC1C"
+    },
+    {
+      "name": "Jane Ahnland Rosenlind",
+      "color": "#37B94B"
+    },
+    {
+      "name": "Konstprojektledare X",
+      "color": "#FA4D2D"
+    },
+    {
+      "name": "Konsthandläggare",
+      "color": "#7C3AED"
+    },
+    {
+      "name": "Övrigt",
+      "color": "#6B7280"
+    }
+  ],
+  "statuses": [
+    {
+      "id": "tidigt",
+      "name": "Tidigt skede"
+    },
+    {
+      "id": "kommande",
+      "name": "Kommande"
+    },
+    {
+      "id": "konstprogram",
+      "name": "Konstprogram"
+    },
+    {
+      "id": "upphandling",
+      "name": "Upphandling"
+    },
+    {
+      "id": "produktion",
+      "name": "Produktion"
+    },
+    {
+      "id": "visning",
+      "name": "Visning/Avslut"
+    }
+  ],
+  "phaseDefinitions": [
+    {
+      "id": "tidigt",
+      "name": "Tidigt skede",
+      "color": "#9AA5B1"
+    },
+    {
+      "id": "konstprogram",
+      "name": "Konstprogram",
+      "color": "#31567D"
+    },
+    {
+      "id": "upphandling",
+      "name": "Upphandling",
+      "color": "#E8BC1C"
+    },
+    {
+      "id": "produktion",
+      "name": "Produktion",
+      "color": "#BA4A71"
+    },
+    {
+      "id": "visning",
+      "name": "Visning/Avslut",
+      "color": "#37B94B"
+    }
+  ],
+  "projects": [
+    {
+      "id": "konst-1",
+      "name": "Tågdepå Sandbäck VT Mölndal",
+      "lead": "Ola Carlsson",
+      "status": "produktion",
+      "start": "2024-11-15",
+      "startType": "date",
+      "end": "2028-12-15",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 4000000,
+      "projectCode": "86056",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-11-15",
+          "end": "2025-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-11-15",
+          "end": "2026-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-08-15",
+          "end": "2027-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2027-02-15",
+          "end": "2028-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-08-15",
+          "end": "2028-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Konstprojekt kopplat till byggandet av ny tågdepå/städhall/tvätthall söder om Mölndal till Västlänkens tåg.\n\nKonstnär/titel: My Lindh - Det är tiden som rör sig\n\nFörvaltningsobjekt: Tågdepå Sandbäck\n\nFörmedlingsinsatser:\nUtlysning 2025\r\n\r\nFilmat material - intervju med konstnär?"
+    },
+    {
+      "id": "konst-2",
+      "name": "Kulverttrilogin Östra sjukhuset Göteborg",
+      "lead": "Ola Carlsson",
+      "status": "produktion",
+      "start": "2022-11-15",
+      "startType": "date",
+      "end": "2026-12-15",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 3500000,
+      "projectCode": "86027, 86087",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2022-11-15",
+          "end": "2023-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2023-11-15",
+          "end": "2024-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2024-08-15",
+          "end": "2025-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2025-02-15",
+          "end": "2026-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2026-08-15",
+          "end": "2026-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Två konstuppdrag till kulvertar på Östra sjukhuset: ett videouppdrag och ett uppdrag \"bortom måleri\"\n\nKonstnär/titel: Tina Nyqvist - Följeslagare Anastasia Ax Bränd jord\n\nFörvaltningsobjekt: Östra sjukhuset Göteborg\n\nFörmedlingsinsatser:\nPodcastserie 3 avsnitt.\r\nInspelning 2026.\r\nKonstnärssamtal\r\nInvigning?\r\nSamarbeta med någon? Kulturhuset Kåken?\r\nBakom kulisserna-film."
+    },
+    {
+      "id": "konst-3",
+      "name": "Förlossning och neonatal (FoN) Östra sjukhuset Göteborg",
+      "lead": "Ola Carlsson",
+      "status": "produktion",
+      "start": "2024-11-15",
+      "startType": "date",
+      "end": "2028-12-15",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 18000000,
+      "projectCode": "85088, 86014, 86015, 86016",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-11-15",
+          "end": "2025-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-11-15",
+          "end": "2026-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-08-15",
+          "end": "2027-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2027-02-15",
+          "end": "2028-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-08-15",
+          "end": "2028-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Tre konstuppdrag: Entréområde Alina Vergnano, Trapphus Tuula Lehtinen, Dagrum Axel Karlsson Rixon\n\nFörvaltningsobjekt: Östra sjukhuset Göteborg\n\nFörmedlingsinsatser:\nInvigning av byggnaden 2028\r\nHur får vi fokus på konsten?\r\n\r\nFilm! Påbörja 2026"
+    },
+    {
+      "id": "konst-4",
+      "name": "Förlossning och neonatal (FoN) etapp 2 och förbindelsegång Östra sjukhuset Göteborg",
+      "lead": "Ola Carlsson",
+      "status": "konstprogram",
+      "start": "2024-11-15",
+      "startType": "date",
+      "end": "2028-12-15",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": null,
+      "projectCode": "86052",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-11-15",
+          "end": "2025-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-11-15",
+          "end": "2026-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-08-15",
+          "end": "2027-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2027-02-15",
+          "end": "2028-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-08-15",
+          "end": "2028-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Förmedlingsinsatser:\nUtlysning etapp 2 2025\r\nLjud / audioguide / podd med ett poetiskt anslag (gött och avslappnande för den som ska föda) och så lite intervju / historiskt för personal och anhöriga, ihop med Medicinhistoriska? konstnärsintervju på film"
+    },
+    {
+      "id": "konst-5",
+      "name": "IVA/HBO",
+      "lead": "Emelie Storm",
+      "status": "produktion",
+      "start": "2024-11-15",
+      "startType": "date",
+      "end": "2028-12-15",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 9000000,
+      "projectCode": "86082 (VG67810) 86077 (VG68956) 86081 (VG69612)",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-11-15",
+          "end": "2025-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-11-15",
+          "end": "2026-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-08-15",
+          "end": "2027-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2027-02-15",
+          "end": "2028-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-08-15",
+          "end": "2028-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Tre konstuppdrag i ny utbyggnad för IVA och HBO (tryckkammare). Ett uppdrag väster om sjukhuset i ny park/utemiljö, ett på två innergårdar och ett uppdrag inomhus på tryckkammaravdelningen.\n\nKonstnär/titel: Valv bakom valv oändligt - Karin Lindh / On View - Katarina Elvén och Christin Svensson / Grand Tour Souvenir - Oscar Gard Montan\n\nFörvaltningsobjekt: Östra sjukhuset\n\nFörmedlingsinsatser:\nPromenadslinga (inte i projektet)\r\n\r\nIntervju, utställning, fysisk modell och på byggplank."
+    },
+    {
+      "id": "konst-6",
+      "name": "Fristad folkhögskola",
+      "lead": "Brita Bahlenberg",
+      "status": "upphandling",
+      "start": "2022-04-30",
+      "startType": "date",
+      "end": "2026-05-30",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "budget": 1070000,
+      "projectCode": "86085",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2022-04-30",
+          "end": "2023-04-30",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2023-04-30",
+          "end": "2024-01-30",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2024-01-30",
+          "end": "2024-07-30",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2024-07-30",
+          "end": "2026-01-30",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2026-01-30",
+          "end": "2026-05-30",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Ny- och ombyggnation, konstuppdraget avser utemiljö, ny torgyta."
+    },
+    {
+      "id": "konst-7",
+      "name": "Spårvagnsdepå Majorna",
+      "lead": "Emelie Storm",
+      "status": "konstprogram",
+      "start": "2026-11-15",
+      "startType": "date",
+      "end": "2030-12-15",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 10000000,
+      "projectCode": "86084",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2026-11-15",
+          "end": "2027-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2027-11-15",
+          "end": "2028-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2028-08-15",
+          "end": "2029-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2029-02-15",
+          "end": "2030-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2030-08-15",
+          "end": "2030-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Om och tillbyggnad befintlig spårvagnsdepå. Genomförandebeslut sommaren 2026.\n\nFörvaltningsobjekt: Spårvagnsdepå Majorna"
+    },
+    {
+      "id": "konst-8",
+      "name": "Västlänken Haga",
+      "lead": "Emelie Storm",
+      "status": "kommande",
+      "start": "2026-09-01",
+      "startType": "date",
+      "end": "2030-10-01",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 1300000,
+      "projectCode": "86046, 86055",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2026-09-01",
+          "end": "2027-09-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2027-09-01",
+          "end": "2028-06-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2028-06-01",
+          "end": "2028-12-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-12-01",
+          "end": "2030-06-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2030-06-01",
+          "end": "2030-10-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Delprojekt Västlänken. pausat från Trafikverket. Eventuellt finns en plan för ett ljudverk av en specifik konstnär.\n\nFörvaltningsobjekt: Västtrafik"
+    },
+    {
+      "id": "konst-9",
+      "name": "Västlänken Korsvägen inkl hållplatspläge",
+      "lead": "Emelie Storm",
+      "status": "kommande",
+      "start": "2026-09-01",
+      "startType": "date",
+      "end": "2030-10-01",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 1550000,
+      "projectCode": "86044, 86068",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2026-09-01",
+          "end": "2027-09-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2027-09-01",
+          "end": "2028-06-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2028-06-01",
+          "end": "2028-12-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-12-01",
+          "end": "2030-06-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2030-06-01",
+          "end": "2030-10-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Delprojekt Västlänken. Uppskjutet, övertar tomt för byggstart 2028. Gör ny plan. 900 000 (resecentrum) och 650 000 (hållplatstak).\n\nFörvaltningsobjekt: Västtrafik"
+    },
+    {
+      "id": "konst-10",
+      "name": "Sahlgrenska Life",
+      "lead": "Brita Bahlenberg",
+      "status": "upphandling",
+      "start": "2029-07-12",
+      "startType": "date",
+      "end": "2033-08-12",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "budget": 22300000,
+      "projectCode": "86061, 86106, 86107",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2029-07-12",
+          "end": "2030-07-12",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2030-07-12",
+          "end": "2031-04-12",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2031-04-12",
+          "end": "2031-10-12",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2031-10-12",
+          "end": "2033-04-12",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2033-04-12",
+          "end": "2033-08-12",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-11",
+      "name": "Försöjningskvart norr (FKN) Östra sjukhuset Göteborg",
+      "lead": "Ola Carlsson",
+      "status": "kommande",
+      "start": "2026-09-01",
+      "startType": "date",
+      "end": "2030-10-01",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 4000000,
+      "projectCode": "85153",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2026-09-01",
+          "end": "2027-09-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2027-09-01",
+          "end": "2028-06-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2028-06-01",
+          "end": "2028-12-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-12-01",
+          "end": "2030-06-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2030-06-01",
+          "end": "2030-10-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan, kräver omtag"
+    },
+    {
+      "id": "konst-12",
+      "name": "BUP/ÄTC",
+      "lead": "Emelie Storm",
+      "status": "produktion",
+      "start": "2024-11-15",
+      "startType": "date",
+      "end": "2028-12-15",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 6229000,
+      "projectCode": "86070/86090/86108",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-11-15",
+          "end": "2025-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-11-15",
+          "end": "2026-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-08-15",
+          "end": "2027-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2027-02-15",
+          "end": "2028-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-08-15",
+          "end": "2028-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Tre konstuppdrag och två konstkollektioner.\n\nKonstnär/titel: Entréområde: Växtkraft av Mia E Göransson, innergårdar BUP: Dyning, Våg, Krusning av Joel Danielsson och innergårdar ÄTC: Att göra det osynliga synligt av Emma Ströde Falk. Färdigt våren 2028.\n\nFörvaltningsobjekt: Östra sjukhuset\n\nFörmedlingsinsatser:\nFördjupat samarbete/projekt för och med verksamhet/patienter. \r\nHandledning/metodmaterial om utvalda konstverk."
+    },
+    {
+      "id": "konst-13",
+      "name": "Kardiologilab, SkaS Skövde",
+      "lead": "Emelie Storm",
+      "status": "upphandling",
+      "start": "2024-06-01",
+      "startType": "date",
+      "end": "2028-07-01",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 1205000,
+      "projectCode": "86094",
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2024-06-01",
+          "end": "2025-06-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2025-06-01",
+          "end": "2026-03-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2026-03-01",
+          "end": "2026-09-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2026-09-01",
+          "end": "2028-03-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2028-03-01",
+          "end": "2028-07-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2026-2035"
+    },
+    {
+      "id": "konst-14",
+      "name": "Infektionsklinik, SkaS Skövde",
+      "lead": "Ola Carlsson",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 1800000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2026-2035"
+    },
+    {
+      "id": "konst-15",
+      "name": "Ny försörjningsbyggnad Kungälvs sjukhus",
+      "lead": null,
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#6B7280",
+      "budget": null,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan, kräver omtag"
+    },
+    {
+      "id": "konst-16",
+      "name": "MR kamera SkaS Skövde",
+      "lead": "Ola Carlsson",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 2500000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-17",
+      "name": "Bussdepå Rösered",
+      "lead": "Emelie Storm",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 4000000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2027-2036"
+    },
+    {
+      "id": "konst-18",
+      "name": "Bussdepå Vädermotet",
+      "lead": "Brita Bahlenberg",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "budget": 5000000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-19",
+      "name": "Storkök Skövde",
+      "lead": "Jane Ahnland Rosenlind",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#37B94B",
+      "budget": 1000000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2027-2036. Genomförandebeslut Q3 2026, färdigt Q4 2028"
+    },
+    {
+      "id": "konst-20",
+      "name": "Lerum resecentrum",
+      "lead": "Brita Bahlenberg",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "budget": 400000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2027-2036"
+    },
+    {
+      "id": "konst-21",
+      "name": "BK-fasad Östra",
+      "lead": "Konstprojektledare X",
+      "status": "tidigt",
+      "start": "2025-12-01",
+      "startType": "date",
+      "end": "2030-01-01",
+      "endType": "date",
+      "color": "#FA4D2D",
+      "budget": 2000000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2025-12-01",
+          "end": "2026-12-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2026-12-01",
+          "end": "2027-09-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2027-09-01",
+          "end": "2028-03-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-03-01",
+          "end": "2029-09-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2029-09-01",
+          "end": "2030-01-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "I investeringsplan 2027-2036"
+    },
+    {
+      "id": "konst-22",
+      "name": "Operation Uddevalla",
+      "lead": "Konstprojektledare X",
+      "status": "kommande",
+      "start": "2028-11-15",
+      "startType": "date",
+      "end": "2032-12-15",
+      "endType": "date",
+      "color": "#FA4D2D",
+      "budget": 7800000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2028-11-15",
+          "end": "2029-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2029-11-15",
+          "end": "2030-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2030-08-15",
+          "end": "2031-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2031-02-15",
+          "end": "2032-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2032-08-15",
+          "end": "2032-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-23",
+      "name": "Jubileumshallen NET",
+      "lead": "Ola Carlsson",
+      "status": "kommande",
+      "start": "2027-11-15",
+      "startType": "date",
+      "end": "2031-12-15",
+      "endType": "date",
+      "color": "#BA4A71",
+      "budget": 1200000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2027-11-15",
+          "end": "2028-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2028-11-15",
+          "end": "2029-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2029-08-15",
+          "end": "2030-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2030-02-15",
+          "end": "2031-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2031-08-15",
+          "end": "2031-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-24",
+      "name": "GVO Östra sjukhuset",
+      "lead": "Emelie Storm",
+      "status": "kommande",
+      "start": "2030-11-15",
+      "startType": "date",
+      "end": "2034-12-15",
+      "endType": "date",
+      "color": "#31567D",
+      "budget": 11800000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2030-11-15",
+          "end": "2031-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2031-11-15",
+          "end": "2032-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2032-08-15",
+          "end": "2033-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2033-02-15",
+          "end": "2034-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2034-08-15",
+          "end": "2034-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    },
+    {
+      "id": "konst-25",
+      "name": "KN-huset Mölndal",
+      "lead": "Konsthandläggare",
+      "status": "kommande",
+      "start": "2026-09-01",
+      "startType": "date",
+      "end": "2030-10-01",
+      "endType": "date",
+      "color": "#7C3AED",
+      "budget": 1100000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2026-09-01",
+          "end": "2027-09-01",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2027-09-01",
+          "end": "2028-06-01",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2028-06-01",
+          "end": "2028-12-01",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2028-12-01",
+          "end": "2030-06-01",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2030-06-01",
+          "end": "2030-10-01",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": "Utemiljö"
+    },
+    {
+      "id": "konst-26",
+      "name": "Teknisk Mediaförsörjning Sahlgrenska Sjukhuset",
+      "lead": "Brita Bahlenberg",
+      "status": "tidigt",
+      "start": "2031-11-15",
+      "startType": "date",
+      "end": "2035-12-15",
+      "endType": "date",
+      "color": "#E8BC1C",
+      "budget": 5600000,
+      "projectCode": null,
+      "phases": [
+        {
+          "id": "tidigt",
+          "name": "Tidigt skede",
+          "start": "2031-11-15",
+          "end": "2032-11-15",
+          "color": "#9AA5B1"
+        },
+        {
+          "id": "konstprogram",
+          "name": "Konstprogram",
+          "start": "2032-11-15",
+          "end": "2033-08-15",
+          "color": "#31567D"
+        },
+        {
+          "id": "upphandling",
+          "name": "Upphandling",
+          "start": "2033-08-15",
+          "end": "2034-02-15",
+          "color": "#E8BC1C"
+        },
+        {
+          "id": "produktion",
+          "name": "Produktion",
+          "start": "2034-02-15",
+          "end": "2035-08-15",
+          "color": "#BA4A71"
+        },
+        {
+          "id": "visning",
+          "name": "Visning/Avslut",
+          "start": "2035-08-15",
+          "end": "2035-12-15",
+          "color": "#37B94B"
+        }
+      ],
+      "comment": null
+    }
+  ],
+  "events": [
+    {
+      "id": "konst-1-avslut",
+      "name": "Prel. avslut: Tågdepå Sandbäck VT Mölndal",
+      "start": "2028-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-1",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-2-avslut",
+      "name": "Prel. avslut: Kulverttrilogin Östra sjukhuset Göteborg",
+      "start": "2026-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-2",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-3-avslut",
+      "name": "Prel. avslut: Förlossning och neonatal (FoN) Östra sjukhuset Göteborg",
+      "start": "2028-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-3",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-4-avslut",
+      "name": "Prel. avslut: Förlossning och neonatal (FoN) etapp 2 och förbindelsegång Östra sjukhuset Göteborg",
+      "start": "2028-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-4",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-5-avslut",
+      "name": "Prel. avslut: IVA/HBO",
+      "start": "2028-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-5",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-6-invigning",
+      "name": "Invigning: Fristad folkhögskola",
+      "start": "2026-05-31",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-6",
+      "symbol": "star",
+      "comment": null
+    },
+    {
+      "id": "konst-7-avslut",
+      "name": "Prel. avslut: Spårvagnsdepå Majorna",
+      "start": "2030-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-7",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-10-invigning",
+      "name": "Invigning: Sahlgrenska Life",
+      "start": "2033-08-12",
+      "startType": "date",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-10",
+      "symbol": "star",
+      "comment": null
+    },
+    {
+      "id": "konst-12-avslut",
+      "name": "Prel. avslut: BUP/ÄTC",
+      "start": "2028-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-12",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-22-avslut",
+      "name": "Prel. avslut: Operation Uddevalla",
+      "start": "2032-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-22",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-23-avslut",
+      "name": "Prel. avslut: Jubileumshallen NET",
+      "start": "2031-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-23",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-24-avslut",
+      "name": "Prel. avslut: GVO Östra sjukhuset",
+      "start": "2034-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-24",
+      "symbol": "flag",
+      "comment": null
+    },
+    {
+      "id": "konst-26-avslut",
+      "name": "Prel. avslut: Teknisk Mediaförsörjning Sahlgrenska Sjukhuset",
+      "start": "2035-12-15",
+      "startType": "year",
+      "end": null,
+      "endType": null,
+      "projectId": "konst-26",
+      "symbol": "flag",
+      "comment": null
+    }
+  ]
+}

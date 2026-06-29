@@ -150,6 +150,25 @@
                     <a href="#" id="openAreasFromProject" class="form-hint-link" data-label="manageAreas">Hantera
                         områden</a>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="projectBudget" data-label="budget">Investeringsbudget (kr)</label>
+                        <input type="number" id="projectBudget" min="0" step="1000" placeholder="Valfritt"
+                            data-placeholder="optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectCode" data-label="projectCode">Projektkod</label>
+                        <input type="text" id="projectCode" placeholder="Valfritt" data-placeholder="optional">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label data-label="phases">Faser</label>
+                    <div id="projectPhasesList" class="phase-list"></div>
+                    <div class="phase-actions">
+                        <button type="button" class="btn-link-sm" id="projectAddPhase" data-label="addPhase">+ Lägg till fas</button>
+                        <button type="button" class="btn-link-sm" id="projectAddStdPhases" data-label="addStdPhases">Lägg till standardfaser</button>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="projectComment" data-label="comment">Kommentar</label>
                     <textarea id="projectComment" rows="3" data-placeholder="commentPlaceholder"
@@ -385,6 +404,25 @@
                     <a href="#" id="openAreasFromEdit" class="form-hint-link" data-label="manageAreas">Hantera
                         områden</a>
                 </div>
+                <div class="form-row" id="editMetaGroup">
+                    <div class="form-group">
+                        <label for="editBudget" data-label="budget">Investeringsbudget (kr)</label>
+                        <input type="number" id="editBudget" min="0" step="1000" placeholder="Valfritt"
+                            data-placeholder="optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="editCode" data-label="projectCode">Projektkod</label>
+                        <input type="text" id="editCode" placeholder="Valfritt" data-placeholder="optional">
+                    </div>
+                </div>
+                <div class="form-group" id="editPhasesGroup">
+                    <label data-label="phases">Faser</label>
+                    <div id="editPhasesList" class="phase-list"></div>
+                    <div class="phase-actions">
+                        <button type="button" class="btn-link-sm" id="editAddPhase" data-label="addPhase">+ Lägg till fas</button>
+                        <button type="button" class="btn-link-sm" id="editAddStdPhases" data-label="addStdPhases">Lägg till standardfaser</button>
+                    </div>
+                </div>
                 <div class="form-group" id="editCommentGroup">
                     <label for="editComment" data-label="comment">Kommentar</label>
                     <textarea id="editComment" rows="3" data-placeholder="commentPlaceholder"
@@ -575,11 +613,12 @@
                     <button id="importDropdownBtn" class="btn btn-secondary btn-dropdown-toggle">▾</button>
                     <div id="importDropdownMenu" class="btn-dropdown-menu">
                         <button id="importFileBtn" class="btn-dropdown-item" data-label="openFile">Öppna fil...</button>
+                        <button id="importExcelBtn" class="btn-dropdown-item" data-label="importExcel">Importera Excel (konstprojekt)...</button>
                         <button id="importUrlBtn" class="btn-dropdown-item" data-label="importUrl">Importera från URL...</button>
                     </div>
                 </div>
                 <button id="exportBtn" class="btn btn-secondary" data-label="export">Spara</button>
-                <input type="file" id="importFile" accept=".json,.ics" style="display: none;">
+                <input type="file" id="importFile" accept=".json,.ics,.xlsx" style="display: none;">
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
@@ -698,7 +737,8 @@
                 </div>
             </div>
         </div>
-        <script src="app.js?v=5"></script>
+        <script src="konstprojekt-import.js?v=1"></script>
+        <script src="app.js?v=6"></script>
 </body>
 
 </html>
