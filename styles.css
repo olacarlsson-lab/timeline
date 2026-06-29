@@ -46,10 +46,15 @@ body[data-theme="light"],
 
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     background: var(--bg-primary);
     color: var(--text-primary);
-    line-height: 1.5;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: 0.01em;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'tnum' 1;
 }
 
 .app {
@@ -3379,4 +3384,49 @@ form {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     color: var(--text-secondary);
+}
+
+/* ===== Milder colours & readability polish ===== */
+/* Soften the saturation of all coloured timeline elements so the palette
+   reads calmer. Applies to existing data too (no re-colouring needed).
+   White labels are unaffected by saturate(); they stay crisp. */
+.project-bar,
+.project-phase-segment,
+.project-phase-subbar,
+.sidebar-phase-dot,
+.budget-row-fill {
+    filter: saturate(0.78);
+}
+
+/* Keep project titles/leads legible on the softer bars */
+.project-bar .project-name {
+    font-weight: 650;
+    letter-spacing: 0.005em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+.project-bar .project-lead,
+.project-bar .project-status-text {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 0, 0, 0.85);
+}
+
+/* Calmer phase-segment labels */
+.phase-seg-label {
+    letter-spacing: 0.01em;
+}
+
+/* More readable small uppercase labels (sidebar, panel sections, budget) */
+.sidebar-label,
+.budget-heading {
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+.sidebar-value {
+    line-height: 1.5;
+}
+
+/* Slightly softer today line / accent so it isn't the loudest thing on screen */
+:root {
+    --accent-color: #7c83e8;
 }
