@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=6">
+    <link rel="stylesheet" href="styles.css?v=7">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -597,6 +597,14 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
+                <label for="phaseDisplaySelect" data-label="phaseDisplay">Faser</label>
+                <select id="phaseDisplaySelect">
+                    <option value="inbar" data-label="phaseInbar">I projektstapeln</option>
+                    <option value="below" data-label="phaseBelow">Under projektet (kompakt)</option>
+                </select>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="panel-section">
                 <label data-label="timelineTitle">Timeline</label>
                 <div class="panel-range">
                     <input type="number" id="timelineStartYear" class="year-input" min="2000" max="2100" title="Startår"
@@ -738,7 +746,7 @@
             </div>
         </div>
         <script src="konstprojekt-import.js?v=1"></script>
-        <script src="app.js?v=6"></script>
+        <script src="app.js?v=7"></script>
 </body>
 
 </html>

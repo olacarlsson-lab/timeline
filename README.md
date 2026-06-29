@@ -7,7 +7,7 @@ A visual project planning tool that runs entirely in your browser. Create and ma
 - **Visual Timeline** - See all your projects and events on an interactive timeline
 - **Multiple Zoom Levels** - View 3 months, 1 year, or 2 years at a time
 - **Drag & Drop** - Move and resize projects directly on the timeline
-- **Phases (faser)** - Give each project its own timed phases (e.g. Early stage → Art programme → Procurement → Production → Exhibition/Closing). Phases are drawn as coloured segments inside the project bar.
+- **Phases (faser)** - Give each project its own timed phases (e.g. Early stage → Art programme → Procurement → Production → Exhibition/Closing). Drag phases to move them and drag their edges to resize, directly on the timeline. Display them either as coloured segments **inside** the project bar or as a compact track **below** the project (Settings → Faser).
 - **Areas & Statuses** - Organize projects by custom areas (departments/workstreams) and statuses
 - **Project metadata** - Track investment budget and project code per project
 - **Events** - Add single-day events with custom icons
