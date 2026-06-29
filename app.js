@@ -670,6 +670,7 @@ class TimelineApp {
         this.timelineStartYear = null;
         this.timelineEndYear = null;
         this.searchQuery = '';
+        this.searchText = '';
         this.filterLead = '';
         this.filterStatus = '';
         this.filterAreaValue = '';
@@ -682,15 +683,8 @@ class TimelineApp {
         this.saveData('timeline_labels', this.labels);
         localStorage.removeItem('timeline_range');
 
-        // Clear filter UI
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) searchInput.value = '';
-        const filterLead = document.getElementById('filterLead');
-        if (filterLead) filterLead.value = '';
-        const filterStatus = document.getElementById('filterStatus');
-        if (filterStatus) filterStatus.value = '';
-        const filterArea = document.getElementById('filterArea');
-        if (filterArea) filterArea.value = '';
+        // Clear filter UI (both the settings panel and the visible filter bar)
+        this.syncFilterUI();
 
         if (loadSample) {
             const data = JSON.parse(JSON.stringify(SAMPLE_DATA));
@@ -1337,16 +1331,19 @@ class TimelineApp {
                     const phases = this.phaseProject.phases;
                     const phase = phases[this.phaseIndex];
                     if (phase) {
-                        phase.start = startDate.toISOString().split('T')[0];
-                        phase.end = endDate.toISOString().split('T')[0];
-                        // Magnetic neighbours: keep adjacent phases contiguous when
-                        // an edge is dragged (no gaps/overlaps).
-                        if (this.phaseMode === 'right') {
-                            const next = phases[this.phaseIndex + 1];
-                            if (next && next.start && (!next.end || phase.end <= next.end)) next.start = phase.end;
+                        // Only update the edge(s) actually dragged so pixel→day
+                        // rounding can't nudge the edge that should stay put.
+                        if (this.phaseMode === 'move') {
+                            phase.start = this.formatDateISO(startDate);
+                            phase.end = this.formatDateISO(endDate);
                         } else if (this.phaseMode === 'left') {
+                            phase.start = this.formatDateISO(startDate);
                             const prev = phases[this.phaseIndex - 1];
                             if (prev && prev.end && (!prev.start || phase.start >= prev.start)) prev.end = phase.start;
+                        } else { // right
+                            phase.end = this.formatDateISO(endDate);
+                            const next = phases[this.phaseIndex + 1];
+                            if (next && next.start && (!next.end || phase.end <= next.end)) next.start = phase.end;
                         }
                     }
                     this.scheduleAutoSave();
@@ -1374,8 +1371,8 @@ class TimelineApp {
                     const endDate = new Date(startDate);
                     endDate.setDate(endDate.getDate() + Math.round(durationDays));
 
-                    const newStart = startDate.toISOString().split('T')[0];
-                    const newEnd = endDate.toISOString().split('T')[0];
+                    const newStart = this.formatDateISO(startDate);
+                    const newEnd = this.formatDateISO(endDate);
                     // Keep phases aligned with the project as it moves/scales.
                     this.remapPhases(this.dragProject, this.dragProject.start, this.dragProject.end, newStart, newEnd);
                     this.dragProject.start = newStart;
@@ -1406,7 +1403,7 @@ class TimelineApp {
                     const startDays = finalLeft / dayWidth;
                     const newStartDate = new Date(this.startDate);
                     newStartDate.setDate(newStartDate.getDate() + Math.round(startDays));
-                    const newStart = newStartDate.toISOString().split('T')[0];
+                    const newStart = this.formatDateISO(newStartDate);
                     // Scale phases to fit the new span.
                     this.remapPhases(this.resizeProject, this.resizeOrigStartDate, this.resizeOrigEndDate, newStart, this.resizeOrigEndDate);
                     this.resizeProject.start = newStart;
@@ -1416,7 +1413,7 @@ class TimelineApp {
                     const endDays = (finalLeft + finalWidth) / dayWidth;
                     const newEndDate = new Date(this.startDate);
                     newEndDate.setDate(newEndDate.getDate() + Math.round(endDays));
-                    const newEnd = newEndDate.toISOString().split('T')[0];
+                    const newEnd = this.formatDateISO(newEndDate);
                     // Scale phases to fit the new span.
                     this.remapPhases(this.resizeProject, this.resizeOrigStartDate, this.resizeOrigEndDate, this.resizeOrigStartDate, newEnd);
                     this.resizeProject.start = this.resizeOrigStartDate; // Keep original start
@@ -4176,7 +4173,7 @@ class TimelineApp {
             const max = Math.max(1, ...entries.map(e => e[1]));
             return entries.map(([label, val]) => `
                 <div class="budget-row">
-                    <span class="budget-row-label">${label}</span>
+                    <span class="budget-row-label">${this.escapeHtml(String(label))}</span>
                     <span class="budget-row-bar"><span class="budget-row-fill" style="width:${Math.round(val / max * 100)}%"></span></span>
                     <span class="budget-row-value">${this.formatBudget(Math.round(val))}</span>
                 </div>`).join('');
