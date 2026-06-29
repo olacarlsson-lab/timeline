@@ -4770,6 +4770,23 @@ class TimelineApp {
         return this.labels.monthShortNames[month];
     }
 
+    // Format a date for the drag popup using a granularity that matches the
+    // current zoom: ISO week when zoomed in, month when medium, quarter when
+    // zoomed out (same thresholds as the timeline header).
+    formatTimelinePosition(date) {
+        const d = (date instanceof Date) ? date : this.parseDate(date);
+        if (!d) return '';
+        const pixelsPerDay = this.dayWidth * this.zoomLevel;
+        const year = d.getFullYear();
+        if (pixelsPerDay >= 8) {
+            const prefix = this.labels.weekPrefix || 'v';
+            return `${prefix}${this.getWeekNumber(d)} ${year}`;
+        } else if (pixelsPerDay >= 1.5) {
+            return `${this.labels.monthShortNames[d.getMonth()]} ${year}`;
+        }
+        return `Q${Math.floor(d.getMonth() / 3) + 1} ${year}`;
+    }
+
     escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
@@ -4871,12 +4888,7 @@ class TimelineApp {
         const endDate = new Date(startDate);
         endDate.setDate(endDate.getDate() + Math.round(durationDays));
 
-        // Format dates
-        const formatDate = (d) => d.toLocaleDateString('sv-SE', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        const formatDate = (d) => this.formatTimelinePosition(d);
 
         indicator.innerHTML = `
             <div class="date-range">
@@ -4886,9 +4898,7 @@ class TimelineApp {
             </div>
         `;
 
-        // Position indicator near cursor
-        indicator.style.left = (mouseX + 15) + 'px';
-        indicator.style.top = (mouseY - 40) + 'px';
+        this.positionDragIndicator(indicator, mouseX, mouseY);
         indicator.classList.add('visible');
     }
 
@@ -4899,18 +4909,28 @@ class TimelineApp {
         }
     }
 
+    // Place the drag popup near the cursor but always fully inside the viewport.
+    positionDragIndicator(indicator, mouseX, mouseY) {
+        const rect = indicator.getBoundingClientRect();
+        const w = rect.width || 160;
+        const h = rect.height || 40;
+        let left = mouseX + 16;
+        let top = mouseY - h - 12;
+        if (left + w > window.innerWidth - 8) left = mouseX - w - 16;
+        if (left < 8) left = 8;
+        if (top < 8) top = mouseY + 20; // flip below cursor when near the top
+        if (top + h > window.innerHeight - 8) top = window.innerHeight - h - 8;
+        indicator.style.left = left + 'px';
+        indicator.style.top = top + 'px';
+    }
+
     showResizeDateIndicator(left, width, mouseX, mouseY) {
         const indicator = document.getElementById('dragDateIndicator');
         if (!indicator) return;
 
         const dayWidth = this.dayWidth * this.zoomLevel;
 
-        // Format date helper
-        const formatDate = (d) => d.toLocaleDateString('sv-SE', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
+        const formatDate = (d) => this.formatTimelinePosition(d);
 
         let startDateStr, endDateStr;
 
@@ -4938,9 +4958,7 @@ class TimelineApp {
             </div>
         `;
 
-        // Position indicator near cursor
-        indicator.style.left = (mouseX + 15) + 'px';
-        indicator.style.top = (mouseY - 40) + 'px';
+        this.positionDragIndicator(indicator, mouseX, mouseY);
         indicator.classList.add('visible');
     }
 
