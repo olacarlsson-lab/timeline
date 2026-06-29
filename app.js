@@ -320,7 +320,12 @@ const DEFAULT_LABELS = {
     importExcel: 'Importera Excel (konstprojekt)...',
     phaseDisplay: 'Faser',
     phaseInbar: 'I projektstapeln',
-    phaseBelow: 'Under projektet (kompakt)'
+    phaseBelow: 'Under projektet (kompakt)',
+    budgetSummary: 'Investeringsplan',
+    budgetTotal: 'Total investeringsbudget',
+    budgetPerYear: 'Per år',
+    budgetPerLead: 'Per projektledare',
+    budgetMissing: 'utan budget'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -450,7 +455,12 @@ const DEFAULT_LABELS_EN = {
     importExcel: 'Import Excel (art projects)...',
     phaseDisplay: 'Phases',
     phaseInbar: 'Inside the project bar',
-    phaseBelow: 'Below the project (compact)'
+    phaseBelow: 'Below the project (compact)',
+    budgetSummary: 'Investment plan',
+    budgetTotal: 'Total investment budget',
+    budgetPerYear: 'Per year',
+    budgetPerLead: 'Per project lead',
+    budgetMissing: 'without budget'
 };
 
 class TimelineApp {
@@ -978,6 +988,9 @@ class TimelineApp {
         safeBind('phaseDisplaySelect', 'change', (e) => this.setPhaseDisplay(e.target.value));
         const phaseDisplaySelect = document.getElementById('phaseDisplaySelect');
         if (phaseDisplaySelect) phaseDisplaySelect.value = this.phaseDisplay;
+        safeBind('budgetBtn', 'click', () => this.openBudgetSummary());
+        safeBind('closeBudgetModal', 'click', () => this.closeModal('budgetModal'));
+        safeBind('closeBudgetBtn', 'click', () => this.closeModal('budgetModal'));
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importDropdownBtn', 'click', (e) => {
@@ -1320,10 +1333,20 @@ class TimelineApp {
                     startDate.setDate(startDate.getDate() + Math.round(absStart / dayWidth));
                     const endDate = new Date(this.startDate);
                     endDate.setDate(endDate.getDate() + Math.round(absEnd / dayWidth));
-                    const phase = this.phaseProject.phases[this.phaseIndex];
+                    const phases = this.phaseProject.phases;
+                    const phase = phases[this.phaseIndex];
                     if (phase) {
                         phase.start = startDate.toISOString().split('T')[0];
                         phase.end = endDate.toISOString().split('T')[0];
+                        // Magnetic neighbours: keep adjacent phases contiguous when
+                        // an edge is dragged (no gaps/overlaps).
+                        if (this.phaseMode === 'right') {
+                            const next = phases[this.phaseIndex + 1];
+                            if (next && next.start && (!next.end || phase.end <= next.end)) next.start = phase.end;
+                        } else if (this.phaseMode === 'left') {
+                            const prev = phases[this.phaseIndex - 1];
+                            if (prev && prev.end && (!prev.start || phase.start >= prev.start)) prev.end = phase.start;
+                        }
                     }
                     this.scheduleAutoSave();
                     this.render();
@@ -1350,8 +1373,12 @@ class TimelineApp {
                     const endDate = new Date(startDate);
                     endDate.setDate(endDate.getDate() + Math.round(durationDays));
 
-                    this.dragProject.start = startDate.toISOString().split('T')[0];
-                    this.dragProject.end = endDate.toISOString().split('T')[0];
+                    const newStart = startDate.toISOString().split('T')[0];
+                    const newEnd = endDate.toISOString().split('T')[0];
+                    // Keep phases aligned with the project as it moves/scales.
+                    this.remapPhases(this.dragProject, this.dragProject.start, this.dragProject.end, newStart, newEnd);
+                    this.dragProject.start = newStart;
+                    this.dragProject.end = newEnd;
 
                     this.scheduleAutoSave();
                     this.render();
@@ -1378,15 +1405,21 @@ class TimelineApp {
                     const startDays = finalLeft / dayWidth;
                     const newStartDate = new Date(this.startDate);
                     newStartDate.setDate(newStartDate.getDate() + Math.round(startDays));
-                    this.resizeProject.start = newStartDate.toISOString().split('T')[0];
+                    const newStart = newStartDate.toISOString().split('T')[0];
+                    // Scale phases to fit the new span.
+                    this.remapPhases(this.resizeProject, this.resizeOrigStartDate, this.resizeOrigEndDate, newStart, this.resizeOrigEndDate);
+                    this.resizeProject.start = newStart;
                     this.resizeProject.end = this.resizeOrigEndDate; // Keep original end
                 } else {
                     // Dragging end - keep original start date
                     const endDays = (finalLeft + finalWidth) / dayWidth;
                     const newEndDate = new Date(this.startDate);
                     newEndDate.setDate(newEndDate.getDate() + Math.round(endDays));
+                    const newEnd = newEndDate.toISOString().split('T')[0];
+                    // Scale phases to fit the new span.
+                    this.remapPhases(this.resizeProject, this.resizeOrigStartDate, this.resizeOrigEndDate, this.resizeOrigStartDate, newEnd);
                     this.resizeProject.start = this.resizeOrigStartDate; // Keep original start
-                    this.resizeProject.end = newEndDate.toISOString().split('T')[0];
+                    this.resizeProject.end = newEnd;
                 }
 
                 this.isResizing = false;
@@ -2177,6 +2210,28 @@ class TimelineApp {
             if (this.phaseMoved) { e.stopPropagation(); this.phaseMoved = false; }
         });
         return seg;
+    }
+
+    // Shift/scale a project's phases so they keep their relative position when
+    // the whole project is moved or resized.
+    remapPhases(project, oldStart, oldEnd, newStart, newEnd) {
+        if (!Array.isArray(project.phases) || !project.phases.length) return;
+        const os = this.parseDate(oldStart) && this.parseDate(oldStart).getTime();
+        const oe = this.parseDate(oldEnd) && this.parseDate(oldEnd).getTime();
+        const ns = this.parseDate(newStart) && this.parseDate(newStart).getTime();
+        const ne = this.parseDate(newEnd) && this.parseDate(newEnd).getTime();
+        if (os == null || oe == null || ns == null || ne == null) return;
+        const oldSpan = oe - os;
+        const scale = oldSpan > 0 ? (ne - ns) / oldSpan : 1;
+        const remap = (iso) => {
+            const t = this.parseDate(iso);
+            if (!t) return iso;
+            return this.formatDateISO(new Date(ns + (t.getTime() - os) * scale));
+        };
+        project.phases.forEach(ph => {
+            if (ph.start) ph.start = remap(ph.start);
+            if (ph.end) ph.end = remap(ph.end);
+        });
     }
 
     beginPhaseDrag(e, mode, project, phaseIndex, seg, originPx, containerWidth) {
@@ -4035,6 +4090,72 @@ class TimelineApp {
         }
     }
 
+    // Validate phase rows: each phase with both dates must have start <= end.
+    // Returns true if valid, otherwise shows a toast and returns false.
+    validatePhases(phases) {
+        for (const ph of phases) {
+            if (ph.start && ph.end && this.parseDate(ph.start) > this.parseDate(ph.end)) {
+                this.showToast(`Fasen "${ph.name || ''}" har slutdatum före startdatum`, 'error');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    openBudgetSummary() {
+        const body = document.getElementById('budgetModalBody');
+        if (!body) return;
+        const withBudget = this.projects.filter(p => p.budget);
+        const total = withBudget.reduce((s, p) => s + (p.budget || 0), 0);
+
+        // Sum per project lead (konstprojektledare).
+        const byLead = {};
+        withBudget.forEach(p => {
+            const k = p.lead || (this.labels.all || 'Övrigt');
+            byLead[k] = (byLead[k] || 0) + p.budget;
+        });
+
+        // Distribute each project's budget evenly across the calendar years it
+        // spans, giving a rough yearly cash-flow view of the investment plan.
+        const byYear = {};
+        withBudget.forEach(p => {
+            const s = this.parseDate(p.start);
+            const e = this.parseDate(p.end) || s;
+            if (!s) return;
+            const y0 = s.getFullYear();
+            const y1 = Math.max(y0, e.getFullYear());
+            const per = p.budget / (y1 - y0 + 1);
+            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + per;
+        });
+
+        const renderBars = (entries) => {
+            const max = Math.max(1, ...entries.map(e => e[1]));
+            return entries.map(([label, val]) => `
+                <div class="budget-row">
+                    <span class="budget-row-label">${label}</span>
+                    <span class="budget-row-bar"><span class="budget-row-fill" style="width:${Math.round(val / max * 100)}%"></span></span>
+                    <span class="budget-row-value">${this.formatBudget(Math.round(val))}</span>
+                </div>`).join('');
+        };
+
+        const yearEntries = Object.keys(byYear).sort().map(y => [y, byYear[y]]);
+        const leadEntries = Object.entries(byLead).sort((a, b) => b[1] - a[1]);
+        const noBudget = this.projects.length - withBudget.length;
+
+        body.innerHTML = `
+            <div class="budget-total">
+                <span>${this.labels.budgetTotal || 'Total investeringsbudget'}</span>
+                <strong>${this.formatBudget(total)}</strong>
+            </div>
+            <div class="budget-meta">${withBudget.length} ${(this.labels.projectsPlural || 'projekt').toLowerCase()}${noBudget ? ` · ${noBudget} ${this.labels.budgetMissing || 'utan budget'}` : ''}</div>
+            <h3 class="budget-heading">${this.labels.budgetPerYear || 'Per år'}</h3>
+            ${yearEntries.length ? renderBars(yearEntries) : '<div class="budget-meta">–</div>'}
+            <h3 class="budget-heading">${this.labels.budgetPerLead || 'Per projektledare'}</h3>
+            ${leadEntries.length ? renderBars(leadEntries) : '<div class="budget-meta">–</div>'}
+        `;
+        document.getElementById('budgetModal').classList.add('active');
+    }
+
     parseBudgetInput(inputId) {
         const v = document.getElementById(inputId).value.trim();
         if (!v) return null;
@@ -4289,6 +4410,9 @@ class TimelineApp {
             return;
         }
 
+        const phases = this.readPhaseList('projectPhasesList');
+        if (!this.validatePhases(phases)) return;
+
         const project = {
             id: Date.now().toString(),
             name: document.getElementById('projectName').value.trim(),
@@ -4301,7 +4425,7 @@ class TimelineApp {
             color: document.getElementById('projectColor').value,
             budget: this.parseBudgetInput('projectBudget'),
             projectCode: document.getElementById('projectCode').value.trim() || null,
-            phases: this.readPhaseList('projectPhasesList'),
+            phases: phases,
             comment: document.getElementById('projectComment').value.trim() || null
         };
 
@@ -4442,6 +4566,9 @@ class TimelineApp {
                     return;
                 }
 
+                const editedPhases = this.readPhaseList('editPhasesList');
+                if (!this.validatePhases(editedPhases)) return;
+
                 this.pushUndoState();
                 project.name = name;
                 project.lead = document.getElementById('editLead').value.trim() || null;
@@ -4453,7 +4580,7 @@ class TimelineApp {
                 project.color = document.getElementById('editColor').value;
                 project.budget = this.parseBudgetInput('editBudget');
                 project.projectCode = document.getElementById('editCode').value.trim() || null;
-                project.phases = this.readPhaseList('editPhasesList');
+                project.phases = editedPhases;
                 project.comment = document.getElementById('editComment').value.trim() || null;
                 this.scheduleAutoSave();
                 this.showToast('Projekt uppdaterat!', 'success');
@@ -4960,13 +5087,99 @@ class TimelineApp {
                 await this.showAlert('Inga projekt hittades i Excel-filen. Kontrollera att det är konstprojekt-exporten.');
                 return;
             }
-            // Route the generated timeline object through the normal JSON import
-            // so replace/merge, undo and persistence all behave identically.
-            await this.importJsonData(JSON.stringify(data));
+            // With an empty timeline there is nothing to sync against.
+            if (this.projects.length === 0) {
+                await this.importJsonData(JSON.stringify(data));
+                return;
+            }
+            // Offer a sync that updates existing projects (matched on project
+            // code) while preserving phase scheduling the user has adjusted.
+            const sync = await this.showConfirm(
+                'Hur vill du importera Excel-datan?\n\n' +
+                'OK = Synka: uppdatera befintliga projekt (matchar projektkod) och behåll dina justerade fasdatum\n' +
+                'Avbryt = Andra alternativ (ersätt allt / lägg till)',
+                { confirmText: 'Synka', cancelText: 'Andra...' }
+            );
+            if (sync) {
+                this.syncExcelImport(data);
+            } else {
+                await this.importJsonData(JSON.stringify(data));
+            }
         } catch (err) {
             console.error('Excel import error:', err);
             await this.showAlert('Kunde inte läsa Excel-filen: ' + err.message);
         }
+    }
+
+    // Update existing projects from a fresh export instead of duplicating them.
+    // Matching is by project code (first long number), falling back to name.
+    syncExcelImport(data) {
+        this.pushUndoState();
+
+        const codeKey = (c) => {
+            if (!c) return null;
+            const m = /\d{4,}/.exec(c.toString());
+            return m ? m[0] : c.toString().trim().toLowerCase();
+        };
+        const nameKey = (n) => (n || '').toString().trim().toLowerCase();
+
+        const byCode = {};
+        const byName = {};
+        this.projects.forEach(p => {
+            const ck = codeKey(p.projectCode);
+            if (ck) byCode[ck] = p;
+            byName[nameKey(p.name)] = p;
+        });
+
+        let updated = 0, added = 0;
+        data.projects.forEach(incoming => {
+            const ck = codeKey(incoming.projectCode);
+            const existing = (ck && byCode[ck]) || byName[nameKey(incoming.name)];
+            if (existing) {
+                // Refresh metadata from the export...
+                existing.name = incoming.name;
+                existing.lead = incoming.lead;
+                existing.status = incoming.status;
+                existing.budget = incoming.budget;
+                existing.projectCode = incoming.projectCode;
+                existing.color = incoming.color;
+                existing.comment = incoming.comment;
+                // ...but keep the user's own schedule. Only take the export's
+                // phases/dates if this project has none yet.
+                if (!Array.isArray(existing.phases) || existing.phases.length === 0) {
+                    existing.phases = incoming.phases;
+                    existing.start = incoming.start;
+                    existing.end = incoming.end;
+                    existing.startType = incoming.startType;
+                    existing.endType = incoming.endType;
+                }
+                updated++;
+            } else {
+                incoming.id = Date.now().toString() + Math.random().toString(36).slice(2, 8);
+                this.projects.push(incoming);
+                added++;
+            }
+        });
+
+        // Merge in any new areas / statuses from the export.
+        if (data.areas) {
+            const colors = new Set(this.areas.map(a => a.color));
+            data.areas.forEach(a => { if (!colors.has(a.color)) this.areas.push(a); });
+            this.saveData('timeline_areas', this.areas);
+            this.populateAreaSelects();
+        }
+        if (data.statuses) {
+            const ids = new Set(this.statuses.map(s => s.id));
+            data.statuses.forEach(s => { if (!ids.has(s.id)) this.statuses.push(s); });
+            this.saveData('timeline_statuses', this.statuses);
+            this.populateStatusSelects();
+        }
+
+        this.saveData('timeline_projects', this.projects);
+        this.initTimelineRange();
+        this.populateDateSelectors();
+        this.render();
+        this.showToast(`Synk klar: ${updated} uppdaterade, ${added} nya`, 'success');
     }
 
     parseIcalDate(dateStr) {
@@ -5376,7 +5589,8 @@ class TimelineApp {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    new TimelineApp();
+    // Exposed for debugging and automated tests.
+    window.timelineApp = new TimelineApp();
 });
 
 // Register service worker

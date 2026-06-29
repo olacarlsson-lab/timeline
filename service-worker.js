@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tidslinje-v3';
+const CACHE_NAME = 'tidslinje-v4';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',

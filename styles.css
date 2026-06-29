@@ -3310,3 +3310,73 @@ form {
     color: var(--text-secondary);
     white-space: nowrap;
 }
+
+/* ===== Investeringsplan / budget summary ===== */
+.budget-body {
+    padding: 4px 2px 8px;
+}
+
+.budget-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.budget-total strong {
+    font-size: 1.25rem;
+    color: var(--accent-color);
+}
+
+.budget-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.budget-heading {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    margin: 16px 0 8px;
+}
+
+.budget-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.budget-row-label {
+    flex: 0 0 8.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.budget-row-bar {
+    flex: 1 1 auto;
+    height: 10px;
+    background: var(--bg-tertiary, rgba(127, 127, 127, 0.15));
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.budget-row-fill {
+    display: block;
+    height: 100%;
+    background: var(--accent-color);
+    border-radius: 5px;
+}
+
+.budget-row-value {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--text-secondary);
+}
