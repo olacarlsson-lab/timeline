@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=11">
+    <link rel="stylesheet" href="styles.css?v=12">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -44,6 +44,8 @@
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
                 <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
+                <button id="brushToggle" class="btn btn-secondary" title="Fas-pensel: klicka ett projekt för att dela i standardfaser">✨ Pensel</button>
+                <button id="cmdBtn" class="btn btn-secondary" title="Kommandopalett (Ctrl/Cmd+K)">⌘K</button>
                 <div class="divider"></div>
                 <div class="undo-redo-controls">
                     <button id="undoBtn" class="btn btn-icon-round" title="Ångra (Ctrl+Z)" disabled>
@@ -83,16 +85,36 @@
             <span class="filter-bar-count" id="filterCount"></span>
         </div>
 
+        <!-- Interactive stage legend (doubles as a status filter) -->
+        <div class="stage-legend" id="stageLegend"></div>
+
         <div class="timeline-container" id="timelineContainer">
             <div class="timeline-header" id="timelineHeader"></div>
             <div class="timeline-body" id="timelineBody">
                 <div class="timeline-grid" id="timelineGrid"></div>
+                <div class="budget-ribbon" id="budgetRibbon"></div>
                 <div class="timeline-content" id="timelineContent"></div>
                 <div class="today-marker" id="todayMarker"></div>
+                <div class="snap-guide" id="snapGuide"></div>
             </div>
         </div>
+
+        <!-- Mini-map / overview strip -->
+        <div class="mini-map" id="miniMap">
+            <div class="mini-map-track" id="miniMapTrack"></div>
+            <div class="mini-map-viewport" id="miniMapViewport"></div>
+        </div>
+
         <!-- Date indicator for drag/resize -->
         <div id="dragDateIndicator" class="drag-date-indicator"></div>
+    </div>
+
+    <!-- Command palette -->
+    <div class="cmd-overlay" id="commandPalette">
+        <div class="cmd-box">
+            <input type="text" id="cmdInput" class="cmd-input" placeholder="Skriv kommando eller projekt..." autocomplete="off">
+            <div class="cmd-list" id="cmdList"></div>
+        </div>
     </div>
 
     <!-- Modal för att lägga till projekt -->
@@ -475,6 +497,7 @@
         <div class="sidebar-content" id="sidebarContent">
         </div>
         <div class="sidebar-actions">
+            <button id="sidebarFocusBtn" class="btn btn-secondary">Fokusera</button>
             <button id="sidebarEditBtn" class="btn btn-primary" data-label="edit">Redigera</button>
         </div>
     </div>
@@ -775,7 +798,7 @@
             </div>
         </div>
         <script src="konstprojekt-import.js?v=1"></script>
-        <script src="app.js?v=11"></script>
+        <script src="app.js?v=12"></script>
 </body>
 
 </html>

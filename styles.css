@@ -3512,3 +3512,172 @@ form {
     .filter-bar-title { display: none; }
     .filter-bar-select { flex: 1 1 30%; }
 }
+
+/* ============ UI prototypes ============ */
+
+/* 5. Stage legend / status filter chips */
+.stage-legend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    flex-wrap: wrap;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--glass-border);
+}
+.stage-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 7px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    transition: all 0.12s ease;
+    user-select: none;
+}
+.stage-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+.stage-chip:hover { color: var(--text-primary); }
+.stage-chip.active { color: #fff; border-color: transparent; }
+.stage-legend.has-active .stage-chip:not(.active) { opacity: 0.5; }
+
+/* 6. Budget ribbon */
+.budget-ribbon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 40px;
+    z-index: 2;
+    pointer-events: none;
+    display: none;
+}
+.timeline-container.show-ribbon .budget-ribbon { display: block; }
+.timeline-container.show-ribbon .timeline-content { margin-top: 44px; }
+.budget-ribbon-bar {
+    position: absolute;
+    bottom: 0;
+    background: linear-gradient(to top, var(--accent-color), rgba(124,131,232,0.25));
+    border-radius: 3px 3px 0 0;
+    opacity: 0.55;
+}
+.budget-ribbon-label {
+    position: absolute;
+    bottom: 2px;
+    font-size: 0.62rem;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+    transform: translateX(4px);
+    white-space: nowrap;
+}
+
+/* 11. Snap guide line */
+.snap-guide {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 2px dashed var(--accent-hover);
+    z-index: 9000;
+    pointer-events: none;
+    display: none;
+}
+.snap-guide.visible { display: block; }
+
+/* 1. Mini-map */
+.mini-map {
+    position: relative;
+    height: 54px;
+    margin: 4px 8px 6px;
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    cursor: pointer;
+}
+.mini-map-track { position: absolute; inset: 0; }
+.mini-map-line { position: absolute; height: 2px; border-radius: 1px; }
+.mini-map-viewport {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: rgba(124,131,232,0.18);
+    border: 1px solid var(--accent-color);
+    border-radius: 4px;
+    cursor: grab;
+}
+.mini-map-viewport:active { cursor: grabbing; }
+
+/* 3. Command palette */
+.cmd-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(2px);
+    z-index: 12000;
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 12vh;
+}
+.cmd-overlay.active { display: flex; }
+.cmd-box {
+    width: min(560px, 92vw);
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+.cmd-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    outline: none;
+}
+.cmd-list { max-height: 50vh; overflow-y: auto; }
+.cmd-item {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--text-secondary);
+}
+.cmd-item .cmd-kind { font-size: 0.7rem; opacity: 0.6; margin-left: auto; }
+.cmd-item.active, .cmd-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+/* 8. Focus / spotlight mode */
+.timeline-content.focus-mode .project-row:not(.focused) { opacity: 0.18; filter: grayscale(0.6); transition: opacity .2s ease; }
+.timeline-content.focus-mode .project-row.focused { z-index: 50; }
+
+/* 9. Countdown / invigning chip */
+.countdown-chip {
+    position: absolute;
+    top: -9px;
+    transform: translateX(-50%);
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-color);
+    color: var(--text-primary);
+    font-size: 0.62rem;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 999px;
+    white-space: nowrap;
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* 2. Semantic zoom: phase boundary ticks when zoomed far out */
+.phase-tick { position: absolute; top: 2px; bottom: 2px; width: 2px; background: rgba(255,255,255,0.6); z-index: 1; }
+
+/* 10. Brush mode */
+.brush-active .project-bar { cursor: crosshair; }
+.btn.brush-on { background: var(--accent-color); color: #fff; }
