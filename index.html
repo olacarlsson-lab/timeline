@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=7">
+    <link rel="stylesheet" href="styles.css?v=11">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -71,6 +71,17 @@
                 </button>
             </div>
         </header>
+
+        <div class="filter-bar" id="filterBar">
+            <span class="filter-bar-title" data-label="filterShort">Filtrera</span>
+            <input type="search" id="barSearch" class="filter-bar-search" placeholder="Sök projekt..."
+                data-placeholder="searchPlaceholder">
+            <select id="barLead" class="filter-bar-select" title="Projektledare" data-title="projectLead"></select>
+            <select id="barStatus" class="filter-bar-select" title="Status" data-title="status"></select>
+            <select id="barArea" class="filter-bar-select" title="Område" data-title="area"></select>
+            <button id="barClear" class="filter-bar-clear" data-label="clearFilters">Rensa</button>
+            <span class="filter-bar-count" id="filterCount"></span>
+        </div>
 
         <div class="timeline-container" id="timelineContainer">
             <div class="timeline-header" id="timelineHeader"></div>
@@ -440,6 +451,20 @@
         </div>
     </div>
 
+    <!-- Investeringsplan / budget summary -->
+    <div class="modal" id="budgetModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 data-label="budgetSummary">Investeringsplan</h2>
+                <button class="modal-close" id="closeBudgetModal">&times;</button>
+            </div>
+            <div id="budgetModalBody" class="budget-body"></div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="closeBudgetBtn" data-label="ok">OK</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Project Sidebar -->
     <div id="projectSidebar" class="sidebar sidebar-left">
         <div class="sidebar-bottom-sheet-handle"></div>
@@ -630,6 +655,10 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
+                <button id="budgetBtn" class="btn btn-secondary" data-label="budgetSummary" style="width:100%;">Investeringsplan</button>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="panel-section">
                 <label data-label="reset">Återställ</label>
                 <div class="panel-section-row">
                     <button id="resetSampleBtn" class="btn btn-secondary" data-label="exampleData">Exempeldata</button>
@@ -746,7 +775,7 @@
             </div>
         </div>
         <script src="konstprojekt-import.js?v=1"></script>
-        <script src="app.js?v=7"></script>
+        <script src="app.js?v=11"></script>
 </body>
 
 </html>
