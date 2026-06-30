@@ -2218,6 +2218,13 @@ class TimelineApp {
             const lbl = document.createElement('span');
             lbl.className = 'phase-seg-label';
             lbl.textContent = phase.name || '';
+            // Pick dark or light text based on the tile's luminance so labels
+            // stay readable on light phase colours (yellow, light grey, green).
+            const dark = this.isLightColor(phase.color || opts.color);
+            lbl.style.color = dark ? '#10121a' : '#ffffff';
+            lbl.style.textShadow = dark
+                ? '0 1px 1px rgba(255,255,255,0.35)'
+                : '0 1px 2px rgba(0,0,0,0.65), 0 0 1px rgba(0,0,0,0.9)';
             seg.appendChild(lbl);
         }
 
@@ -5180,6 +5187,19 @@ class TimelineApp {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Perceived-luminance check so we can put dark text on light fills.
+    isLightColor(hex) {
+        if (!hex || hex[0] !== '#') return false;
+        let c = hex.slice(1);
+        if (c.length === 3) c = c.split('').map(x => x + x).join('');
+        if (c.length < 6) return false;
+        const r = parseInt(c.slice(0, 2), 16);
+        const g = parseInt(c.slice(2, 4), 16);
+        const b = parseInt(c.slice(4, 6), 16);
+        const L = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return L > 0.58;
     }
 
     // Toast notifications
