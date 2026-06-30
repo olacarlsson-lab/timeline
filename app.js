@@ -524,6 +524,7 @@ class TimelineApp {
         this.filterAreaValue = '';
         this.searchQuery = '';
         this.searchText = '';
+        this.filterCollapsed = !!this.loadData('timeline_filter_collapsed');
         // Optional view layers (off by default for a clean, readable timeline)
         this.focusProjectId = null;
         const layers = this.loadData('timeline_layers') || {};
@@ -1007,6 +1008,8 @@ class TimelineApp {
         safeBind('filterArea', 'change', (e) => { this.filterAreaValue = e.target.value; this.afterFilterChange(); });
         safeBind('barArea', 'change', (e) => { this.filterAreaValue = e.target.value; this.afterFilterChange(); });
         safeBind('barClear', 'click', () => this.clearFilters());
+        safeBind('filterToggle', 'click', () => this.setFilterCollapsed(!this.filterCollapsed));
+        this.applyFilterCollapsed();
         safeBind('sortSelect', 'change', (e) => this.setSortBy(e.target.value));
         safeBind('phaseDisplaySelect', 'change', (e) => this.setPhaseDisplay(e.target.value));
         const phaseDisplaySelect = document.getElementById('phaseDisplaySelect');
@@ -3473,15 +3476,36 @@ class TimelineApp {
         this.afterFilterChange();
     }
 
+    setFilterCollapsed(collapsed) {
+        this.filterCollapsed = !!collapsed;
+        this.saveData('timeline_filter_collapsed', this.filterCollapsed);
+        this.applyFilterCollapsed();
+    }
+
+    applyFilterCollapsed() {
+        const bar = document.getElementById('filterBar');
+        const btn = document.getElementById('filterToggle');
+        if (bar) bar.classList.toggle('collapsed', this.filterCollapsed);
+        if (btn) {
+            btn.classList.toggle('active', !this.filterCollapsed);
+            btn.setAttribute('aria-pressed', String(!this.filterCollapsed));
+        }
+        this.updateFilterCount();
+    }
+
     updateFilterCount() {
         const el = document.getElementById('filterCount');
-        if (!el) return;
         const total = this.projects.length;
         const shown = this.getFilteredProjects().length;
         const active = this.searchQuery || this.filterLead || this.filterStatus || this.filterAreaValue;
-        el.textContent = active ? `${shown} / ${total}` : `${total}`;
-        const bar = document.getElementById('filterBar');
-        if (bar) bar.classList.toggle('has-active-filter', !!active);
+        if (el) {
+            el.textContent = active ? `${shown} / ${total}` : `${total}`;
+            const bar = document.getElementById('filterBar');
+            if (bar) bar.classList.toggle('has-active-filter', !!active);
+        }
+        // When the filter bar is hidden, flag active filters on the toolbar button.
+        const dot = document.getElementById('filterToggleDot');
+        if (dot) dot.style.display = (this.filterCollapsed && active) ? 'block' : 'none';
     }
 
 
