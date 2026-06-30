@@ -77,6 +77,20 @@ node generate-konstprojekt-data.js path/to/projekten.xlsx
 and mapping (`konstprojekt-import.js`), so the bundled dataset and a live
 import stay identical.
 
+## Source ⊕ planning model
+
+When the master data lives in a spreadsheet (Excel/SharePoint), the app keeps
+two layers apart so a re-import never overwrites your work:
+
+- **Source fields** (name, lead, budget, area/colour, code) are refreshed from
+  each import — unless you have explicitly overridden them in the app.
+- **Planning fields** (phases, dates, status, comment) are always preserved.
+
+On re-import, projects are matched by code (or name), source facts are
+refreshed, new rows are added, and rows that vanished from the source are
+flagged (not deleted). The logic lives in `data-model.js` as pure,
+unit-tested functions (`mergeImport`, `recordOverrides`, `initSource`).
+
 ## Technology
 
 This is a standalone web application built with:

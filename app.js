@@ -335,7 +335,8 @@ const DEFAULT_LABELS = {
     layerLegend: 'Stadie-legend',
     layerRibbon: 'Belastning per år',
     layerMiniMap: 'Mini-karta',
-    layerCountdown: 'Nedräkningar'
+    layerCountdown: 'Nedräkningar',
+    orphanNote: 'Saknas i senaste import – planeringen är kvar.'
 };
 
 const DEFAULT_LABELS_EN = {
@@ -480,7 +481,8 @@ const DEFAULT_LABELS_EN = {
     layerLegend: 'Stage legend',
     layerRibbon: 'Load per year',
     layerMiniMap: 'Mini-map',
-    layerCountdown: 'Countdowns'
+    layerCountdown: 'Countdowns',
+    orphanNote: 'Missing from the latest import – planning kept.'
 };
 
 class TimelineApp {
@@ -2941,6 +2943,7 @@ class TimelineApp {
         projectEvents.sort((a, b) => this.parseDate(a.start || a.date) - this.parseDate(b.start || b.date));
 
         content.innerHTML = `
+            ${project._orphan ? `<div class="sidebar-orphan">⚠ ${this.labels.orphanNote || 'Saknas i senaste import – planeringen är kvar.'}</div>` : ''}
             <div class="sidebar-section">
                 <span class="sidebar-label">${this.labels.area}</span>
                 <div class="sidebar-value" style="display: flex; align-items: center; gap: 8px;">
@@ -5027,6 +5030,10 @@ class TimelineApp {
                 project.projectCode = document.getElementById('editCode').value.trim() || null;
                 project.phases = editedPhases;
                 project.comment = document.getElementById('editComment').value.trim() || null;
+                // Remember which source fields the user changed so a future
+                // re-import won't revert them, and clear any orphan flag.
+                if (window.TimelineModel) TimelineModel.recordOverrides(project);
+                delete project._orphan;
                 this.scheduleAutoSave();
                 this.showToast('Projekt uppdaterat!', 'success');
             }
@@ -5655,55 +5662,17 @@ class TimelineApp {
         }
     }
 
-    // Update existing projects from a fresh export instead of duplicating them.
-    // Matching is by project code (first long number), falling back to name.
+    // Sync a fresh export into the existing timeline using the source/overlay
+    // model: SOURCE fields (name, lead, budget, colour, code) are refreshed
+    // from the export unless the user overrode them, while planning (phases,
+    // dates, status, comment) is always preserved. New rows are added; rows
+    // that vanished from the source are flagged, not deleted.
     syncExcelImport(data) {
         this.pushUndoState();
 
-        const codeKey = (c) => {
-            if (!c) return null;
-            const m = /\d{4,}/.exec(c.toString());
-            return m ? m[0] : c.toString().trim().toLowerCase();
-        };
-        const nameKey = (n) => (n || '').toString().trim().toLowerCase();
-
-        const byCode = {};
-        const byName = {};
-        this.projects.forEach(p => {
-            const ck = codeKey(p.projectCode);
-            if (ck) byCode[ck] = p;
-            byName[nameKey(p.name)] = p;
-        });
-
-        let updated = 0, added = 0;
-        data.projects.forEach(incoming => {
-            const ck = codeKey(incoming.projectCode);
-            const existing = (ck && byCode[ck]) || byName[nameKey(incoming.name)];
-            if (existing) {
-                // Refresh metadata from the export...
-                existing.name = incoming.name;
-                existing.lead = incoming.lead;
-                existing.status = incoming.status;
-                existing.budget = incoming.budget;
-                existing.projectCode = incoming.projectCode;
-                existing.color = incoming.color;
-                existing.comment = incoming.comment;
-                // ...but keep the user's own schedule. Only take the export's
-                // phases/dates if this project has none yet.
-                if (!Array.isArray(existing.phases) || existing.phases.length === 0) {
-                    existing.phases = incoming.phases;
-                    existing.start = incoming.start;
-                    existing.end = incoming.end;
-                    existing.startType = incoming.startType;
-                    existing.endType = incoming.endType;
-                }
-                updated++;
-            } else {
-                incoming.id = Date.now().toString() + Math.random().toString(36).slice(2, 8);
-                this.projects.push(incoming);
-                added++;
-            }
-        });
+        const imported = TimelineModel.initSource(data.projects || []);
+        const { projects, stats } = TimelineModel.mergeImport(this.projects, imported);
+        this.projects = projects;
 
         // Merge in any new areas / statuses from the export.
         if (data.areas) {
@@ -5723,7 +5692,8 @@ class TimelineApp {
         this.initTimelineRange();
         this.populateDateSelectors();
         this.render();
-        this.showToast(`Synk klar: ${updated} uppdaterade, ${added} nya`, 'success');
+        const orphanNote = stats.orphaned ? `, ${stats.orphaned} saknas i källan` : '';
+        this.showToast(`Synk klar: ${stats.updated} uppdaterade, ${stats.added} nya${orphanNote}`, 'success');
     }
 
     parseIcalDate(dateStr) {
@@ -5989,6 +5959,10 @@ class TimelineApp {
                     this.events.push(event);
                 });
             }
+
+            // Seed the source snapshot so a later re-import can refresh facts
+            // without overwriting planning (source/overlay model).
+            if (window.TimelineModel) TimelineModel.initSource(this.projects);
 
             this.saveData('timeline_projects', this.projects);
             this.saveData('timeline_events', this.events);
