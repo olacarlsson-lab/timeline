@@ -5585,8 +5585,21 @@ class TimelineApp {
         const fields = KonstprojektImport.FIELDS;
         const rowsEl = document.getElementById('importMapRows');
 
+        // Prefer a previously saved mapping (by header name) when the columns
+        // still exist; otherwise fall back to auto-detection.
+        const saved = this.loadData('timeline_import_mapping') || {};
+        const resolve = (key) => {
+            if (Object.prototype.hasOwnProperty.call(saved, key)) {
+                const name = saved[key];
+                if (name === '__ignore__') return -1;
+                const i = headers.indexOf(name);
+                if (i !== -1) return i;
+            }
+            return detected[key];
+        };
+
         rowsEl.innerHTML = fields.map(f => {
-            const sel = detected[f.key];
+            const sel = resolve(f.key);
             const opts = ['<option value="-1">— ignorera —</option>'].concat(
                 headers.map((h, i) => `<option value="${i}" ${i === sel ? 'selected' : ''}>${this.escapeHtml(h || ('Kolumn ' + (i + 1)))}</option>`)
             ).join('');
@@ -5613,17 +5626,23 @@ class TimelineApp {
 
     async confirmImportMapping() {
         const rowsEl = document.getElementById('importMapRows');
+        const headers = (this._importParsed && this._importParsed.headers) || [];
         const mapping = {};
+        const toSave = {};
         let hasName = false;
         rowsEl.querySelectorAll('.map-select').forEach(s => {
             const v = parseInt(s.value, 10);
             mapping[s.dataset.key] = v;
+            // Remember the choice by header name so it survives reordering.
+            toSave[s.dataset.key] = v >= 0 ? (headers[v] || '') : '__ignore__';
             if (s.dataset.key === 'rubrik' && v >= 0) hasName = true;
         });
         if (!hasName) {
             await this.showAlert('Du måste koppla en kolumn till Projektnamn.');
             return;
         }
+        // Persist the mapping for the next import from a similar file.
+        this.saveData('timeline_import_mapping', toSave);
         this.closeModal('importMapModal');
         try {
             const data = KonstprojektImport.buildTimeline(this._importParsed, {

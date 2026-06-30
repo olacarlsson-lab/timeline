@@ -69,6 +69,14 @@
         '#FA4D2D', '#7C3AED', '#0EA5A4', '#D97706'
     ];
 
+    // Dedicated, calmer palette for områden (förvaltningsobjekt). More hues so
+    // many sites stay distinguishable, tuned to the milder visual style.
+    const AREA_PALETTE = [
+        '#6E8EBF', '#C77DA0', '#D8A93F', '#6FB286', '#D98E5A',
+        '#8E7CC3', '#5BA8A0', '#C76B6B', '#A0894C', '#7E9C5B',
+        '#B07CA8', '#5C9CC2'
+    ];
+
     // ---- Date helpers ----------------------------------------------------
 
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -391,7 +399,7 @@
             // Område drives the colour / area dimension.
             const omrade = get(row, idx.omrade) || null;
             if (omrade && !areaColor[omrade]) {
-                areaColor[omrade] = LEAD_PALETTE[areaNames.length % LEAD_PALETTE.length];
+                areaColor[omrade] = AREA_PALETTE[areaNames.length % AREA_PALETTE.length];
                 areaNames.push(omrade);
             }
 
@@ -522,6 +530,7 @@
         PHASES,
         STADIE,
         LEAD_PALETTE,
+        AREA_PALETTE,
         FIELDS,
         normalizeStadie,
         detectMapping,
