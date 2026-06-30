@@ -321,6 +321,11 @@ const DEFAULT_LABELS = {
     mapColumns: 'Koppla kolumner',
     mapIntro: 'Välj vilken Excel-kolumn som motsvarar varje fält. Auto-förslag är ifyllda.',
     import: 'Importera',
+    sharedFile: 'Delad fil',
+    openSharedFile: 'Öppna delad...',
+    createSharedFile: 'Skapa delad...',
+    reconnect: 'Återanslut',
+    disconnect: 'Koppla från',
     phaseDisplay: 'Faser',
     phaseInbar: 'I projektstapeln',
     phaseBelow: 'Under projektet (kompakt)',
@@ -467,6 +472,11 @@ const DEFAULT_LABELS_EN = {
     mapColumns: 'Map columns',
     mapIntro: 'Choose which Excel column maps to each field. Auto-suggestions are pre-filled.',
     import: 'Import',
+    sharedFile: 'Shared file',
+    openSharedFile: 'Open shared...',
+    createSharedFile: 'Create shared...',
+    reconnect: 'Reconnect',
+    disconnect: 'Disconnect',
     phaseDisplay: 'Phases',
     phaseInbar: 'Inside the project bar',
     phaseBelow: 'Below the project (compact)',
@@ -684,6 +694,9 @@ class TimelineApp {
         } else {
             this.setView('3months');
         }
+
+        // Reconnect to a remembered shared file (reads it if still permitted).
+        this.restoreSharedFile();
     }
 
     async resetToDefaults(loadSample = false) {
@@ -1034,6 +1047,10 @@ class TimelineApp {
         safeBind('importMapConfirm', 'click', () => this.confirmImportMapping());
         safeBind('cancelImportMap', 'click', () => this.closeModal('importMapModal'));
         safeBind('closeImportMap', 'click', () => this.closeModal('importMapModal'));
+        safeBind('openSharedFileBtn', 'click', () => this.openSharedFile());
+        safeBind('createSharedFileBtn', 'click', () => this.createSharedFile());
+        safeBind('sharedFileReconnect', 'click', () => this.reconnectSharedFile());
+        safeBind('sharedFileDisconnect', 'click', () => this.disconnectSharedFile());
         safeBind('importUrlBtn', 'click', () => {
             document.getElementById('importDropdownMenu').classList.remove('open');
             this.importFromUrl();
@@ -5421,6 +5438,8 @@ class TimelineApp {
             this.saveData('timeline_statuses', this.statuses);
             this.saveData('timeline_projects', this.projects);
             this.saveData('timeline_events', this.events);
+            // Mirror to the shared file when connected.
+            if (this.fileHandle && !this.fileNeedsReconnect) this.saveToSharedFile();
         }, 500);
     }
 
@@ -5472,6 +5491,238 @@ class TimelineApp {
     getStatusLabel(status) {
         const found = this.statuses.find(s => s.id === status);
         return found ? found.name : status;
+    }
+
+    // ============ Shared file (File System Access API) ============
+    // Step 1–2: open/create a single shared JSON file (e.g. in a synced
+    // SharePoint/OneDrive folder) and read/write it, remembering the handle.
+
+    fileSyncSupported() {
+        return typeof window.showSaveFilePicker === 'function' &&
+               typeof window.showOpenFilePicker === 'function';
+    }
+
+    // The full serialisable timeline payload (same shape as export/import).
+    getTimelineData() {
+        return {
+            version: 1,
+            exportDate: new Date().toISOString(),
+            timelineRange: {
+                startYear: this.startDate.getFullYear(),
+                endYear: this.endDate.getFullYear()
+            },
+            areas: JSON.parse(JSON.stringify(this.areas)),
+            statuses: JSON.parse(JSON.stringify(this.statuses)),
+            projects: JSON.parse(JSON.stringify(this.projects)),
+            events: JSON.parse(JSON.stringify(this.events)),
+            labels: JSON.parse(JSON.stringify(this.labels))
+        };
+    }
+
+    // Load a timeline payload into state (file is the source of truth).
+    applyTimelineData(data) {
+        if (!data || (!data.projects && !data.events)) return;
+        this.projects = data.projects || [];
+        this.events = data.events || [];
+        if (data.areas) { this.areas = data.areas; this.saveData('timeline_areas', this.areas); }
+        if (data.statuses) { this.statuses = data.statuses; this.saveData('timeline_statuses', this.statuses); }
+        if (data.labels) { this.labels = { ...DEFAULT_LABELS, ...data.labels }; this.saveData('timeline_labels', this.labels); }
+        if (data.timelineRange) {
+            this.timelineStartYear = data.timelineRange.startYear;
+            this.timelineEndYear = data.timelineRange.endYear;
+        }
+        if (window.TimelineModel) TimelineModel.initSource(this.projects);
+        this.saveData('timeline_projects', this.projects);
+        this.saveData('timeline_events', this.events);
+        this.startDate = this.getStartDate();
+        this.endDate = this.getEndDate();
+        this.initTimelineRange();
+        this.populateDateSelectors();
+        this.populateAreaSelects();
+        this.renderAreaList();
+        this.populateStatusSelects();
+        this.renderStatusList();
+        this.applyLabels();
+        this.render();
+    }
+
+    // --- tiny IndexedDB store for the (structured-cloneable) file handle ---
+    _idb() {
+        return new Promise((resolve, reject) => {
+            const r = indexedDB.open('timeline-fs', 1);
+            r.onupgradeneeded = () => r.result.createObjectStore('handles');
+            r.onsuccess = () => resolve(r.result);
+            r.onerror = () => reject(r.error);
+        });
+    }
+    async _idbPut(key, val) {
+        const db = await this._idb();
+        return new Promise((res, rej) => {
+            const tx = db.transaction('handles', 'readwrite');
+            tx.objectStore('handles').put(val, key);
+            tx.oncomplete = () => res();
+            tx.onerror = () => rej(tx.error);
+        });
+    }
+    async _idbGet(key) {
+        const db = await this._idb();
+        return new Promise((res, rej) => {
+            const tx = db.transaction('handles', 'readonly');
+            const rq = tx.objectStore('handles').get(key);
+            rq.onsuccess = () => res(rq.result);
+            rq.onerror = () => rej(rq.error);
+        });
+    }
+    async _idbDel(key) {
+        const db = await this._idb();
+        return new Promise((res, rej) => {
+            const tx = db.transaction('handles', 'readwrite');
+            tx.objectStore('handles').delete(key);
+            tx.oncomplete = () => res();
+            tx.onerror = () => rej(tx.error);
+        });
+    }
+
+    async createSharedFile() {
+        if (!this.fileSyncSupported()) {
+            await this.showAlert('Delad fil stöds bara i Chrome och Edge. Använd Spara/Öppna fil så länge.');
+            return;
+        }
+        try {
+            const handle = await window.showSaveFilePicker({
+                suggestedName: 'konstprojekt-tidslinje.json',
+                types: [{ description: 'Tidslinje (JSON)', accept: { 'application/json': ['.json'] } }]
+            });
+            this.fileHandle = handle;
+            this.fileNeedsReconnect = false;
+            await this._idbPut('shared', handle);
+            await this.saveToSharedFile();
+            this.updateSharedFileUI();
+            this.showToast('Delad fil skapad. Lägg den i er synkade mapp.', 'success');
+        } catch (err) {
+            if (err.name !== 'AbortError') await this.showAlert('Kunde inte skapa filen: ' + err.message);
+        }
+    }
+
+    async openSharedFile() {
+        if (!this.fileSyncSupported()) {
+            await this.showAlert('Delad fil stöds bara i Chrome och Edge. Använd Spara/Öppna fil så länge.');
+            return;
+        }
+        try {
+            const [handle] = await window.showOpenFilePicker({
+                types: [{ description: 'Tidslinje (JSON)', accept: { 'application/json': ['.json'] } }]
+            });
+            this.fileHandle = handle;
+            this.fileNeedsReconnect = false;
+            await this._idbPut('shared', handle);
+            await this.readSharedFile();
+            this.updateSharedFileUI();
+            this.showToast('Ansluten till delad fil.', 'success');
+        } catch (err) {
+            if (err.name !== 'AbortError') await this.showAlert('Kunde inte öppna filen: ' + err.message);
+        }
+    }
+
+    async readSharedFile() {
+        if (!this.fileHandle) return;
+        const file = await this.fileHandle.getFile();
+        this.fileLastModified = file.lastModified;
+        const text = await file.text();
+        if (!text.trim()) return; // empty new file
+        let data;
+        try { data = JSON.parse(text); }
+        catch (e) { await this.showAlert('Den delade filen är inte giltig JSON.'); return; }
+        this.applyTimelineData(data);
+    }
+
+    async saveToSharedFile() {
+        if (!this.fileHandle || this.fileNeedsReconnect) return;
+        try {
+            const writable = await this.fileHandle.createWritable();
+            await writable.write(JSON.stringify(this.getTimelineData(), null, 2));
+            await writable.close();
+            const file = await this.fileHandle.getFile();
+            this.fileLastModified = file.lastModified;
+        } catch (err) {
+            console.warn('Shared file write failed:', err);
+            this.fileNeedsReconnect = true;
+            this.updateSharedFileUI();
+        }
+    }
+
+    async disconnectSharedFile() {
+        this.fileHandle = null;
+        this.fileNeedsReconnect = false;
+        await this._idbDel('shared');
+        this.updateSharedFileUI();
+        this.showToast('Frånkopplad från delad fil.', 'info');
+    }
+
+    // On startup: reconnect to the remembered file if permission is still granted.
+    async restoreSharedFile() {
+        if (!this.fileSyncSupported()) { this.updateSharedFileUI(); return; }
+        let handle;
+        try { handle = await this._idbGet('shared'); } catch (e) { handle = null; }
+        if (!handle) { this.updateSharedFileUI(); return; }
+        this.fileHandle = handle;
+        let perm = 'prompt';
+        try { perm = await handle.queryPermission({ mode: 'readwrite' }); } catch (e) { perm = 'prompt'; }
+        if (perm === 'granted') {
+            this.fileNeedsReconnect = false;
+            await this.readSharedFile();
+        } else {
+            // Re-granting permission needs a user gesture -> show a button.
+            this.fileNeedsReconnect = true;
+        }
+        this.updateSharedFileUI();
+    }
+
+    async reconnectSharedFile() {
+        if (!this.fileHandle) return;
+        try {
+            const perm = await this.fileHandle.requestPermission({ mode: 'readwrite' });
+            if (perm === 'granted') {
+                this.fileNeedsReconnect = false;
+                await this.readSharedFile();
+                this.updateSharedFileUI();
+                this.showToast('Återansluten till delad fil.', 'success');
+            }
+        } catch (err) {
+            await this.showAlert('Kunde inte återansluta: ' + err.message);
+        }
+    }
+
+    updateSharedFileUI() {
+        const status = document.getElementById('sharedFileStatus');
+        const reconnectBtn = document.getElementById('sharedFileReconnect');
+        const disconnectBtn = document.getElementById('sharedFileDisconnect');
+        const openBtn = document.getElementById('openSharedFileBtn');
+        const createBtn = document.getElementById('createSharedFileBtn');
+        const supported = this.fileSyncSupported();
+        if (!status) return;
+        if (!supported) {
+            status.textContent = 'Stöds i Chrome/Edge';
+            if (openBtn) openBtn.disabled = true;
+            if (createBtn) createBtn.disabled = true;
+            if (reconnectBtn) reconnectBtn.style.display = 'none';
+            if (disconnectBtn) disconnectBtn.style.display = 'none';
+            return;
+        }
+        const name = this.fileHandle ? this.fileHandle.name : null;
+        if (this.fileHandle && this.fileNeedsReconnect) {
+            status.textContent = `Återanslut: ${name}`;
+            if (reconnectBtn) reconnectBtn.style.display = '';
+            if (disconnectBtn) disconnectBtn.style.display = '';
+        } else if (this.fileHandle) {
+            status.textContent = `● Ansluten: ${name}`;
+            if (reconnectBtn) reconnectBtn.style.display = 'none';
+            if (disconnectBtn) disconnectBtn.style.display = '';
+        } else {
+            status.textContent = 'Ej ansluten';
+            if (reconnectBtn) reconnectBtn.style.display = 'none';
+            if (disconnectBtn) disconnectBtn.style.display = 'none';
+        }
     }
 
     async exportData() {
