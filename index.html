@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="styles.css?v=19">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -44,6 +44,13 @@
                         data-title="zoom3MonthsTitle">3 mån</button>
                 </div>
                 <button id="todayBtn" class="btn btn-secondary" data-label="today">Idag</button>
+                <button id="filterToggle" class="btn btn-secondary" title="Visa/dölj filterraden" aria-pressed="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span class="filter-toggle-dot" id="filterToggleDot" style="display:none;"></span>
+                </button>
                 <button id="cmdBtn" class="btn btn-secondary" title="Kommandopalett (Ctrl/Cmd+K)">⌘K</button>
                 <div class="divider"></div>
                 <div class="undo-redo-controls">
@@ -824,7 +831,7 @@
         </div>
         <script src="konstprojekt-import.js?v=4"></script>
         <script src="data-model.js?v=1"></script>
-        <script src="app.js?v=18"></script>
+        <script src="app.js?v=19"></script>
 </body>
 
 </html>

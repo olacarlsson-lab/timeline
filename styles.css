@@ -3859,3 +3859,19 @@ input[type="checkbox"], input[type="radio"] {
     color: #e8bc1c;
     font-size: 0.82rem;
 }
+
+/* Collapsible filter bar */
+.filter-bar.collapsed { display: none; }
+#filterToggle { position: relative; }
+#filterToggle.active { background: var(--accent-color); color: #fff; }
+.filter-toggle-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 0 2px var(--bg-secondary);
+}
+#filterToggle.active .filter-toggle-dot { background: #fff; }
