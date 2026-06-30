@@ -2426,6 +2426,9 @@ class TimelineApp {
             });
             row.classList.add('phase-below');
             row.appendChild(track);
+            // Give the title the same readable backing pill as in-bar mode so
+            // it stays legible on light område colours (gold, green, …).
+            bar.classList.add('has-phases');
         }
 
         // 8. Focus / spotlight: highlight the focused row, dim the rest.
