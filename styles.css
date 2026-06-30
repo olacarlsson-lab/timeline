@@ -3777,3 +3777,40 @@ input:focus, select:focus, textarea:focus,
 
 /* Hairline header */
 .header { border-bottom: 1px solid var(--glass-border); }
+
+/* Excel column mapping dialog */
+.map-intro {
+    padding: 12px 1.5rem 4px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.map-rows {
+    padding: 8px 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 56vh;
+    overflow-y: auto;
+}
+.map-row {
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    align-items: center;
+    gap: 10px;
+}
+.map-field { font-size: 0.88rem; color: var(--text-primary); }
+.map-req { color: var(--accent-color); }
+.map-select { width: 100%; }
+.map-sample {
+    grid-column: 2;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+@media (max-width: 560px) {
+    .map-row { grid-template-columns: 1fr; gap: 2px; }
+    .map-sample { grid-column: 1; }
+}

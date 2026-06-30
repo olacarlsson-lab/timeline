@@ -276,12 +276,20 @@
     }
 
     // Build the phase segments for one project given an anchor strategy.
-    function schedulePhases(stadieId, endAnchorDate, referenceDate) {
+    function schedulePhases(stadieId, endAnchorDate, referenceDate, explicitStart) {
         const order = PHASES;
         const total = order.reduce((s, p) => s + p.months, 0);
 
         let projectStart;
-        if (endAnchorDate) {
+        let totalMs = null; // when set, phases are scaled to fit start..end exactly
+        if (explicitStart && endAnchorDate && endAnchorDate.getTime() > explicitStart.getTime()) {
+            // Explicit start AND end: scale the standard phases to fit the span.
+            projectStart = explicitStart;
+            totalMs = endAnchorDate.getTime() - explicitStart.getTime();
+        } else if (explicitStart) {
+            // Explicit start only: lay phases forward with default durations.
+            projectStart = explicitStart;
+        } else if (endAnchorDate) {
             // Lay phases so the final "Visning/Avslut" ends at the anchor.
             projectStart = addMonths(endAnchorDate, -total);
         } else {
@@ -307,7 +315,9 @@
         let cursor = projectStart;
         for (const p of order) {
             const start = cursor;
-            const end = addMonths(cursor, p.months);
+            const end = (totalMs != null)
+                ? new Date(start.getTime() + (p.months / total) * totalMs)
+                : addMonths(cursor, p.months);
             phases.push({
                 id: p.id,
                 name: p.sv,
@@ -326,29 +336,50 @@
      * @param {Object} [opts]
      * @param {Date}   [opts.referenceDate] "today" used for scheduling.
      */
+    // Mappable target fields. `keywords` drive auto-detection from headers.
+    const FIELDS = [
+        { key: 'rubrik',      label: 'Projektnamn',                required: true, keywords: ['rubrik', 'projektnamn', 'projektnamn', 'namn'] },
+        { key: 'lead',        label: 'Projektledare',              keywords: ['konstprojektledare', 'projektledare', 'ledare', 'ansvarig'] },
+        { key: 'stadie',      label: 'Stadie / status',            keywords: ['stadie', 'status', 'skede', 'fas'] },
+        { key: 'budget',      label: 'Investeringsbudget',         keywords: ['investeringsbudget', 'budget', 'belopp', 'kostnad'] },
+        { key: 'kod',         label: 'Projektkod',                 keywords: ['projektkod', 'kod', 'projektnr'] },
+        { key: 'start',       label: 'Startdatum',                 keywords: ['startdatum', 'start', 'påbörjad'] },
+        { key: 'avslut',      label: 'Slutdatum / prel. avslut',   keywords: ['preliminärt avslut', 'slutdatum', 'avslut', 'slut', 'klart', 'färdig'] },
+        { key: 'invigning',   label: 'Invigning',                  keywords: ['invigning', 'inauguration', 'vernissage'] },
+        { key: 'konstnar',    label: 'Konstnär / titel',           keywords: ['titel - konstnär', 'konstnär', 'artist', 'verk'] },
+        { key: 'forvaltning', label: 'Förvaltningsobjekt / plats', keywords: ['förvaltningsobjekt', 'plats', 'objekt', 'byggnad'] },
+        { key: 'besk',        label: 'Kort beskrivning',           keywords: ['kort beskrivning', 'beskrivning', 'description'] },
+        { key: 'formedling',  label: 'Förmedlingsinsatser',        keywords: ['förmedlingsinsatser', 'förmedling', 'outreach'] }
+    ];
+
+    // Auto-detect a field -> column-index mapping from the header row. Each
+    // column is assigned to at most one field (first matching keyword wins).
+    function detectMapping(headers) {
+        const used = new Set();
+        const map = {};
+        FIELDS.forEach(f => {
+            let found = -1;
+            for (const kw of f.keywords) {
+                const needle = kw.toLowerCase();
+                const i = headers.findIndex((h, hi) =>
+                    !used.has(hi) && h && h.toLowerCase().indexOf(needle) !== -1);
+                if (i !== -1) { found = i; break; }
+            }
+            map[f.key] = found;
+            if (found !== -1) used.add(found);
+        });
+        return map;
+    }
+
     function buildTimeline(parsed, opts) {
         opts = opts || {};
         const reference = opts.referenceDate || new Date();
         const headers = parsed.headers || [];
         const rows = parsed.rows || [];
 
-        const col = (name) => {
-            const i = headers.findIndex(h => h && h.toLowerCase().indexOf(name.toLowerCase()) !== -1);
-            return i;
-        };
-        const idx = {
-            rubrik: col('Rubrik'),
-            budget: col('Investeringsbudget'),
-            kod: col('Projektkod'),
-            konstnar: col('Titel'),
-            lead: col('Konstprojektledare'),
-            besk: col('beskrivning'),
-            formedling: col('rmedlingsinsatser'),
-            stadie: col('Stadie'),
-            forvaltning: col('rvaltningsobjekt'),
-            invigning: col('Invigning'),
-            avslut: col('Preliminärt avslut')
-        };
+        // Column mapping: either supplied by the user (field key -> column index)
+        // or auto-detected from the header names.
+        const idx = opts.mapping || detectMapping(headers);
 
         const get = (row, i) => (i >= 0 && i < row.length ? (row[i] || '').toString().trim() : '');
 
@@ -391,7 +422,16 @@
                 endAnchor = new Date(Date.UTC(anchorYear, 11, 15));
             }
 
-            const phases = schedulePhases(stadieId, endAnchor, reference);
+            // Optional explicit start date column.
+            const startRaw = get(row, idx.start);
+            let explicitStart = null;
+            if (isISODate(startRaw)) {
+                explicitStart = new Date(startRaw + 'T00:00:00Z');
+            } else if (parseYear(startRaw)) {
+                explicitStart = new Date(Date.UTC(parseYear(startRaw), 0, 1));
+            }
+
+            const phases = schedulePhases(stadieId, endAnchor, reference, explicitStart);
             const start = phases[0].start;
             const end = phases[phases.length - 1].end;
 
@@ -488,7 +528,9 @@
         PHASES,
         STADIE,
         LEAD_PALETTE,
+        FIELDS,
         normalizeStadie,
+        detectMapping,
         parseXlsx,
         buildTimeline,
         importXlsxToTimeline

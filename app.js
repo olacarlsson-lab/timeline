@@ -317,7 +317,10 @@ const DEFAULT_LABELS = {
     phaseName: 'Fasnamn',
     addPhase: '+ Lägg till fas',
     addStdPhases: '✨ Lägg till standardfaser',
-    importExcel: 'Importera Excel (konstprojekt)...',
+    importExcel: 'Importera Excel...',
+    mapColumns: 'Koppla kolumner',
+    mapIntro: 'Välj vilken Excel-kolumn som motsvarar varje fält. Auto-förslag är ifyllda.',
+    import: 'Importera',
     phaseDisplay: 'Faser',
     phaseInbar: 'I projektstapeln',
     phaseBelow: 'Under projektet (kompakt)',
@@ -459,7 +462,10 @@ const DEFAULT_LABELS_EN = {
     phaseName: 'Phase name',
     addPhase: '+ Add phase',
     addStdPhases: '✨ Add standard phases',
-    importExcel: 'Import Excel (art projects)...',
+    importExcel: 'Import Excel...',
+    mapColumns: 'Map columns',
+    mapIntro: 'Choose which Excel column maps to each field. Auto-suggestions are pre-filled.',
+    import: 'Import',
     phaseDisplay: 'Phases',
     phaseInbar: 'Inside the project bar',
     phaseBelow: 'Below the project (compact)',
@@ -1020,6 +1026,9 @@ class TimelineApp {
             document.getElementById('importDropdownMenu').classList.remove('open');
             document.getElementById('importFile').click();
         });
+        safeBind('importMapConfirm', 'click', () => this.confirmImportMapping());
+        safeBind('cancelImportMap', 'click', () => this.closeModal('importMapModal'));
+        safeBind('closeImportMap', 'click', () => this.closeModal('importMapModal'));
         safeBind('importUrlBtn', 'click', () => {
             document.getElementById('importDropdownMenu').classList.remove('open');
             this.importFromUrl();
@@ -5547,34 +5556,102 @@ class TimelineApp {
         }
         try {
             this.showToast('Läser Excel-fil...', 'info');
-            const data = await KonstprojektImport.importXlsxToTimeline(arrayBuffer, {
-                referenceDate: new Date()
-            });
-            if (!data.projects || data.projects.length === 0) {
-                await this.showAlert('Inga projekt hittades i Excel-filen. Kontrollera att det är konstprojekt-exporten.');
+            const parsed = await KonstprojektImport.parseXlsx(arrayBuffer);
+            if (!parsed.headers || !parsed.headers.length) {
+                await this.showAlert('Hittade inga kolumner i Excel-filen.');
                 return;
             }
-            // With an empty timeline there is nothing to sync against.
-            if (this.projects.length === 0) {
-                await this.importJsonData(JSON.stringify(data));
-                return;
-            }
-            // Offer a sync that updates existing projects (matched on project
-            // code) while preserving phase scheduling the user has adjusted.
-            const sync = await this.showConfirm(
-                'Hur vill du importera Excel-datan?\n\n' +
-                'OK = Synka: uppdatera befintliga projekt (matchar projektkod) och behåll dina justerade fasdatum\n' +
-                'Avbryt = Andra alternativ (ersätt allt / lägg till)',
-                { confirmText: 'Synka', cancelText: 'Andra...' }
-            );
-            if (sync) {
-                this.syncExcelImport(data);
-            } else {
-                await this.importJsonData(JSON.stringify(data));
-            }
+            // Let the user map columns to fields before building the timeline.
+            this.openImportMapping(parsed);
         } catch (err) {
             console.error('Excel import error:', err);
             await this.showAlert('Kunde inte läsa Excel-filen: ' + err.message);
+        }
+    }
+
+    // Show the column-mapping dialog, pre-filled with auto-detected columns.
+    openImportMapping(parsed) {
+        this._importParsed = parsed;
+        const headers = parsed.headers || [];
+        const sample = (parsed.rows && parsed.rows.find(r => r.some(c => c))) || [];
+        const detected = KonstprojektImport.detectMapping(headers);
+        const fields = KonstprojektImport.FIELDS;
+        const rowsEl = document.getElementById('importMapRows');
+
+        rowsEl.innerHTML = fields.map(f => {
+            const sel = detected[f.key];
+            const opts = ['<option value="-1">— ignorera —</option>'].concat(
+                headers.map((h, i) => `<option value="${i}" ${i === sel ? 'selected' : ''}>${this.escapeHtml(h || ('Kolumn ' + (i + 1)))}</option>`)
+            ).join('');
+            return `<div class="map-row">
+                <label class="map-field">${this.escapeHtml(f.label)}${f.required ? ' <span class="map-req">*</span>' : ''}</label>
+                <select class="map-select" data-key="${f.key}">${opts}</select>
+                <span class="map-sample" data-key="${f.key}"></span>
+            </div>`;
+        }).join('');
+
+        rowsEl.querySelectorAll('.map-select').forEach(s => {
+            const update = () => {
+                const i = parseInt(s.value, 10);
+                const span = rowsEl.querySelector(`.map-sample[data-key="${s.dataset.key}"]`);
+                const v = (i >= 0 && sample[i] != null) ? String(sample[i]).trim() : '';
+                span.textContent = v ? ('ex: ' + (v.length > 38 ? v.slice(0, 38) + '…' : v)) : '';
+            };
+            s.addEventListener('change', update);
+            update();
+        });
+
+        document.getElementById('importMapModal').classList.add('active');
+    }
+
+    async confirmImportMapping() {
+        const rowsEl = document.getElementById('importMapRows');
+        const mapping = {};
+        let hasName = false;
+        rowsEl.querySelectorAll('.map-select').forEach(s => {
+            const v = parseInt(s.value, 10);
+            mapping[s.dataset.key] = v;
+            if (s.dataset.key === 'rubrik' && v >= 0) hasName = true;
+        });
+        if (!hasName) {
+            await this.showAlert('Du måste koppla en kolumn till Projektnamn.');
+            return;
+        }
+        this.closeModal('importMapModal');
+        try {
+            const data = KonstprojektImport.buildTimeline(this._importParsed, {
+                mapping: mapping,
+                referenceDate: new Date()
+            });
+            if (!data.projects || data.projects.length === 0) {
+                await this.showAlert('Inga projekt kunde skapas från mappningen.');
+                return;
+            }
+            await this.finishExcelImport(data);
+        } catch (err) {
+            console.error('Mapping build error:', err);
+            await this.showAlert('Kunde inte bygga tidslinjen: ' + err.message);
+        }
+    }
+
+    async finishExcelImport(data) {
+        // With an empty timeline there is nothing to sync against.
+        if (this.projects.length === 0) {
+            await this.importJsonData(JSON.stringify(data));
+            return;
+        }
+        // Offer a sync that updates existing projects (matched on project code)
+        // while preserving phase scheduling the user has adjusted.
+        const sync = await this.showConfirm(
+            'Hur vill du importera Excel-datan?\n\n' +
+            'OK = Synka: uppdatera befintliga projekt (matchar projektkod) och behåll dina justerade fasdatum\n' +
+            'Avbryt = Andra alternativ (ersätt allt / lägg till)',
+            { confirmText: 'Synka', cancelText: 'Andra...' }
+        );
+        if (sync) {
+            this.syncExcelImport(data);
+        } else {
+            await this.importJsonData(JSON.stringify(data));
         }
     }
 
