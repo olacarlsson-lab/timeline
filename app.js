@@ -2342,6 +2342,8 @@ class TimelineApp {
             color = project.color;
         }
         bar.style.backgroundColor = color;
+        // Mark light-coloured bars so text can switch to dark for contrast.
+        if (this.isLightColor(color)) bar.classList.add('bar-light');
 
         // Content
         const statusText = this.getStatusLabel(project.status) || '';

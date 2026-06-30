@@ -3177,23 +3177,44 @@ form {
 
 /* The title/lead block stays clickable: drag it to move the whole project,
    while dragging a phase tile moves just that phase. */
+/* In-bar mode: the title floats over varying phase tiles, so keep a light,
+   soft scrim (not a hard dark box) to stay legible without standing out. */
 .project-bar.has-phases .project-info {
-    background: rgba(13, 14, 18, 0.92);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
     padding: 1px 10px;
     border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
     cursor: grab;
 }
-
-/* Brighter secondary text so lead + stage read clearly on the pill */
 .project-bar.has-phases .project-lead {
     color: rgba(255, 255, 255, 0.92);
 }
 .timeline-container.compact-mode .project-bar.has-phases .project-status-text {
     color: rgba(255, 255, 255, 0.95);
     border-left-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Compact "below" mode: the bar is one solid område colour, so drop the box
+   entirely and let the text colour adapt to the background instead. */
+.project-row.phase-below .project-bar.has-phases .project-info {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+}
+/* Dark text on light område bars */
+.project-row.phase-below .project-bar.bar-light .project-name {
+    color: #15171e;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+.project-row.phase-below .project-bar.bar-light .project-lead,
+.timeline-container.compact-mode .project-row.phase-below .project-bar.bar-light .project-status-text {
+    color: rgba(18, 20, 28, 0.8);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+.project-row.phase-below .project-bar.bar-light .project-status-text {
+    border-left-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Phase editor rows in the project/edit modals */
