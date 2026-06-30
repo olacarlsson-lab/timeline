@@ -91,6 +91,23 @@ refreshed, new rows are added, and rows that vanished from the source are
 flagged (not deleted). The logic lives in `data-model.js` as pure,
 unit-tested functions (`mergeImport`, `recordOverrides`, `initSource`).
 
+## Shared file (sync via your own folder)
+
+In Chrome/Edge you can connect the timeline to a single JSON file kept in a
+synced folder (OneDrive, SharePoint, Dropbox, …) so a small team shares one
+plan — no server involved. Use **Settings → Delad fil**:
+
+- **Skapa delad...** writes a new file; **Öppna delad...** connects to an
+  existing one. Edits auto-save back to the file.
+- **Conflict guard**: before overwriting, the app checks whether the file was
+  changed by someone else since you last read it. If so it pauses auto-save,
+  shows a banner, and lets you choose **Läs in deras** (load their version) or
+  **Behåll mina** (overwrite with yours) instead of silently clobbering their
+  work.
+
+The file handle is remembered between sessions via IndexedDB; re-granting
+permission after a browser restart needs one click (**Återanslut**).
+
 ## Technology
 
 This is a standalone web application built with:
