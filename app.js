@@ -1051,6 +1051,8 @@ class TimelineApp {
         safeBind('createSharedFileBtn', 'click', () => this.createSharedFile());
         safeBind('sharedFileReconnect', 'click', () => this.reconnectSharedFile());
         safeBind('sharedFileDisconnect', 'click', () => this.disconnectSharedFile());
+        safeBind('sharedFileLoadTheirs', 'click', () => this.resolveConflictLoadTheirs());
+        safeBind('sharedFileKeepMine', 'click', () => this.resolveConflictKeepMine());
         safeBind('importUrlBtn', 'click', () => {
             document.getElementById('importDropdownMenu').classList.remove('open');
             this.importFromUrl();
@@ -5633,6 +5635,7 @@ class TimelineApp {
         if (!this.fileHandle) return;
         const file = await this.fileHandle.getFile();
         this.fileLastModified = file.lastModified;
+        this.fileConflict = false;
         const text = await file.text();
         if (!text.trim()) return; // empty new file
         let data;
@@ -5641,14 +5644,29 @@ class TimelineApp {
         this.applyTimelineData(data);
     }
 
-    async saveToSharedFile() {
+    async saveToSharedFile(force = false) {
         if (!this.fileHandle || this.fileNeedsReconnect) return;
+        // Don't keep overwriting while a conflict is pending resolution.
+        if (this.fileConflict && !force) return;
         try {
+            // Conflict guard: has someone else written to the file since we
+            // last read/wrote it? If so, don't clobber their changes — flag it
+            // and let the user decide (Läs in deras / Behåll mina).
+            if (!force && this.fileLastModified != null) {
+                const current = await this.fileHandle.getFile();
+                if (current.lastModified > this.fileLastModified + 1000) {
+                    this.fileConflict = true;
+                    this.updateSharedFileUI();
+                    this.showToast('Delad fil: någon annan har ändrat filen. Lös konflikten i Inställningar → Delad fil.', 'error');
+                    return;
+                }
+            }
             const writable = await this.fileHandle.createWritable();
             await writable.write(JSON.stringify(this.getTimelineData(), null, 2));
             await writable.close();
             const file = await this.fileHandle.getFile();
             this.fileLastModified = file.lastModified;
+            this.fileConflict = false;
         } catch (err) {
             console.warn('Shared file write failed:', err);
             this.fileNeedsReconnect = true;
@@ -5656,9 +5674,31 @@ class TimelineApp {
         }
     }
 
+    // Conflict: load the other person's version (replaces local unsaved edits).
+    async resolveConflictLoadTheirs() {
+        this.fileConflict = false;
+        await this.readSharedFile();
+        this.updateSharedFileUI();
+        this.showToast('Läste in den delade filen.', 'success');
+    }
+
+    // Conflict: keep my version and overwrite theirs.
+    async resolveConflictKeepMine() {
+        this.fileConflict = false;
+        // Re-baseline so the force-write isn't blocked by the same conflict.
+        try {
+            const current = await this.fileHandle.getFile();
+            this.fileLastModified = current.lastModified;
+        } catch (e) { /* ignore */ }
+        await this.saveToSharedFile(true);
+        this.updateSharedFileUI();
+        this.showToast('Sparade dina ändringar till den delade filen.', 'success');
+    }
+
     async disconnectSharedFile() {
         this.fileHandle = null;
         this.fileNeedsReconnect = false;
+        this.fileConflict = false;
         await this._idbDel('shared');
         this.updateSharedFileUI();
         this.showToast('Frånkopplad från delad fil.', 'info');
@@ -5704,7 +5744,9 @@ class TimelineApp {
         const disconnectBtn = document.getElementById('sharedFileDisconnect');
         const openBtn = document.getElementById('openSharedFileBtn');
         const createBtn = document.getElementById('createSharedFileBtn');
+        const conflictBox = document.getElementById('sharedFileConflict');
         const supported = this.fileSyncSupported();
+        if (conflictBox) conflictBox.style.display = (this.fileHandle && this.fileConflict) ? 'block' : 'none';
         if (!status) return;
         if (!supported) {
             status.textContent = 'Stöds i Chrome/Edge';
@@ -5715,7 +5757,11 @@ class TimelineApp {
             return;
         }
         const name = this.fileHandle ? this.fileHandle.name : null;
-        if (this.fileHandle && this.fileNeedsReconnect) {
+        if (this.fileHandle && this.fileConflict) {
+            status.textContent = `⚠ Konflikt: ${name}`;
+            if (reconnectBtn) reconnectBtn.style.display = 'none';
+            if (disconnectBtn) disconnectBtn.style.display = '';
+        } else if (this.fileHandle && this.fileNeedsReconnect) {
             status.textContent = `Återanslut: ${name}`;
             if (reconnectBtn) reconnectBtn.style.display = '';
             if (disconnectBtn) disconnectBtn.style.display = '';

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=21">
+    <link rel="stylesheet" href="styles.css?v=22">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -720,6 +720,13 @@
                     <button id="sharedFileReconnect" class="btn btn-secondary" data-label="reconnect" style="display:none;">Återanslut</button>
                     <button id="sharedFileDisconnect" class="btn btn-secondary" data-label="disconnect" style="display:none;">Koppla från</button>
                 </div>
+                <div id="sharedFileConflict" class="shared-file-conflict" style="display:none;">
+                    <div class="shared-file-conflict-text">Filen har ändrats av någon annan sedan du läste in den. Vad vill du göra?</div>
+                    <div class="panel-section-row">
+                        <button id="sharedFileLoadTheirs" class="btn btn-secondary">Läs in deras</button>
+                        <button id="sharedFileKeepMine" class="btn btn-secondary">Behåll mina</button>
+                    </div>
+                </div>
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
@@ -844,7 +851,7 @@
         </div>
         <script src="konstprojekt-import.js?v=4"></script>
         <script src="data-model.js?v=1"></script>
-        <script src="app.js?v=22"></script>
+        <script src="app.js?v=23"></script>
 </body>
 
 </html>
