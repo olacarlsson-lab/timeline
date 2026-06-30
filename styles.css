@@ -3848,3 +3848,14 @@ input[type="date"], input[type="week"], input[type="month"], textarea {
 input[type="checkbox"], input[type="radio"] {
     accent-color: var(--accent-color);
 }
+
+/* Orphan (source row vanished) note in the project sidebar */
+.sidebar-orphan {
+    margin: 0 0 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(229, 159, 28, 0.12);
+    border: 1px solid rgba(229, 159, 28, 0.4);
+    color: #e8bc1c;
+    font-size: 0.82rem;
+}

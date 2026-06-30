@@ -1,10 +1,11 @@
-const CACHE_NAME = 'tidslinje-v4';
+const CACHE_NAME = 'tidslinje-v5';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './styles.css',
     './app.js',
     './konstprojekt-import.js',
+    './data-model.js',
     './manifest.json',
     './icon.svg',
     './icon-192.png',
