@@ -338,18 +338,11 @@
      */
     // Mappable target fields. `keywords` drive auto-detection from headers.
     const FIELDS = [
-        { key: 'rubrik',      label: 'Projektnamn',                required: true, keywords: ['rubrik', 'projektnamn', 'projektnamn', 'namn'] },
-        { key: 'lead',        label: 'Projektledare',              keywords: ['konstprojektledare', 'projektledare', 'ledare', 'ansvarig'] },
-        { key: 'stadie',      label: 'Stadie / status',            keywords: ['stadie', 'status', 'skede', 'fas'] },
-        { key: 'budget',      label: 'Investeringsbudget',         keywords: ['investeringsbudget', 'budget', 'belopp', 'kostnad'] },
-        { key: 'kod',         label: 'Projektkod',                 keywords: ['projektkod', 'kod', 'projektnr'] },
-        { key: 'start',       label: 'Startdatum',                 keywords: ['startdatum', 'start', 'påbörjad'] },
-        { key: 'avslut',      label: 'Slutdatum / prel. avslut',   keywords: ['preliminärt avslut', 'slutdatum', 'avslut', 'slut', 'klart', 'färdig'] },
-        { key: 'invigning',   label: 'Invigning',                  keywords: ['invigning', 'inauguration', 'vernissage'] },
-        { key: 'konstnar',    label: 'Konstnär / titel',           keywords: ['titel - konstnär', 'konstnär', 'artist', 'verk'] },
-        { key: 'forvaltning', label: 'Förvaltningsobjekt / plats', keywords: ['förvaltningsobjekt', 'plats', 'objekt', 'byggnad'] },
-        { key: 'besk',        label: 'Kort beskrivning',           keywords: ['kort beskrivning', 'beskrivning', 'description'] },
-        { key: 'formedling',  label: 'Förmedlingsinsatser',        keywords: ['förmedlingsinsatser', 'förmedling', 'outreach'] }
+        { key: 'rubrik',   label: 'Projektnamn',                required: true, keywords: ['rubrik', 'projektnamn', 'namn', 'titel på projekt'] },
+        { key: 'budget',   label: 'Investeringsbudget',         keywords: ['investeringsbudget', 'budget', 'belopp', 'kostnad'] },
+        { key: 'lead',     label: 'Projektledare',              keywords: ['konstprojektledare', 'projektledare', 'ledare', 'ansvarig'] },
+        { key: 'konstnar', label: 'Konstnär / titel',           keywords: ['titel - konstnär', 'konstnär', 'artist', 'verk'] },
+        { key: 'omrade',   label: 'Område (förvaltningsobjekt)', keywords: ['förvaltningsobjekt', 'område', 'plats', 'objekt', 'byggnad'] }
     ];
 
     // Auto-detect a field -> column-index mapping from the header row. Each
@@ -383,8 +376,8 @@
 
         const get = (row, i) => (i >= 0 && i < row.length ? (row[i] || '').toString().trim() : '');
 
-        const leads = [];          // ordered unique leads for area assignment
-        const leadColor = {};
+        const areaNames = [];      // ordered unique områden (förvaltningsobjekt)
+        const areaColor = {};
         const projects = [];
         let minYear = reference.getUTCFullYear();
         let maxYear = reference.getUTCFullYear();
@@ -394,9 +387,12 @@
             if (!name) return;
 
             const lead = firstLead(get(row, idx.lead));
-            if (lead && !leadColor[lead]) {
-                leadColor[lead] = LEAD_PALETTE[leads.length % LEAD_PALETTE.length];
-                leads.push(lead);
+
+            // Område drives the colour / area dimension.
+            const omrade = get(row, idx.omrade) || null;
+            if (omrade && !areaColor[omrade]) {
+                areaColor[omrade] = LEAD_PALETTE[areaNames.length % LEAD_PALETTE.length];
+                areaNames.push(omrade);
             }
 
             const stadieId = normalizeStadie(get(row, idx.stadie));
@@ -435,15 +431,13 @@
             const start = phases[0].start;
             const end = phases[phases.length - 1].end;
 
-            // Build a readable comment from description + outreach efforts.
+            // Build a readable comment from the mapped extra fields.
             const desc = get(row, idx.besk);
             const formedling = get(row, idx.formedling);
             const artist = get(row, idx.konstnar);
-            const forvaltning = get(row, idx.forvaltning);
             const commentParts = [];
             if (desc) commentParts.push(desc);
             if (artist) commentParts.push('Konstnär/titel: ' + artist);
-            if (forvaltning) commentParts.push('Förvaltningsobjekt: ' + forvaltning);
             if (formedling) commentParts.push('Förmedlingsinsatser:\n' + formedling);
 
             projects.push({
@@ -455,7 +449,7 @@
                 startType: 'date',
                 end: end,
                 endType: 'date',
-                color: lead ? leadColor[lead] : '#6B7280',
+                color: omrade ? areaColor[omrade] : '#6B7280',
                 budget: parseBudget(get(row, idx.budget)),
                 projectCode: get(row, idx.kod) || null,
                 phases: phases,
@@ -501,9 +495,9 @@
             delete p._anchorYear;
         });
 
-        const areas = leads.map(l => ({ name: l, color: leadColor[l] }));
-        // Ensure an "Övrigt" bucket exists for projects without a lead.
-        if (projects.some(p => !p.lead)) {
+        const areas = areaNames.map(n => ({ name: n, color: areaColor[n] }));
+        // Ensure an "Övrigt" bucket exists for projects without an område.
+        if (projects.some(p => p.color === '#6B7280')) {
             areas.push({ name: 'Övrigt', color: '#6B7280' });
         }
 
