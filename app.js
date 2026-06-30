@@ -321,16 +321,16 @@ const DEFAULT_LABELS = {
     phaseDisplay: 'Faser',
     phaseInbar: 'I projektstapeln',
     phaseBelow: 'Under projektet (kompakt)',
-    budgetSummary: 'Investeringsplan',
-    budgetTotal: 'Total investeringsbudget',
-    budgetPerYear: 'Per år',
+    budgetSummary: 'Belastningsprognos',
+    budgetTotal: 'Totalt projektvärde',
+    budgetPerYear: 'Aktivt värde per år',
     budgetPerLead: 'Per projektledare',
     budgetMissing: 'utan budget',
     filterShort: 'Filtrera',
     clearFilters: 'Rensa',
     viewLayers: 'Visa lager',
     layerLegend: 'Stadie-legend',
-    layerRibbon: 'Budget per år',
+    layerRibbon: 'Belastning per år',
     layerMiniMap: 'Mini-karta',
     layerCountdown: 'Nedräkningar'
 };
@@ -463,16 +463,16 @@ const DEFAULT_LABELS_EN = {
     phaseDisplay: 'Phases',
     phaseInbar: 'Inside the project bar',
     phaseBelow: 'Below the project (compact)',
-    budgetSummary: 'Investment plan',
-    budgetTotal: 'Total investment budget',
-    budgetPerYear: 'Per year',
+    budgetSummary: 'Load forecast',
+    budgetTotal: 'Total project value',
+    budgetPerYear: 'Active value per year',
     budgetPerLead: 'Per project lead',
     budgetMissing: 'without budget',
     filterShort: 'Filter',
     clearFilters: 'Clear',
     viewLayers: 'Show layers',
     layerLegend: 'Stage legend',
-    layerRibbon: 'Budget per year',
+    layerRibbon: 'Load per year',
     layerMiniMap: 'Mini-map',
     layerCountdown: 'Countdowns'
 };
@@ -3678,14 +3678,14 @@ class TimelineApp {
         container.classList.toggle('show-ribbon', !!this.showRibbon);
         if (!this.showRibbon) { ribbon.innerHTML = ''; return; }
 
+        // Active project value per year (full budget of every active project).
         const byYear = {};
         this.getFilteredProjects().forEach(p => {
             if (!p.budget) return;
             const s = this.parseDate(p.start), e = this.parseDate(p.end) || s;
             if (!s) return;
             const y0 = s.getFullYear(), y1 = Math.max(y0, e.getFullYear());
-            const per = p.budget / (y1 - y0 + 1);
-            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + per;
+            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + p.budget;
         });
         const years = Object.keys(byYear).map(Number);
         if (!years.length) { ribbon.innerHTML = ''; return; }
@@ -3792,7 +3792,7 @@ class TimelineApp {
             { kind: 'Vy', label: '2 år', run: () => this.setView('2years') },
             { kind: 'Gå', label: 'Idag', run: () => this.scrollToToday() },
             { kind: 'Åtgärd', label: 'Lägg till projekt', run: () => this.openProjectModal() },
-            { kind: 'Åtgärd', label: 'Investeringsplan', run: () => this.openBudgetSummary() },
+            { kind: 'Åtgärd', label: 'Belastningsprognos', run: () => this.openBudgetSummary() },
             { kind: 'Åtgärd', label: 'Rensa filter', run: () => this.clearFilters() },
             { kind: 'Åtgärd', label: 'Avsluta fokusläge', run: () => this.setFocus(null) }
         ];
@@ -4552,8 +4552,8 @@ class TimelineApp {
             byLead[k] = (byLead[k] || 0) + p.budget;
         });
 
-        // Distribute each project's budget evenly across the calendar years it
-        // spans, giving a rough yearly cash-flow view of the investment plan.
+        // Load forecast: for each year, sum the FULL value of every project
+        // that is active during that year (not divided across years).
         const byYear = {};
         withBudget.forEach(p => {
             const s = this.parseDate(p.start);
@@ -4561,8 +4561,7 @@ class TimelineApp {
             if (!s) return;
             const y0 = s.getFullYear();
             const y1 = Math.max(y0, e.getFullYear());
-            const per = p.budget / (y1 - y0 + 1);
-            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + per;
+            for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + p.budget;
         });
 
         const renderBars = (entries) => {

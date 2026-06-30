@@ -3178,13 +3178,22 @@ form {
 /* The title/lead block stays clickable: drag it to move the whole project,
    while dragging a phase tile moves just that phase. */
 .project-bar.has-phases .project-info {
-    background: rgba(15, 23, 42, 0.78);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    background: rgba(13, 14, 18, 0.92);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     padding: 1px 10px;
     border-radius: 6px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
     cursor: grab;
+}
+
+/* Brighter secondary text so lead + stage read clearly on the pill */
+.project-bar.has-phases .project-lead {
+    color: rgba(255, 255, 255, 0.92);
+}
+.timeline-container.compact-mode .project-bar.has-phases .project-status-text {
+    color: rgba(255, 255, 255, 0.95);
+    border-left-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Phase editor rows in the project/edit modals */
@@ -3322,7 +3331,7 @@ form {
 
 /* ===== Investeringsplan / budget summary ===== */
 .budget-body {
-    padding: 4px 2px 8px;
+    padding: 12px 1.75rem 8px;
 }
 
 .budget-total {
