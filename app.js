@@ -322,6 +322,15 @@ const DEFAULT_LABELS = {
     planBackwardNeedsEnd: 'Sätt ett slutdatum (deadline) först',
     planBackwardDone: 'Planerade faser bakåt från deadline',
     importExcel: 'Importera Excel...',
+    importUnsupported: 'Filtypen stöds inte (använd .xlsx, .json eller .ics)',
+    importReceiptTitle: 'Import klar',
+    receiptIntro: 'Din planering (faser, datum, status, kommentarer) är bevarad. Endast källfält uppdaterades.',
+    receiptAdded: 'nya projekt',
+    receiptUpdated: 'uppdaterade från källan',
+    receiptUnchanged: 'oförändrade',
+    receiptOrphaned: 'saknas i källan (flaggade, ej borttagna)',
+    dropHere: 'Släpp Excel-, JSON- eller iCal-filen för att importera',
+    ok: 'OK',
     mapColumns: 'Koppla kolumner',
     mapIntro: 'Välj vilken Excel-kolumn som motsvarar varje fält. Auto-förslag är ifyllda.',
     import: 'Importera',
@@ -481,6 +490,15 @@ const DEFAULT_LABELS_EN = {
     planBackward: '⏪ Plan back from end',
     planBackwardNeedsEnd: 'Set an end date (deadline) first',
     planBackwardDone: 'Scheduled phases back from the deadline',
+    importUnsupported: 'Unsupported file type (use .xlsx, .json or .ics)',
+    importReceiptTitle: 'Import complete',
+    receiptIntro: 'Your planning (phases, dates, status, comments) is preserved. Only source fields were refreshed.',
+    receiptAdded: 'new projects',
+    receiptUpdated: 'refreshed from source',
+    receiptUnchanged: 'unchanged',
+    receiptOrphaned: 'missing from source (flagged, not deleted)',
+    dropHere: 'Drop the Excel, JSON or iCal file to import',
+    ok: 'OK',
     importExcel: 'Import Excel...',
     mapColumns: 'Map columns',
     mapIntro: 'Choose which Excel column maps to each field. Auto-suggestions are pre-filled.',
@@ -1100,6 +1118,9 @@ class TimelineApp {
             this.importFromUrl();
         });
         safeBind('importFile', 'change', (e) => this.importData(e));
+        safeBind('importReceiptOk', 'click', () => this.closeModal('importReceiptModal'));
+        safeBind('closeImportReceipt', 'click', () => this.closeModal('importReceiptModal'));
+        this.bindFileDragDrop();
 
         // Close dropdown when clicking outside
         document.addEventListener('click', (e) => {
@@ -5994,10 +6015,52 @@ class TimelineApp {
     importData(e) {
         const file = e.target.files[0];
         if (!file) return;
+        this.handleImportFile(file);
+        e.target.value = ''; // Reset input so same file can be imported again
+    }
 
+    // Drag a .xlsx/.json/.ics file anywhere onto the window to import it.
+    bindFileDragDrop() {
+        const overlay = document.getElementById('dropOverlay');
+        let depth = 0; // dragenter/leave fire per child; count to know when we truly leave
+        const hasFiles = (e) => e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files');
+        window.addEventListener('dragenter', (e) => {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            depth++;
+            if (overlay) overlay.classList.add('active');
+        });
+        window.addEventListener('dragover', (e) => {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        });
+        window.addEventListener('dragleave', (e) => {
+            if (!hasFiles(e)) return;
+            depth = Math.max(0, depth - 1);
+            if (depth === 0 && overlay) overlay.classList.remove('active');
+        });
+        window.addEventListener('drop', (e) => {
+            if (!hasFiles(e)) return;
+            e.preventDefault();
+            depth = 0;
+            if (overlay) overlay.classList.remove('active');
+            const file = e.dataTransfer.files && e.dataTransfer.files[0];
+            if (file) this.handleImportFile(file);
+        });
+    }
+
+    // Shared entry point for both the file picker and drag-and-drop.
+    handleImportFile(file) {
+        if (!file) return;
         const name = file.name.toLowerCase();
         const isIcal = name.endsWith('.ics');
         const isExcel = name.endsWith('.xlsx');
+        const isJson = name.endsWith('.json');
+        if (!isIcal && !isExcel && !isJson) {
+            this.showToast(this.labels.importUnsupported || 'Filtypen stöds inte (använd .xlsx, .json eller .ics)', 'error');
+            return;
+        }
 
         const reader = new FileReader();
         reader.onload = async (event) => {
@@ -6015,7 +6078,6 @@ class TimelineApp {
         } else {
             reader.readAsText(file);
         }
-        e.target.value = ''; // Reset input so same file can be imported again
     }
 
     async importExcelData(arrayBuffer) {
@@ -6173,8 +6235,36 @@ class TimelineApp {
         this.initTimelineRange();
         this.populateDateSelectors();
         this.render();
-        const orphanNote = stats.orphaned ? `, ${stats.orphaned} saknas i källan` : '';
-        this.showToast(`Synk klar: ${stats.updated} uppdaterade, ${stats.added} nya${orphanNote}`, 'success');
+        this.showImportReceipt(stats);
+    }
+
+    // Import receipt: show exactly what the sync did, so a re-import feels safe
+    // (nothing was silently overwritten; planning survived).
+    showImportReceipt(stats) {
+        const body = document.getElementById('importReceiptBody');
+        const modal = document.getElementById('importReceiptModal');
+        if (!body || !modal) {
+            const orphanNote = stats.orphaned ? `, ${stats.orphaned} saknas i källan` : '';
+            this.showToast(`Synk klar: ${stats.updated} uppdaterade, ${stats.added} nya${orphanNote}`, 'success');
+            return;
+        }
+        const L = this.labels;
+        const rows = [
+            { n: stats.added || 0, label: L.receiptAdded || 'nya projekt', cls: 'added' },
+            { n: stats.updated || 0, label: L.receiptUpdated || 'uppdaterade från källan', cls: 'updated' },
+            { n: stats.unchanged || 0, label: L.receiptUnchanged || 'oförändrade', cls: 'unchanged' },
+            { n: stats.orphaned || 0, label: L.receiptOrphaned || 'saknas i källan (flaggade, ej borttagna)', cls: 'orphaned' }
+        ];
+        body.innerHTML = `
+            <p class="import-receipt-intro">${L.receiptIntro || 'Din planering (faser, datum, status, kommentarer) är bevarad. Endast källfält uppdaterades.'}</p>
+            <div class="import-receipt-grid">
+                ${rows.map(r => `
+                    <div class="import-receipt-row ${r.cls}">
+                        <span class="import-receipt-num">${r.n}</span>
+                        <span class="import-receipt-label">${r.label}</span>
+                    </div>`).join('')}
+            </div>`;
+        modal.classList.add('active');
     }
 
     parseIcalDate(dateStr) {

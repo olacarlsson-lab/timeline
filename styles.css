@@ -3458,6 +3458,73 @@ form {
     font-weight: 600;
 }
 
+/* ===== Drag-and-drop import overlay ===== */
+.drop-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(12, 14, 20, 0.72);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+}
+.drop-overlay.active { display: flex; }
+.drop-overlay-inner {
+    border: 2px dashed var(--accent-color, #8b8cf0);
+    border-radius: 16px;
+    padding: 40px 56px;
+    text-align: center;
+    background: rgba(30, 33, 45, 0.85);
+}
+.drop-overlay-icon {
+    font-size: 2.4rem;
+    color: var(--accent-color, #8b8cf0);
+    margin-bottom: 8px;
+}
+.drop-overlay-text {
+    font-size: 1rem;
+    color: #fff;
+}
+
+/* ===== Import receipt ===== */
+.import-receipt-intro {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0 0 14px;
+}
+.import-receipt-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.import-receipt-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--bg-tertiary, rgba(127, 127, 127, 0.1));
+    border-left: 3px solid transparent;
+}
+.import-receipt-num {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 2ch;
+    text-align: right;
+}
+.import-receipt-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.import-receipt-row.added { border-left-color: #37b94b; }
+.import-receipt-row.updated { border-left-color: var(--accent-color, #8b8cf0); }
+.import-receipt-row.unchanged { border-left-color: #9aa5b1; }
+.import-receipt-row.orphaned { border-left-color: #d9534f; }
+.import-receipt-row.orphaned .import-receipt-num { color: #d9534f; }
+
 /* ===== Milder colours & readability polish ===== */
 /* Soften the saturation of all coloured timeline elements so the palette
    reads calmer. Applies to existing data too (no re-colouring needed).
