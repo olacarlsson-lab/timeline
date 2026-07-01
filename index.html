@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=25">
+    <link rel="stylesheet" href="styles.css?v=26">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -553,6 +553,21 @@
         </div>
     </div>
 
+    <!-- Report / print view -->
+    <div class="modal report-modal" id="reportModal">
+        <div class="report-content">
+            <div class="report-toolbar">
+                <h2 data-label="reportTitle">Konstprojekt – tidslinje</h2>
+                <div class="report-actions">
+                    <button type="button" class="btn btn-primary" id="reportPrint" data-label="reportPrint">🖨 Skriv ut / PDF</button>
+                    <button type="button" class="btn btn-secondary" id="reportDownload" data-label="reportDownload">⬇ Ladda ner bild</button>
+                    <button type="button" class="btn btn-secondary" id="closeReport" data-label="close">Stäng</button>
+                </div>
+            </div>
+            <div id="reportBody" class="report-body"></div>
+        </div>
+    </div>
+
     <!-- Project Sidebar -->
     <div id="projectSidebar" class="sidebar sidebar-left">
         <div class="sidebar-bottom-sheet-handle"></div>
@@ -778,6 +793,10 @@
             </div>
             <div class="panel-divider"></div>
             <div class="panel-section">
+                <button id="reportBtn" class="btn btn-secondary" data-label="reportButton" style="width:100%;">🖨 Rapport / utskrift</button>
+            </div>
+            <div class="panel-divider"></div>
+            <div class="panel-section">
                 <label data-label="reset">Återställ</label>
                 <div class="panel-section-row">
                     <button id="resetSampleBtn" class="btn btn-secondary" data-label="exampleData">Exempeldata</button>
@@ -895,7 +914,7 @@
         </div>
         <script src="konstprojekt-import.js?v=4"></script>
         <script src="data-model.js?v=1"></script>
-        <script src="app.js?v=26"></script>
+        <script src="app.js?v=27"></script>
 </body>
 
 </html>

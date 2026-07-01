@@ -112,6 +112,15 @@ The file handle is remembered between sessions via IndexedDB; re-granting
 permission after a browser restart needs one click (**Återanslut**). When
 connected, the status shows **when the file was last synced**.
 
+## Report / print view
+
+**Settings → Rapport / utskrift** opens a clean, self-contained report: a
+timeline grouped by område (with phase segments) plus the load-per-year
+chart and its warning threshold. Colours are baked in and the canvas is
+white, so it looks the same regardless of the app theme. From there you can
+**Skriv ut / PDF** (print or save as PDF) or **Ladda ner bild** to save it
+as a scalable SVG — handy for meeting slides and planning documents.
+
 ## Getting started screen
 
 An empty timeline shows a short onboarding card with the three ways in

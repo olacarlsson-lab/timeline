@@ -259,6 +259,14 @@ const DEFAULT_LABELS = {
     onboardTip2: 'Tips: sätt bara ett slutdatum och klicka "Planera bakåt" så fylls faserna i automatiskt.',
     onboardTip3: 'Tips: dra faser och deras kanter direkt på tidslinjen för att flytta och ändra längd.',
     lastSynced: 'senast synkad',
+    reportButton: '🖨 Rapport / utskrift',
+    reportTitle: 'Konstprojekt – tidslinje',
+    reportGenerated: 'Genererad',
+    reportPrint: '🖨 Skriv ut / PDF',
+    reportDownload: '⬇ Ladda ner bild',
+    reportDownloaded: 'Rapport nedladdad (SVG)',
+    reportEmpty: 'Inga projekt att visa.',
+    uncategorised: 'Övrigt',
     settingsTitle: 'Filter & inställningar',
     toggleTheme: 'Växla tema',
     advanced: 'Avancerat',
@@ -437,6 +445,14 @@ const DEFAULT_LABELS_EN = {
     onboardTip2: 'Tip: set just an end date and click "Plan back" to fill in the phases automatically.',
     onboardTip3: 'Tip: drag phases and their edges directly on the timeline to move and resize them.',
     lastSynced: 'last synced',
+    reportButton: '🖨 Report / print',
+    reportTitle: 'Art projects – timeline',
+    reportGenerated: 'Generated',
+    reportPrint: '🖨 Print / PDF',
+    reportDownload: '⬇ Download image',
+    reportDownloaded: 'Report downloaded (SVG)',
+    reportEmpty: 'No projects to show.',
+    uncategorised: 'Other',
     settingsTitle: 'Filters & Settings',
     toggleTheme: 'Toggle Theme',
     advanced: 'Advanced',
@@ -1108,6 +1124,10 @@ class TimelineApp {
         safeBind('budgetBtn', 'click', () => this.openBudgetSummary());
         safeBind('closeBudgetModal', 'click', () => this.closeModal('budgetModal'));
         safeBind('closeBudgetBtn', 'click', () => this.closeModal('budgetModal'));
+        safeBind('reportBtn', 'click', () => { this.closeControlPanel && this.closeControlPanel(); this.openReport(); });
+        safeBind('closeReport', 'click', () => this.closeModal('reportModal'));
+        safeBind('reportPrint', 'click', () => this.printReport());
+        safeBind('reportDownload', 'click', () => this.downloadReportSvg());
         safeBind('exportBtn', 'click', () => this.exportData());
         safeBind('importBtn', 'click', () => document.getElementById('importFile').click());
         safeBind('importDropdownBtn', 'click', (e) => {
@@ -4819,6 +4839,168 @@ class TimelineApp {
             });
         }
         document.getElementById('budgetModal').classList.add('active');
+    }
+
+    areaNameFor(color) {
+        const a = this.areas.find(x => x.color === color);
+        return a ? a.name : (this.labels.uncategorised || 'Övrigt');
+    }
+
+    // Build a clean, self-contained SVG report: a printable timeline grouped by
+    // område plus the load-per-year chart. Colours are baked in and the canvas
+    // is white, so it prints and exports the same regardless of the app theme.
+    buildReportSvg() {
+        const esc = (s) => this.escapeHtml(String(s == null ? '' : s));
+        const projs = this.projects.filter(p => p.start && p.end);
+        const L = this.labels;
+        if (!projs.length) {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="120"><text x="24" y="60" font-family="sans-serif" font-size="16" fill="#333">${esc(L.reportEmpty || 'Inga projekt att visa.')}</text></svg>`;
+        }
+
+        // Time range snapped to whole years.
+        let t0 = Infinity, t1 = -Infinity;
+        projs.forEach(p => {
+            t0 = Math.min(t0, this.parseDate(p.start).getTime());
+            t1 = Math.max(t1, this.parseDate(p.end).getTime());
+        });
+        const y0 = new Date(t0).getFullYear();
+        const y1 = new Date(t1).getFullYear();
+        const start = new Date(y0, 0, 1).getTime();
+        const end = new Date(y1 + 1, 0, 1).getTime();
+
+        // Layout constants.
+        const padX = 24, leftCol = 190, plotW = 860, rowH = 22;
+        const width = padX * 2 + leftCol + plotW;
+        const plotX = padX + leftCol;
+        const xForT = (t) => plotX + (Math.max(start, Math.min(end, t)) - start) / (end - start) * plotW;
+
+        // Group projects by område (colour), sorted; projects within by start.
+        const groups = {};
+        projs.forEach(p => { (groups[p.color || ''] = groups[p.color || ''] || []).push(p); });
+        const groupKeys = Object.keys(groups).sort((a, b) => this.areaNameFor(a).localeCompare(this.areaNameFor(b), 'sv'));
+        groupKeys.forEach(k => groups[k].sort((a, b) => this.parseDate(a.start) - this.parseDate(b.start)));
+
+        let svg = '';
+        const headerH = 66;
+        let y = headerH + 28; // leave room for title + year axis
+
+        // Year gridlines + labels.
+        let axis = '';
+        for (let yr = y0; yr <= y1 + 1; yr++) {
+            const x = xForT(new Date(yr, 0, 1).getTime());
+            axis += `<line x1="${x.toFixed(1)}" y1="${headerH + 8}" x2="${x.toFixed(1)}" y2="__PLOTBOTTOM__" stroke="#e2e5ea" stroke-width="1"/>`;
+            if (yr <= y1) {
+                const xMid = xForT(new Date(yr, 6, 1).getTime());
+                axis += `<text x="${xMid.toFixed(1)}" y="${headerH + 2}" font-size="12" fill="#8a92a0" text-anchor="middle">${yr}</text>`;
+            }
+        }
+
+        // Rows grouped by område.
+        let rows = '';
+        groupKeys.forEach(k => {
+            const color = k || '#888';
+            // Group header: colour swatch + område name.
+            rows += `<rect x="${padX}" y="${(y + 2).toFixed(1)}" width="10" height="10" rx="2" fill="${color}"/>`;
+            rows += `<text x="${padX + 16}" y="${(y + 11).toFixed(1)}" font-size="12.5" font-weight="700" fill="#333">${esc(this.areaNameFor(k))}</text>`;
+            y += 20;
+            groups[k].forEach(p => {
+                const x1 = xForT(this.parseDate(p.start).getTime());
+                const x2 = xForT(this.parseDate(p.end).getTime());
+                const bw = Math.max(2, x2 - x1);
+                // Name (left column, truncated).
+                const name = p.name && p.name.length > 30 ? p.name.slice(0, 29) + '…' : (p.name || '');
+                rows += `<text x="${padX}" y="${(y + 11).toFixed(1)}" font-size="11.5" fill="#333">${esc(name)}</text>`;
+                // Base bar.
+                rows += `<rect x="${x1.toFixed(1)}" y="${(y + 3).toFixed(1)}" width="${bw.toFixed(1)}" height="14" rx="3" fill="${color}" fill-opacity="0.85"/>`;
+                // Phase segments overlaid.
+                (p.phases || []).forEach(ph => {
+                    if (!ph.start || !ph.end) return;
+                    const px1 = xForT(this.parseDate(ph.start).getTime());
+                    const px2 = xForT(this.parseDate(ph.end).getTime());
+                    const pw = Math.max(1, px2 - px1);
+                    rows += `<rect x="${px1.toFixed(1)}" y="${(y + 5).toFixed(1)}" width="${pw.toFixed(1)}" height="10" rx="2" fill="${ph.color || '#333'}" fill-opacity="0.9"/>`;
+                });
+                y += rowH;
+            });
+            y += 6;
+        });
+        const plotBottom = y + 4;
+        axis = axis.replace(/__PLOTBOTTOM__/g, plotBottom.toFixed(1));
+
+        // Load-per-year chart aligned under the same year columns.
+        const byYear = {};
+        projs.forEach(p => {
+            if (!p.budget) return;
+            const a = this.parseDate(p.start).getFullYear();
+            const b = Math.max(a, this.parseDate(p.end).getFullYear());
+            for (let yr = a; yr <= b; yr++) byYear[yr] = (byYear[yr] || 0) + p.budget;
+        });
+        const chartTop = plotBottom + 40;
+        const chartH = 120;
+        const maxLoad = Math.max(1, ...Object.values(byYear));
+        const thresholdKr = this.loadThreshold ? this.loadThreshold * 1e6 : null;
+        let chart = `<text x="${padX}" y="${(chartTop - 12).toFixed(1)}" font-size="13" font-weight="700" fill="#333">${esc(L.budgetPerYear || 'Aktivt värde per år')}</text>`;
+        chart += `<line x1="${plotX}" y1="${(chartTop + chartH).toFixed(1)}" x2="${(plotX + plotW).toFixed(1)}" y2="${(chartTop + chartH).toFixed(1)}" stroke="#ccd2da" stroke-width="1"/>`;
+        for (let yr = y0; yr <= y1; yr++) {
+            const v = byYear[yr] || 0;
+            const x1 = xForT(new Date(yr, 0, 1).getTime());
+            const x2 = xForT(new Date(yr + 1, 0, 1).getTime());
+            const bw = (x2 - x1) * 0.6;
+            const bx = x1 + (x2 - x1) * 0.2;
+            const bh = v / maxLoad * (chartH - 8);
+            const crunch = thresholdKr && v > thresholdKr;
+            chart += `<rect x="${bx.toFixed(1)}" y="${(chartTop + chartH - bh).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="2" fill="${crunch ? '#d9534f' : '#6E8EBF'}"/>`;
+            chart += `<text x="${(bx + bw / 2).toFixed(1)}" y="${(chartTop + chartH - bh - 4).toFixed(1)}" font-size="10.5" fill="${crunch ? '#d9534f' : '#555'}" text-anchor="middle">${(v / 1e6).toFixed(1)}</text>`;
+        }
+        if (thresholdKr) {
+            const ty = chartTop + chartH - (thresholdKr / maxLoad * (chartH - 8));
+            if (ty > chartTop) {
+                chart += `<line x1="${plotX}" y1="${ty.toFixed(1)}" x2="${(plotX + plotW).toFixed(1)}" y2="${ty.toFixed(1)}" stroke="#d9534f" stroke-width="1" stroke-dasharray="4 3"/>`;
+                chart += `<text x="${(plotX + plotW).toFixed(1)}" y="${(ty - 3).toFixed(1)}" font-size="10" fill="#d9534f" text-anchor="end">${this.loadThreshold} mkr</text>`;
+            }
+        }
+
+        const totalH = chartTop + chartH + 34;
+        const genDate = this.formatSyncTime ? new Date().toLocaleDateString(this.language === 'en' ? 'en-GB' : 'sv-SE', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+        const title = esc(L.reportTitle || 'Konstprojekt – tidslinje');
+        const header = `
+            <text x="${padX}" y="30" font-size="20" font-weight="700" fill="#1a1d24">${title}</text>
+            <text x="${padX}" y="48" font-size="12" fill="#8a92a0">${esc(L.reportGenerated || 'Genererad')} ${esc(genDate)} · ${projs.length} ${esc((L.projectsPlural || 'projekt').toLowerCase())}</text>`;
+
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${totalH.toFixed(0)}" viewBox="0 0 ${width} ${totalH.toFixed(0)}" font-family="'Segoe UI', system-ui, sans-serif">
+            <rect x="0" y="0" width="${width}" height="${totalH.toFixed(0)}" fill="#ffffff"/>
+            ${header}${axis}${rows}${chart}
+        </svg>`;
+    }
+
+    openReport() {
+        const body = document.getElementById('reportBody');
+        if (!body) return;
+        this._reportSvg = this.buildReportSvg();
+        body.innerHTML = this._reportSvg;
+        document.getElementById('reportModal').classList.add('active');
+    }
+
+    printReport() {
+        document.body.classList.add('report-printing');
+        const done = () => document.body.classList.remove('report-printing');
+        window.addEventListener('afterprint', done, { once: true });
+        setTimeout(() => { window.print(); }, 30);
+        // Fallback cleanup in case afterprint never fires.
+        setTimeout(done, 2000);
+    }
+
+    downloadReportSvg() {
+        const svg = this._reportSvg || this.buildReportSvg();
+        const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tidslinje-rapport-${new Date().toISOString().split('T')[0]}.svg`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 200);
+        this.showToast(this.labels.reportDownloaded || 'Rapport nedladdad (SVG)', 'success');
     }
 
     parseBudgetInput(inputId) {
