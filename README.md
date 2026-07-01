@@ -109,7 +109,15 @@ plan — no server involved. Use **Settings → Delad fil**:
   work.
 
 The file handle is remembered between sessions via IndexedDB; re-granting
-permission after a browser restart needs one click (**Återanslut**).
+permission after a browser restart needs one click (**Återanslut**). When
+connected, the status shows **when the file was last synced**.
+
+## Getting started screen
+
+An empty timeline shows a short onboarding card with the three ways in
+(import Excel, create a project, try sample data) plus a few tips for
+features that aren't obvious (drag-and-drop import, backward planning,
+dragging phases). It disappears as soon as there is anything to show.
 
 ## Technology
 
