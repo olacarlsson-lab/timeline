@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Timeline</title>
-    <link rel="stylesheet" href="styles.css?v=22">
+    <link rel="stylesheet" href="styles.css?v=23">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -167,6 +167,7 @@
                             <option value="date">Datum</option>
                             <option value="week">Vecka</option>
                             <option value="month">Månad</option>
+                            <option value="quarter">Kvartal</option>
                         </select>
                         <input type="date" id="projectStartDate" class="date-input">
                         <div id="projectStartWeekGroup" class="week-group" style="display:none;">
@@ -177,6 +178,10 @@
                             <select id="projectStartMonthNum" class="month-num-input"></select>
                             <select id="projectStartMonthYear" class="month-year-input"></select>
                         </div>
+                        <div id="projectStartQuarterGroup" class="quarter-group" style="display:none;">
+                            <select id="projectStartQuarterNum" class="quarter-num-input"></select>
+                            <select id="projectStartQuarterYear" class="quarter-year-input"></select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -186,6 +191,7 @@
                             <option value="date">Datum</option>
                             <option value="week">Vecka</option>
                             <option value="month">Månad</option>
+                            <option value="quarter">Kvartal</option>
                         </select>
                         <input type="date" id="projectEndDate" class="date-input">
                         <div id="projectEndWeekGroup" class="week-group" style="display:none;">
@@ -195,6 +201,10 @@
                         <div id="projectEndMonthGroup" class="month-group" style="display:none;">
                             <select id="projectEndMonthNum" class="month-num-input"></select>
                             <select id="projectEndMonthYear" class="month-year-input"></select>
+                        </div>
+                        <div id="projectEndQuarterGroup" class="quarter-group" style="display:none;">
+                            <select id="projectEndQuarterNum" class="quarter-num-input"></select>
+                            <select id="projectEndQuarterYear" class="quarter-year-input"></select>
                         </div>
                     </div>
                 </div>
@@ -222,6 +232,7 @@
                     <div class="phase-actions">
                         <button type="button" class="btn-link-sm" id="projectAddPhase" data-label="addPhase">+ Lägg till fas</button>
                         <button type="button" class="btn-link-sm" id="projectAddStdPhases" data-label="addStdPhases">Lägg till standardfaser</button>
+                        <button type="button" class="btn-link-sm" id="projectPlanBackward" data-label="planBackward">Planera bakåt från slut</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -365,6 +376,7 @@
                             <option value="date" data-label="dateTypeDate">Datum</option>
                             <option value="week" data-label="dateTypeWeek">Vecka</option>
                             <option value="month" data-label="dateTypeMonth">Månad</option>
+                            <option value="quarter" data-label="dateTypeQuarter">Kvartal</option>
                         </select>
                         <input type="date" id="editStartDate" class="date-input">
                         <div id="editStartWeekGroup" class="week-group" style="display:none;">
@@ -375,6 +387,10 @@
                             <select id="editStartMonthNum" class="month-num-input"></select>
                             <select id="editStartMonthYear" class="month-year-input"></select>
                         </div>
+                        <div id="editStartQuarterGroup" class="quarter-group" style="display:none;">
+                            <select id="editStartQuarterNum" class="quarter-num-input"></select>
+                            <select id="editStartQuarterYear" class="quarter-year-input"></select>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group" id="editEndGroup">
@@ -384,6 +400,7 @@
                             <option value="date" data-label="dateTypeDate">Datum</option>
                             <option value="week" data-label="dateTypeWeek">Vecka</option>
                             <option value="month" data-label="dateTypeMonth">Månad</option>
+                            <option value="quarter" data-label="dateTypeQuarter">Kvartal</option>
                         </select>
                         <input type="date" id="editEndDate" class="date-input">
                         <div id="editEndWeekGroup" class="week-group" style="display:none;">
@@ -393,6 +410,10 @@
                         <div id="editEndMonthGroup" class="month-group" style="display:none;">
                             <select id="editEndMonthNum" class="month-num-input"></select>
                             <select id="editEndMonthYear" class="month-year-input"></select>
+                        </div>
+                        <div id="editEndQuarterGroup" class="quarter-group" style="display:none;">
+                            <select id="editEndQuarterNum" class="quarter-num-input"></select>
+                            <select id="editEndQuarterYear" class="quarter-year-input"></select>
                         </div>
                     </div>
                 </div>
@@ -476,6 +497,7 @@
                     <div class="phase-actions">
                         <button type="button" class="btn-link-sm" id="editAddPhase" data-label="addPhase">+ Lägg till fas</button>
                         <button type="button" class="btn-link-sm" id="editAddStdPhases" data-label="addStdPhases">Lägg till standardfaser</button>
+                        <button type="button" class="btn-link-sm" id="editPlanBackward" data-label="planBackward">Planera bakåt från slut</button>
                     </div>
                 </div>
                 <div class="form-group" id="editCommentGroup">
@@ -851,7 +873,7 @@
         </div>
         <script src="konstprojekt-import.js?v=4"></script>
         <script src="data-model.js?v=1"></script>
-        <script src="app.js?v=23"></script>
+        <script src="app.js?v=24"></script>
 </body>
 
 </html>
