@@ -1795,6 +1795,74 @@ body {
     border: 1px solid var(--border-color);
 }
 
+/* ===== Report / print view ===== */
+.report-content {
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 1040px;
+    max-height: 92dvh;
+    display: flex;
+    flex-direction: column;
+    margin: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+.report-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+}
+.report-toolbar h2 { margin: 0; font-size: 1.1rem; }
+.report-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.report-body {
+    overflow: auto;
+    padding: 16px;
+    background: #f4f5f7;
+}
+.report-body svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* When printing, show only the report (baked-in colours). */
+@media print {
+    body.report-printing > *:not(#reportModal) { display: none !important; }
+    body.report-printing #reportModal {
+        display: block !important;
+        position: static;
+        background: #fff;
+        backdrop-filter: none;
+    }
+    body.report-printing #reportModal .report-content {
+        max-width: none;
+        max-height: none;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        display: block;
+    }
+    body.report-printing #reportModal .report-toolbar { display: none !important; }
+    body.report-printing #reportModal .report-body {
+        overflow: visible;
+        padding: 0;
+        background: #fff;
+    }
+    body.report-printing #reportModal .report-body svg {
+        box-shadow: none;
+        width: 100%;
+    }
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
