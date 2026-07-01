@@ -250,6 +250,15 @@ const DEFAULT_LABELS = {
     weekWord: 'Vecka',
     emptyState: 'Inga projekt eller händelser',
     getStarted: 'för att komma igång',
+    onboardTitle: 'Kom igång',
+    onboardSub: 'Bygg en tidslinje från er Konstprojekt-Excel, eller lägg till projekt för hand.',
+    onboardExcel: '📄 Importera Excel',
+    onboardProject: '+ Skapa projekt',
+    onboardSample: '✨ Testa med exempeldata',
+    onboardTip1: 'Tips: dra en Excel-, JSON- eller iCal-fil var som helst hit för att importera.',
+    onboardTip2: 'Tips: sätt bara ett slutdatum och klicka "Planera bakåt" så fylls faserna i automatiskt.',
+    onboardTip3: 'Tips: dra faser och deras kanter direkt på tidslinjen för att flytta och ändra längd.',
+    lastSynced: 'senast synkad',
     settingsTitle: 'Filter & inställningar',
     toggleTheme: 'Växla tema',
     advanced: 'Avancerat',
@@ -419,6 +428,15 @@ const DEFAULT_LABELS_EN = {
     weekWord: 'Week',
     emptyState: 'No projects or events',
     getStarted: 'to get started',
+    onboardTitle: 'Get started',
+    onboardSub: 'Build a timeline from your art-projects Excel, or add projects by hand.',
+    onboardExcel: '📄 Import Excel',
+    onboardProject: '+ Create project',
+    onboardSample: '✨ Try sample data',
+    onboardTip1: 'Tip: drag an Excel, JSON or iCal file anywhere here to import it.',
+    onboardTip2: 'Tip: set just an end date and click "Plan back" to fill in the phases automatically.',
+    onboardTip3: 'Tip: drag phases and their edges directly on the timeline to move and resize them.',
+    lastSynced: 'last synced',
     settingsTitle: 'Filters & Settings',
     toggleTheme: 'Toggle Theme',
     advanced: 'Advanced',
@@ -4360,19 +4378,47 @@ class TimelineApp {
         this.timelineGrid.style.width = totalWidth + 'px';
     }
 
+    // A friendly, actionable start screen for the (often infrequent) user who
+    // opens an empty timeline: the three real ways in, plus a couple of tips
+    // for features that aren't obvious.
+    buildOnboarding() {
+        const L = this.labels;
+        const el = document.createElement('div');
+        el.className = 'onboarding';
+        el.innerHTML = `
+            <div class="onboarding-card">
+                <h2 class="onboarding-title">${L.onboardTitle || 'Kom igång'}</h2>
+                <p class="onboarding-sub">${L.onboardSub || 'Bygg en tidslinje från er Konstprojekt-Excel, eller lägg till projekt för hand.'}</p>
+                <div class="onboarding-actions">
+                    <button type="button" class="btn btn-primary" data-act="excel">${L.onboardExcel || '📄 Importera Excel'}</button>
+                    <button type="button" class="btn btn-secondary" data-act="project">${L.onboardProject || '+ Skapa projekt'}</button>
+                    <button type="button" class="btn btn-secondary" data-act="sample">${L.onboardSample || '✨ Testa med exempeldata'}</button>
+                </div>
+                <ul class="onboarding-tips">
+                    <li>${L.onboardTip1 || 'Tips: dra en Excel-, JSON- eller iCal-fil var som helst hit för att importera.'}</li>
+                    <li>${L.onboardTip2 || 'Tips: sätt bara ett slutdatum och klicka "Planera bakåt" så fylls faserna i automatiskt.'}</li>
+                    <li>${L.onboardTip3 || 'Tips: dra faser och deras kanter direkt på tidslinjen för att flytta och ändra längd.'}</li>
+                </ul>
+            </div>`;
+        el.querySelector('[data-act="excel"]').addEventListener('click', () => {
+            const input = document.getElementById('importFile');
+            if (input) input.click();
+        });
+        el.querySelector('[data-act="project"]').addEventListener('click', () => this.openProjectModal());
+        el.querySelector('[data-act="sample"]').addEventListener('click', () => {
+            // Nothing to lose from an empty timeline — load sample straight away.
+            this.resetToDefaults(true);
+        });
+        return el;
+    }
+
     renderContent() {
         this.timelineContent.innerHTML = '';
         const totalWidth = this.getTotalWidth();
         this.timelineContent.style.width = totalWidth + 'px';
 
         if (this.projects.length === 0 && this.events.length === 0) {
-            const emptyState = document.createElement('div');
-            emptyState.className = 'empty-state';
-            emptyState.innerHTML = `
-    <p>${this.labels.emptyState}</p>
-    <span>${this.labels.edit || 'Klicka'} "${this.labels.addProject}" ${this.labels.getStarted}</span>
-`;
-            this.timelineContent.appendChild(emptyState);
+            this.timelineContent.appendChild(this.buildOnboarding());
             return;
         }
 
@@ -5923,7 +5969,8 @@ class TimelineApp {
             if (reconnectBtn) reconnectBtn.style.display = '';
             if (disconnectBtn) disconnectBtn.style.display = '';
         } else if (this.fileHandle) {
-            status.textContent = `● Ansluten: ${name}`;
+            const synced = this.fileLastModified ? ` · ${this.labels.lastSynced || 'senast synkad'} ${this.formatSyncTime(this.fileLastModified)}` : '';
+            status.textContent = `● Ansluten: ${name}${synced}`;
             if (reconnectBtn) reconnectBtn.style.display = 'none';
             if (disconnectBtn) disconnectBtn.style.display = '';
         } else {
@@ -5931,6 +5978,19 @@ class TimelineApp {
             if (reconnectBtn) reconnectBtn.style.display = 'none';
             if (disconnectBtn) disconnectBtn.style.display = 'none';
         }
+    }
+
+    // Human-friendly "last synced" time: clock for today, else a short date.
+    formatSyncTime(ts) {
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return '';
+        const now = new Date();
+        const sameDay = d.toDateString() === now.toDateString();
+        const locale = this.language === 'en' ? 'en-GB' : 'sv-SE';
+        if (sameDay) {
+            return d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+        }
+        return d.toLocaleDateString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     }
 
     async exportData() {
