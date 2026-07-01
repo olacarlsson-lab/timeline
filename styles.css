@@ -1956,7 +1956,8 @@ form {
 }
 
 .week-group,
-.month-group {
+.month-group,
+.quarter-group {
     display: flex;
     gap: 0.25rem;
     flex: 1;
@@ -1964,7 +1965,8 @@ form {
 }
 
 .week-num-input,
-.month-num-input {
+.month-num-input,
+.quarter-num-input {
     flex: 1 1 0;
     min-width: 0;
     font-size: 0.8rem !important;
@@ -1975,7 +1977,8 @@ form {
 }
 
 .week-year-input,
-.month-year-input {
+.month-year-input,
+.quarter-year-input {
     flex: 0 0 5.5rem;
     min-width: 5.5rem;
     font-size: 0.8rem !important;
@@ -3420,6 +3423,41 @@ form {
     color: var(--text-secondary);
 }
 
+/* Crunch (over-threshold) years in the load forecast */
+.budget-row.crunch .budget-row-label,
+.budget-row.crunch .budget-row-value {
+    color: #d9534f;
+    font-weight: 600;
+}
+.budget-row.crunch .budget-row-fill {
+    background: #d9534f;
+}
+
+.budget-threshold {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 4px;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+}
+.budget-threshold input {
+    width: 5.5rem;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+}
+
+.budget-crunch-note {
+    margin: 8px 0 4px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: rgba(217, 83, 79, 0.12);
+    border: 1px solid rgba(217, 83, 79, 0.4);
+    color: #d9534f;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
 /* ===== Milder colours & readability polish ===== */
 /* Soften the saturation of all coloured timeline elements so the palette
    reads calmer. Applies to existing data too (no re-colouring needed).
@@ -3604,6 +3642,14 @@ form {
     text-shadow: 0 1px 2px rgba(0,0,0,0.6);
     transform: translateX(4px);
     white-space: nowrap;
+}
+.budget-ribbon-bar.crunch {
+    background: linear-gradient(to top, #d9534f, rgba(217,83,79,0.3));
+    opacity: 0.8;
+}
+.budget-ribbon-label.crunch {
+    color: #ffd9d7;
+    font-weight: 700;
 }
 
 /* 11. Snap guide line */

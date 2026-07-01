@@ -219,6 +219,7 @@ const DEFAULT_LABELS = {
     dateTypeDate: 'Datum',
     dateTypeWeek: 'Vecka',
     dateTypeMonth: 'Månad',
+    dateTypeQuarter: 'Kvartal',
     projectName: 'Projektnamn',
     projectNamePlaceholder: 'Ange projektets namn...',
     projectLeadPlaceholder: 'Namn på ansvarig...',
@@ -317,6 +318,9 @@ const DEFAULT_LABELS = {
     phaseName: 'Fasnamn',
     addPhase: '+ Lägg till fas',
     addStdPhases: '✨ Lägg till standardfaser',
+    planBackward: '⏪ Planera bakåt från slut',
+    planBackwardNeedsEnd: 'Sätt ett slutdatum (deadline) först',
+    planBackwardDone: 'Planerade faser bakåt från deadline',
     importExcel: 'Importera Excel...',
     mapColumns: 'Koppla kolumner',
     mapIntro: 'Välj vilken Excel-kolumn som motsvarar varje fält. Auto-förslag är ifyllda.',
@@ -334,6 +338,11 @@ const DEFAULT_LABELS = {
     budgetPerYear: 'Aktivt värde per år',
     budgetPerLead: 'Per projektledare',
     budgetMissing: 'utan budget',
+    budgetThreshold: 'Varna över (mkr/år)',
+    budgetPeak: 'Topp',
+    budgetHeavyYear: 'tungt år',
+    budgetHeavyYears: 'tunga år',
+    budgetOver: 'över',
     filterShort: 'Filtrera',
     clearFilters: 'Rensa',
     viewLayers: 'Visa lager',
@@ -370,6 +379,7 @@ const DEFAULT_LABELS_EN = {
     dateTypeDate: 'Date',
     dateTypeWeek: 'Week',
     dateTypeMonth: 'Month',
+    dateTypeQuarter: 'Quarter',
     projectName: 'Project Name',
     projectNamePlaceholder: 'Enter project name...',
     projectLeadPlaceholder: 'Name of responsible...',
@@ -468,6 +478,9 @@ const DEFAULT_LABELS_EN = {
     phaseName: 'Phase name',
     addPhase: '+ Add phase',
     addStdPhases: '✨ Add standard phases',
+    planBackward: '⏪ Plan back from end',
+    planBackwardNeedsEnd: 'Set an end date (deadline) first',
+    planBackwardDone: 'Scheduled phases back from the deadline',
     importExcel: 'Import Excel...',
     mapColumns: 'Map columns',
     mapIntro: 'Choose which Excel column maps to each field. Auto-suggestions are pre-filled.',
@@ -485,6 +498,11 @@ const DEFAULT_LABELS_EN = {
     budgetPerYear: 'Active value per year',
     budgetPerLead: 'Per project lead',
     budgetMissing: 'without budget',
+    budgetThreshold: 'Warn above (mkr/yr)',
+    budgetPeak: 'Peak',
+    budgetHeavyYear: 'heavy year',
+    budgetHeavyYears: 'heavy years',
+    budgetOver: 'over',
     filterShort: 'Filter',
     clearFilters: 'Clear',
     viewLayers: 'Show layers',
@@ -542,6 +560,9 @@ class TimelineApp {
         this.showRibbon = !!layers.showRibbon;
         this.showMiniMap = !!layers.showMiniMap;
         this.showCountdown = !!layers.showCountdown;
+        // Load threshold (mkr) for the belastningsprognos crunch-year warnings.
+        const savedThreshold = this.loadData('timeline_load_threshold');
+        this.loadThreshold = (typeof savedThreshold === 'number' && savedThreshold > 0) ? savedThreshold : null;
         this.cmdIndex = 0;
         this.cmdCommands = [];
         this.activeSidebarProject = null;
@@ -954,6 +975,27 @@ class TimelineApp {
                 option.textContent = name;
                 select.appendChild(option);
             });
+        });
+
+        // Populate quarter selects (Q1-Q4) + their year selects.
+        document.querySelectorAll('.quarter-num-input').forEach(select => {
+            select.innerHTML = '';
+            for (let q = 1; q <= 4; q++) {
+                const option = document.createElement('option');
+                option.value = q;
+                option.textContent = `Q${q}`;
+                select.appendChild(option);
+            }
+        });
+        document.querySelectorAll('.quarter-year-input').forEach(select => {
+            select.innerHTML = '';
+            for (let y = startYear; y <= endYear; y++) {
+                const option = document.createElement('option');
+                option.value = y;
+                option.textContent = y;
+                if (y === currentYear) option.selected = true;
+                select.appendChild(option);
+            }
         });
     }
 
@@ -1554,11 +1596,17 @@ class TimelineApp {
         safeBind('projectAddStdPhases', 'click', () => {
             this.fillStandardPhases('projectPhasesList', 'projectStart', 'projectEnd');
         });
+        safeBind('projectPlanBackward', 'click', () => {
+            this.fillStandardPhasesBackward('projectPhasesList', 'projectStart', 'projectEnd');
+        });
         safeBind('editAddPhase', 'click', () => {
             document.getElementById('editPhasesList').appendChild(this.buildPhaseRow({}));
         });
         safeBind('editAddStdPhases', 'click', () => {
             this.fillStandardPhases('editPhasesList', 'editStart', 'editEnd');
+        });
+        safeBind('editPlanBackward', 'click', () => {
+            this.fillStandardPhasesBackward('editPhasesList', 'editStart', 'editEnd');
         });
 
         // Event modal
@@ -1949,6 +1997,7 @@ class TimelineApp {
         const dateInput = document.getElementById(`${prefix}Date`);
         const weekGroup = document.getElementById(`${prefix}WeekGroup`);
         const monthGroup = document.getElementById(`${prefix}MonthGroup`);
+        const quarterGroup = document.getElementById(`${prefix}QuarterGroup`);
 
         if (!typeSelect) return;
 
@@ -1957,6 +2006,7 @@ class TimelineApp {
             dateInput.style.display = type === 'date' ? 'block' : 'none';
             if (weekGroup) weekGroup.style.display = type === 'week' ? 'flex' : 'none';
             if (monthGroup) monthGroup.style.display = type === 'month' ? 'flex' : 'none';
+            if (quarterGroup) quarterGroup.style.display = type === 'quarter' ? 'flex' : 'none';
 
             // Set default values to current date if empty or default
             if (type === 'week') {
@@ -1971,6 +2021,12 @@ class TimelineApp {
                 const monthYear = document.getElementById(`${prefix}MonthYear`);
                 if (monthNum && (!monthNum.value || monthNum.value === '1')) monthNum.value = now.getMonth() + 1;
                 if (monthYear && (!monthYear.value || monthYear.value === '2025')) monthYear.value = now.getFullYear();
+            } else if (type === 'quarter') {
+                const now = new Date();
+                const qNum = document.getElementById(`${prefix}QuarterNum`);
+                const qYear = document.getElementById(`${prefix}QuarterYear`);
+                if (qNum && !qNum.value) qNum.value = Math.floor(now.getMonth() / 3) + 1;
+                if (qYear && !qYear.value) qYear.value = now.getFullYear();
             } else if (type === 'date') {
                 // For date input, we could also default to today if empty
                 if (dateInput && !dateInput.value) {
@@ -2002,6 +2058,11 @@ class TimelineApp {
                 if (!monthNum || !monthNum.value) {
                     return ''; // No end date specified
                 }
+            } else if (type === 'quarter') {
+                const qNum = document.getElementById(`${prefix}QuarterNum`);
+                if (!qNum || !qNum.value) {
+                    return ''; // No end date specified
+                }
             }
         }
 
@@ -2017,6 +2078,12 @@ class TimelineApp {
             const weekNum = parseInt(document.getElementById(`${prefix}WeekNum`).value);
             const year = parseInt(document.getElementById(`${prefix}WeekYear`).value);
             return this.getMondayOfWeek(isEnd ? weekNum + 1 : weekNum, year);
+        } else if (type === 'quarter') {
+            const q = parseInt(document.getElementById(`${prefix}QuarterNum`).value);
+            const year = parseInt(document.getElementById(`${prefix}QuarterYear`).value);
+            // Start = first day of the quarter; end (exclusive) = first day of the next quarter.
+            const monthIndex = isEnd ? q * 3 : (q - 1) * 3;
+            return this.formatDateISO(new Date(year, monthIndex, 1));
         } else {
             const month = parseInt(document.getElementById(`${prefix}MonthNum`).value);
             const year = parseInt(document.getElementById(`${prefix}MonthYear`).value);
@@ -2033,6 +2100,7 @@ class TimelineApp {
         const dateInput = document.getElementById(`${prefix}Date`);
         const weekGroup = document.getElementById(`${prefix}WeekGroup`);
         const monthGroup = document.getElementById(`${prefix}MonthGroup`);
+        const quarterGroup = document.getElementById(`${prefix}QuarterGroup`);
         const isEnd = prefix.toLowerCase().includes('end');
 
         // Guard against missing elements
@@ -2042,6 +2110,7 @@ class TimelineApp {
         dateInput.style.display = type === 'date' ? 'block' : 'none';
         if (weekGroup) weekGroup.style.display = type === 'week' ? 'flex' : 'none';
         if (monthGroup) monthGroup.style.display = type === 'month' ? 'flex' : 'none';
+        if (quarterGroup) quarterGroup.style.display = type === 'quarter' ? 'flex' : 'none';
 
         // Handle empty value - clear the field
         if (!value || value === '') {
@@ -2062,6 +2131,8 @@ class TimelineApp {
                 d.setDate(d.getDate() - 3); // Move into the previous week (Monday - 3 days = Friday)
             } else if (type === 'month') {
                 d.setDate(d.getDate() - 1); // Move into the previous month (1st - 1 day = last day of prev month)
+            } else if (type === 'quarter') {
+                d.setDate(d.getDate() - 1); // Move into the quarter that ends here
             }
         }
 
@@ -2072,6 +2143,9 @@ class TimelineApp {
             const year = d.getFullYear();
             document.getElementById(`${prefix}WeekNum`).value = weekNum;
             document.getElementById(`${prefix}WeekYear`).value = year;
+        } else if (type === 'quarter') {
+            document.getElementById(`${prefix}QuarterNum`).value = Math.floor(d.getMonth() / 3) + 1;
+            document.getElementById(`${prefix}QuarterYear`).value = d.getFullYear();
         } else {
             document.getElementById(`${prefix}MonthNum`).value = d.getMonth() + 1;
             document.getElementById(`${prefix}MonthYear`).value = d.getFullYear();
@@ -3750,14 +3824,16 @@ class TimelineApp {
         const years = Object.keys(byYear).map(Number);
         if (!years.length) { ribbon.innerHTML = ''; return; }
         const max = Math.max(...years.map(y => byYear[y]));
+        const thresholdKr = this.loadThreshold ? this.loadThreshold * 1e6 : null;
         ribbon.style.width = this.getTotalWidth() + 'px';
         ribbon.innerHTML = years.map(y => {
             const left = this.dateToPosition(`${y}-01-01`);
             const right = this.dateToPosition(`${y}-12-31`);
             const h = Math.max(4, Math.round(byYear[y] / max * 34));
             const mkr = (byYear[y] / 1e6).toFixed(1);
-            return `<div class="budget-ribbon-bar" style="left:${left}px;width:${Math.max(2, right - left - 2)}px;height:${h}px"></div>
-                    <div class="budget-ribbon-label" style="left:${left}px">${mkr} mkr</div>`;
+            const crunch = thresholdKr && byYear[y] > thresholdKr ? ' crunch' : '';
+            return `<div class="budget-ribbon-bar${crunch}" style="left:${left}px;width:${Math.max(2, right - left - 2)}px;height:${h}px"></div>
+                    <div class="budget-ribbon-label${crunch}" style="left:${left}px">${mkr} mkr</div>`;
         }).join('');
     }
 
@@ -4390,6 +4466,8 @@ class TimelineApp {
 
         if (dateType === 'month') {
             return `${months[date.getMonth()]} ${date.getFullYear()} `;
+        } else if (dateType === 'quarter') {
+            return `Q${Math.floor(date.getMonth() / 3) + 1} ${date.getFullYear()} `;
         } else if (dateType === 'week') {
             return `${this.labels.weekWord || 'Vecka'} ${this.getWeekNumber(date)}, ${date.getFullYear()} `;
         } else {
@@ -4421,6 +4499,8 @@ class TimelineApp {
         let startStr;
         if (startType === 'month') {
             startStr = `${shortMonths[startDate.getMonth()]} `;
+        } else if (startType === 'quarter') {
+            startStr = `Q${Math.floor(startDate.getMonth() / 3) + 1} `;
         } else if (startType === 'week') {
             startStr = `${weekPrefix}${this.getWeekNumber(startDate)} `;
         } else {
@@ -4624,31 +4704,53 @@ class TimelineApp {
             for (let y = y0; y <= y1; y++) byYear[y] = (byYear[y] || 0) + p.budget;
         });
 
-        const renderBars = (entries) => {
+        const thresholdKr = this.loadThreshold ? this.loadThreshold * 1e6 : null;
+
+        const renderBars = (entries, markCrunch) => {
             const max = Math.max(1, ...entries.map(e => e[1]));
-            return entries.map(([label, val]) => `
-                <div class="budget-row">
-                    <span class="budget-row-label">${this.escapeHtml(String(label))}</span>
+            return entries.map(([label, val]) => {
+                const crunch = markCrunch && thresholdKr && val > thresholdKr;
+                return `
+                <div class="budget-row${crunch ? ' crunch' : ''}">
+                    <span class="budget-row-label">${this.escapeHtml(String(label))}${crunch ? ' ⚠' : ''}</span>
                     <span class="budget-row-bar"><span class="budget-row-fill" style="width:${Math.round(val / max * 100)}%"></span></span>
                     <span class="budget-row-value">${this.formatBudget(Math.round(val))}</span>
-                </div>`).join('');
+                </div>`;
+            }).join('');
         };
 
         const yearEntries = Object.keys(byYear).sort().map(y => [y, byYear[y]]);
         const leadEntries = Object.entries(byLead).sort((a, b) => b[1] - a[1]);
         const noBudget = this.projects.length - withBudget.length;
+        const crunchYears = thresholdKr ? yearEntries.filter(([, v]) => v > thresholdKr) : [];
+        const peakYear = yearEntries.length ? yearEntries.reduce((a, b) => b[1] > a[1] ? b : a) : null;
 
         body.innerHTML = `
             <div class="budget-total">
                 <span>${this.labels.budgetTotal || 'Total investeringsbudget'}</span>
                 <strong>${this.formatBudget(total)}</strong>
             </div>
-            <div class="budget-meta">${withBudget.length} ${(this.labels.projectsPlural || 'projekt').toLowerCase()}${noBudget ? ` · ${noBudget} ${this.labels.budgetMissing || 'utan budget'}` : ''}</div>
+            <div class="budget-meta">${withBudget.length} ${(this.labels.projectsPlural || 'projekt').toLowerCase()}${noBudget ? ` · ${noBudget} ${this.labels.budgetMissing || 'utan budget'}` : ''}${peakYear ? ` · ${this.labels.budgetPeak || 'Topp'}: ${peakYear[0]} (${(peakYear[1] / 1e6).toFixed(1)} mkr)` : ''}</div>
+            <div class="budget-threshold">
+                <label for="loadThresholdInput">${this.labels.budgetThreshold || 'Varna över (mkr/år)'}</label>
+                <input type="number" id="loadThresholdInput" min="0" step="1" placeholder="–" value="${this.loadThreshold != null ? this.loadThreshold : ''}">
+            </div>
+            ${crunchYears.length ? `<div class="budget-crunch-note">⚠ ${crunchYears.length} ${crunchYears.length === 1 ? (this.labels.budgetHeavyYear || 'tungt år') : (this.labels.budgetHeavyYears || 'tunga år')} ${this.labels.budgetOver || 'över'} ${this.loadThreshold} mkr: ${crunchYears.map(e => e[0]).join(', ')}</div>` : ''}
             <h3 class="budget-heading">${this.labels.budgetPerYear || 'Per år'}</h3>
-            ${yearEntries.length ? renderBars(yearEntries) : '<div class="budget-meta">–</div>'}
+            ${yearEntries.length ? renderBars(yearEntries, true) : '<div class="budget-meta">–</div>'}
             <h3 class="budget-heading">${this.labels.budgetPerLead || 'Per projektledare'}</h3>
-            ${leadEntries.length ? renderBars(leadEntries) : '<div class="budget-meta">–</div>'}
+            ${leadEntries.length ? renderBars(leadEntries, false) : '<div class="budget-meta">–</div>'}
         `;
+        const thresholdInput = document.getElementById('loadThresholdInput');
+        if (thresholdInput) {
+            thresholdInput.addEventListener('change', () => {
+                const v = parseFloat(thresholdInput.value);
+                this.loadThreshold = (!isNaN(v) && v > 0) ? v : null;
+                this.saveData('timeline_load_threshold', this.loadThreshold);
+                this.openBudgetSummary(); // re-render with new threshold
+                this.render();             // refresh ribbon crunch marks
+            });
+        }
         document.getElementById('budgetModal').classList.add('active');
     }
 
@@ -4711,6 +4813,40 @@ class TimelineApp {
             cursor = segEnd;
         });
         this.renderPhaseList(containerId, phases);
+    }
+
+    // Backward planning: anchor on the deadline (end date) and lay the standard
+    // phases out ending exactly there, deriving the project start. Matches how
+    // art projects are actually planned ("the building opens then — work back").
+    fillStandardPhasesBackward(containerId, startId, endId) {
+        const defaults = this.getDefaultPhases();
+        const endStr = this.getDateValue(endId);
+        if (!endStr) {
+            this.showToast(this.labels.planBackwardNeedsEnd || 'Sätt ett slutdatum (deadline) först', 'error');
+            return;
+        }
+        const end = this.parseDate(endStr);
+        const totalMonths = defaults.reduce((s, p) => s + (p.months || 6), 0);
+        const start = new Date(end.getTime());
+        start.setMonth(start.getMonth() - totalMonths);
+        const totalMs = end.getTime() - start.getTime();
+        const phases = [];
+        let cursor = start.getTime();
+        defaults.forEach(def => {
+            const share = (def.months || 6) / totalMonths;
+            const segEnd = cursor + share * totalMs;
+            phases.push({
+                name: def.sv || def.name,
+                start: this.formatDateISO(new Date(cursor)),
+                end: this.formatDateISO(new Date(segEnd)),
+                color: def.color
+            });
+            cursor = segEnd;
+        });
+        // Derive the project start field from the computed anchor.
+        this.setDateValue(startId, this.formatDateISO(start), 'date');
+        this.renderPhaseList(containerId, phases);
+        this.showToast(this.labels.planBackwardDone || 'Planerade faser bakåt från deadline', 'success');
     }
 
     // Modal handling

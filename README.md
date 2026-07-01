@@ -8,6 +8,9 @@ A visual project planning tool that runs entirely in your browser. Create and ma
 - **Multiple Zoom Levels** - View 3 months, 1 year, or 2 years at a time
 - **Drag & Drop** - Move and resize projects directly on the timeline
 - **Phases (faser)** - Give each project its own timed phases (e.g. Early stage → Art programme → Procurement → Production → Exhibition/Closing). Drag phases to move them and drag their edges to resize, directly on the timeline. Display them either as coloured segments **inside** the project bar or as a compact track **below** the project (Settings → Faser).
+- **Backward planning** - Set only the deadline (end date) and click *"Planera bakåt från slut"* to lay out the standard phases ending exactly there; the project start is derived automatically. Matches how art projects are planned ("the building opens then — work back").
+- **Fuzzy dates** - Set start/end as an exact **Date**, a **Week**, a **Month**, or a **Quarter** (Q1–Q4) — useful when planning is only known to the quarter.
+- **Load forecast (Belastningsprognos)** - See the full active project value per year, set a warning threshold (mkr/year), and get **crunch years** highlighted both in the forecast and live on the timeline's load ribbon as you drag projects.
 - **Areas & Statuses** - Organize projects by custom areas (departments/workstreams) and statuses
 - **Project metadata** - Track investment budget and project code per project
 - **Events** - Add single-day events with custom icons
