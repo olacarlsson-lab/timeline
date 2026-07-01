@@ -14,7 +14,7 @@ A visual project planning tool that runs entirely in your browser. Create and ma
 - **Areas & Statuses** - Organize projects by custom areas (departments/workstreams) and statuses
 - **Project metadata** - Track investment budget and project code per project
 - **Events** - Add single-day events with custom icons
-- **Import/Export** - Save your data as JSON, import from iCal calendars, or import the "Konstprojekten" Excel (.xlsx) export directly
+- **Import/Export** - Save your data as JSON, import from iCal calendars, or import the "Konstprojekten" Excel (.xlsx) export directly. **Drag & drop** a `.xlsx`, `.json` or `.ics` file anywhere onto the window to import it, and get an **import receipt** afterwards showing exactly what changed (new / refreshed / unchanged / missing from source).
 - **Offline Support** - Works offline as a Progressive Web App (PWA)
 - **Privacy First** - All data is stored locally in your browser, nothing is sent to any server
 - **Dark/Light Theme** - Choose your preferred color scheme
